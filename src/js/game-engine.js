@@ -46,6 +46,7 @@ class GameEngine {
         
         this.initialize();
         this.initializeTankRendering();
+        this.setupDebugKeys();
     }
 
     async initialize() {
@@ -834,6 +835,29 @@ class GameEngine {
     toggleCollisionBoxes() {
         this.showCollisionBoxes = !this.showCollisionBoxes;
         console.log('Collision boxes:', this.showCollisionBoxes);
+    }
+
+    setupDebugKeys() {
+        document.addEventListener('keydown', (event) => {
+            // Only handle debug keys during battle
+            if (this.currentScene !== 'battle') return;
+            
+            switch (event.key.toLowerCase()) {
+                case 'c':
+                    this.toggleCollisionBoxes();
+                    break;
+                case 'd':
+                    this.toggleDebug();
+                    break;
+                case 'r':
+                    // Reset tank rendering log
+                    this.hasLoggedTankRender = false;
+                    console.log('Tank rendering log reset');
+                    break;
+            }
+        });
+        
+        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, R = Reset Tank Log');
     }
 
     resetGame() {
