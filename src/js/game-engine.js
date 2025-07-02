@@ -222,13 +222,8 @@ class GameEngine {
         // Get joystick input
         const joystick = this.ui.getJoystickInput();
         
-        if (joystick.magnitude > 0.1) {
-            // Convert joystick input to world coordinates (endless movement)
-            const moveX = this.player.mainTank.x + joystick.x * 300;
-            const moveY = this.player.mainTank.y + joystick.y * 300;
-            
-            this.player.setMoveTarget(moveX, moveY);
-        }
+        // Set movement direction directly instead of target points
+        this.player.setMovementDirection(joystick.x, joystick.y, joystick.magnitude);
     }
 
     checkCollisions() {
@@ -405,7 +400,7 @@ class GameEngine {
         this.currentScene = 'skillSelection';
         this.waveManager.pauseWave();
         
-        const skillChoices = this.skillManager.getRandomSkillChoices(1);
+        const skillChoices = this.skillManager.getRandomSkillChoices(3);
         this.ui.showSkillSelection(skillChoices);
     }
 

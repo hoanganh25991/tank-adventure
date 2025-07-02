@@ -96,10 +96,29 @@ class VirtualJoystick {
     }
 
     getDirection() {
+        const magnitude = Math.sqrt(this.currentX * this.currentX + this.currentY * this.currentY);
+        
+        // Apply deadzone - ignore very small movements
+        const deadzone = 0.15;
+        if (magnitude < deadzone) {
+            return {
+                x: 0,
+                y: 0,
+                magnitude: 0
+            };
+        }
+        
+        // Normalize direction and apply magnitude scaling
+        const normalizedX = magnitude > 0 ? this.currentX / magnitude : 0;
+        const normalizedY = magnitude > 0 ? this.currentY / magnitude : 0;
+        
+        // Scale magnitude to remove deadzone effect
+        const adjustedMagnitude = Math.min((magnitude - deadzone) / (1 - deadzone), 1);
+        
         return {
-            x: this.currentX,
-            y: this.currentY,
-            magnitude: Math.sqrt(this.currentX * this.currentX + this.currentY * this.currentY)
+            x: normalizedX * adjustedMagnitude,
+            y: normalizedY * adjustedMagnitude,
+            magnitude: adjustedMagnitude
         };
     }
 }
@@ -366,6 +385,7 @@ class GameUI {
 
     showSkillSelection(skillChoices) {
         this.elements.skillOptions.innerHTML = '';
+        this.skillSelectionInProgress = false;
         
         skillChoices.forEach(skill => {
             const skillDiv = document.createElement('div');
@@ -377,7 +397,9 @@ class GameUI {
             `;
             
             skillDiv.addEventListener('click', () => {
-                this.selectSkill(skill.id);
+                if (!this.skillSelectionInProgress) {
+                    this.selectSkill(skill.id);
+                }
             });
             
             this.elements.skillOptions.appendChild(skillDiv);
@@ -387,6 +409,11 @@ class GameUI {
     }
 
     selectSkill(skillId) {
+        // Prevent multiple selections
+        if (this.gameEngine.currentScene !== 'skillSelection') {
+            return;
+        }
+        
         this.gameEngine.skillManager.addSkill(skillId);
         this.gameEngine.resumeBattle();
     }

@@ -234,6 +234,11 @@ class Player {
         this.targetY = y;
         this.isMoving = false;
         
+        // Direction-based movement
+        this.moveDirectionX = 0;
+        this.moveDirectionY = 0;
+        this.moveIntensity = 0;
+        
         // Auto-shoot for mini tanks
         this.autoShootTimer = 0;
         this.autoShootInterval = 800; // milliseconds
@@ -270,17 +275,22 @@ class Player {
 
     updateMovement(deltaTime) {
         const mainTank = this.mainTank;
-        const distance = Utils.distance(mainTank.x, mainTank.y, this.targetX, this.targetY);
         
-        if (distance > 5) {
+        // Use direction-based movement for smooth, consistent control
+        if (this.moveIntensity > 0.1) {
             this.isMoving = true;
-            const angle = Utils.angle(mainTank.x, mainTank.y, this.targetX, this.targetY);
-            const moveX = Math.cos(angle) * mainTank.speed;
-            const moveY = Math.sin(angle) * mainTank.speed;
+            
+            // Calculate movement based on joystick direction and intensity
+            const moveX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
+            const moveY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
             
             // Move main tank
             mainTank.x += moveX;
             mainTank.y += moveY;
+            
+            // Update target position for reference
+            this.targetX = mainTank.x;
+            this.targetY = mainTank.y;
             
             // Move mini tanks in formation
             const positions = [
@@ -302,6 +312,7 @@ class Player {
                 miniTank.y = Utils.lerp(miniTank.y, targetY, 0.1);
             }
         } else {
+            // Stop moving when joystick is released
             this.isMoving = false;
         }
     }
@@ -384,6 +395,13 @@ class Player {
         // Allow endless movement - no boundaries
         this.targetX = x;
         this.targetY = y;
+    }
+    
+    setMovementDirection(directionX, directionY, intensity) {
+        this.moveDirectionX = directionX;
+        this.moveDirectionY = directionY;
+        this.moveIntensity = intensity;
+        this.isMoving = intensity > 0.1; // Only consider moving if intensity is above threshold
     }
 
     getAllBullets() {

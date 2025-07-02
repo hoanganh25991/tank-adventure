@@ -264,22 +264,25 @@ body {
 
 #skillOptions {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 15px;
+    flex-wrap: nowrap;
     justify-content: center;
-    max-width: 800px;
+    max-width: 100%;
+    padding: 0 10px;
 }
 
 .skill-option {
     background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
     border: 2px solid #4a9eff;
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
-    width: 220px;
+    flex: 1;
+    min-width: 0;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 280px;
 }
 
 .skill-option:hover {
@@ -510,12 +513,27 @@ body {
     }
     
     #skillOptions {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        padding: 0 5px;
     }
     
     .skill-option {
-        width: 280px;
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+    
+    .skill-option h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .skill-option p {
+        font-size: 11px;
+        line-height: 1.3;
     }
 }
 
