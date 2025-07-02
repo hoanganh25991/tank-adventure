@@ -35,6 +35,15 @@ class GameEngine {
         this.explosions = [];
         this.particles = [];
         
+        // Camera system for endless movement
+        this.camera = {
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            smoothing: 0.1
+        };
+        
         this.initialize();
     }
 
@@ -147,6 +156,9 @@ class GameEngine {
         // Update player
         this.player.update(deltaTime, this.waveManager.enemies);
         
+        // Update camera to follow player
+        this.updateCamera();
+        
         // Update wave manager
         this.waveManager.update(deltaTime, this.player);
         
@@ -192,6 +204,18 @@ class GameEngine {
         }
     }
 
+    updateCamera() {
+        if (!this.player || !this.player.mainTank) return;
+        
+        // Set camera target to center on player
+        this.camera.targetX = this.player.mainTank.x - this.canvas.width / 2;
+        this.camera.targetY = this.player.mainTank.y - this.canvas.height / 2;
+        
+        // Smooth camera movement
+        this.camera.x += (this.camera.targetX - this.camera.x) * this.camera.smoothing;
+        this.camera.y += (this.camera.targetY - this.camera.y) * this.camera.smoothing;
+    }
+
     handleInput() {
         if (this.currentScene !== 'battle' || !this.player || !this.ui) return;
         
@@ -199,9 +223,9 @@ class GameEngine {
         const joystick = this.ui.getJoystickInput();
         
         if (joystick.magnitude > 0.1) {
-            // Convert joystick input to world coordinates
-            const moveX = this.player.mainTank.x + joystick.x * 200;
-            const moveY = this.player.mainTank.y + joystick.y * 200;
+            // Convert joystick input to world coordinates (endless movement)
+            const moveX = this.player.mainTank.x + joystick.x * 300;
+            const moveY = this.player.mainTank.y + joystick.y * 300;
             
             this.player.setMoveTarget(moveX, moveY);
         }
@@ -321,11 +345,7 @@ class GameEngine {
                     tank2.x += Math.cos(angle) * separation;
                     tank2.y += Math.sin(angle) * separation;
                     
-                    // Keep tanks in bounds
-                    tank1.x = Utils.clamp(tank1.x, tank1.size, this.canvas.width - tank1.size);
-                    tank1.y = Utils.clamp(tank1.y, tank1.size, this.canvas.height - tank1.size);
-                    tank2.x = Utils.clamp(tank2.x, tank2.size, this.canvas.width - tank2.size);
-                    tank2.y = Utils.clamp(tank2.y, tank2.size, this.canvas.height - tank2.size);
+                    // No boundary constraints for endless world
                 }
             }
         }
@@ -385,7 +405,7 @@ class GameEngine {
         this.currentScene = 'skillSelection';
         this.waveManager.pauseWave();
         
-        const skillChoices = this.skillManager.getRandomSkillChoices(3);
+        const skillChoices = this.skillManager.getRandomSkillChoices(1);
         this.ui.showSkillSelection(skillChoices);
     }
 
@@ -444,13 +464,20 @@ class GameEngine {
         
         if (this.currentScene === 'battle') {
             this.renderBattle();
+            
+            // Render effects in world space
+            this.ctx.save();
+            this.ctx.translate(-this.camera.x, -this.camera.y);
+            this.renderEffects();
+            this.ctx.restore();
         }
-        
-        // Render effects on top
-        this.renderEffects();
     }
 
     renderBattle() {
+        // Save context and apply camera transform
+        this.ctx.save();
+        this.ctx.translate(-this.camera.x, -this.camera.y);
+        
         // Draw background
         this.drawBackground();
         
@@ -462,28 +489,39 @@ class GameEngine {
         // Draw enemies
         this.waveManager.draw(this.ctx);
         
+        // Restore context (UI elements are drawn in screen space)
+        this.ctx.restore();
+        
         // Draw UI elements
         this.drawBattleUI();
     }
 
     drawBackground() {
-        // Simple grid background
+        // Infinite grid background
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         this.ctx.lineWidth = 1;
         
         const gridSize = 50;
         
-        for (let x = 0; x < this.canvas.width; x += gridSize) {
+        // Calculate grid offset based on camera position
+        const startX = Math.floor(this.camera.x / gridSize) * gridSize;
+        const startY = Math.floor(this.camera.y / gridSize) * gridSize;
+        const endX = startX + this.canvas.width + gridSize;
+        const endY = startY + this.canvas.height + gridSize;
+        
+        // Draw vertical lines
+        for (let x = startX; x <= endX; x += gridSize) {
             this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
+            this.ctx.moveTo(x, startY);
+            this.ctx.lineTo(x, endY);
             this.ctx.stroke();
         }
         
-        for (let y = 0; y < this.canvas.height; y += gridSize) {
+        // Draw horizontal lines
+        for (let y = startY; y <= endY; y += gridSize) {
             this.ctx.beginPath();
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.canvas.width, y);
+            this.ctx.moveTo(startX, y);
+            this.ctx.lineTo(endX, y);
             this.ctx.stroke();
         }
     }

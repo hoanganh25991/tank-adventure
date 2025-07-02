@@ -24,6 +24,7 @@ class Enemy {
         // Visual effects
         this.hitFlash = 0;
         this.muzzleFlash = 0;
+        this.isTargeted = false; // For auto-aim visual feedback
         
         // Animation
         this.animationTimer = 0;
@@ -129,7 +130,7 @@ class Enemy {
             bullet.y += Math.sin(bullet.angle) * bullet.speed;
             bullet.life -= deltaTime;
             
-            if (bullet.life <= 0 || bullet.x < 0 || bullet.x > 800 || bullet.y < 0 || bullet.y > 600) {
+            if (bullet.life <= 0) {
                 this.bullets.splice(i, 1);
             }
         }
@@ -259,12 +260,9 @@ class Enemy {
         const moveX = Math.cos(angle) * this.speed;
         const moveY = Math.sin(angle) * this.speed;
         
-        // Check boundaries
-        const newX = Utils.clamp(this.x + moveX, this.size, 800 - this.size);
-        const newY = Utils.clamp(this.y + moveY, this.size, 600 - this.size);
-        
-        this.x = newX;
-        this.y = newY;
+        // Move without boundary constraints (endless world)
+        this.x += moveX;
+        this.y += moveY;
         this.targetAngle = angle;
     }
 
@@ -273,11 +271,9 @@ class Enemy {
         const moveX = Math.cos(angle) * this.speed;
         const moveY = Math.sin(angle) * this.speed;
         
-        const newX = Utils.clamp(this.x + moveX, this.size, 800 - this.size);
-        const newY = Utils.clamp(this.y + moveY, this.size, 600 - this.size);
-        
-        this.x = newX;
-        this.y = newY;
+        // Move without boundary constraints (endless world)
+        this.x += moveX;
+        this.y += moveY;
         this.targetAngle = Utils.angle(this.x, this.y, targetX, targetY);
     }
 
@@ -291,11 +287,9 @@ class Enemy {
         const moveX = Math.cos(strafeAngle) * this.speed;
         const moveY = Math.sin(strafeAngle) * this.speed;
         
-        const newX = Utils.clamp(this.x + moveX, this.size, 800 - this.size);
-        const newY = Utils.clamp(this.y + moveY, this.size, 600 - this.size);
-        
-        this.x = newX;
-        this.y = newY;
+        // Move without boundary constraints (endless world)
+        this.x += moveX;
+        this.y += moveY;
         this.targetAngle = angle;
     }
 
@@ -415,6 +409,11 @@ class Enemy {
             this.drawHealthBar(ctx);
         }
         
+        // Target indicator for auto-aim
+        if (this.isTargeted) {
+            this.drawTargetIndicator(ctx);
+        }
+        
         // Draw bullets
         this.drawBullets(ctx);
     }
@@ -432,6 +431,49 @@ class Enemy {
         const healthPercent = this.health / this.maxHealth;
         ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth * healthPercent, barHeight);
+    }
+
+    drawTargetIndicator(ctx) {
+        // Draw targeting reticle around the enemy
+        ctx.save();
+        ctx.strokeStyle = '#ff4444';
+        ctx.lineWidth = 3;
+        ctx.globalAlpha = 0.8 + 0.2 * Math.sin(Date.now() * 0.01); // Pulsing effect
+        
+        const reticleSize = this.size + 15;
+        
+        // Draw corner brackets
+        const cornerLength = 8;
+        
+        // Top-left
+        ctx.beginPath();
+        ctx.moveTo(this.x - reticleSize, this.y - reticleSize + cornerLength);
+        ctx.lineTo(this.x - reticleSize, this.y - reticleSize);
+        ctx.lineTo(this.x - reticleSize + cornerLength, this.y - reticleSize);
+        ctx.stroke();
+        
+        // Top-right
+        ctx.beginPath();
+        ctx.moveTo(this.x + reticleSize - cornerLength, this.y - reticleSize);
+        ctx.lineTo(this.x + reticleSize, this.y - reticleSize);
+        ctx.lineTo(this.x + reticleSize, this.y - reticleSize + cornerLength);
+        ctx.stroke();
+        
+        // Bottom-left
+        ctx.beginPath();
+        ctx.moveTo(this.x - reticleSize, this.y + reticleSize - cornerLength);
+        ctx.lineTo(this.x - reticleSize, this.y + reticleSize);
+        ctx.lineTo(this.x - reticleSize + cornerLength, this.y + reticleSize);
+        ctx.stroke();
+        
+        // Bottom-right
+        ctx.beginPath();
+        ctx.moveTo(this.x + reticleSize - cornerLength, this.y + reticleSize);
+        ctx.lineTo(this.x + reticleSize, this.y + reticleSize);
+        ctx.lineTo(this.x + reticleSize, this.y + reticleSize - cornerLength);
+        ctx.stroke();
+        
+        ctx.restore();
     }
 
     drawBullets(ctx) {
@@ -479,9 +521,9 @@ class WaveManager {
         this.wavePaused = false;
         this.spawnTimer = 0;
         
-        // Calculate wave difficulty
-        this.totalEnemiesInWave = Math.min(5 + waveNumber * 2, 25);
-        this.spawnInterval = Math.max(1000, 2500 - waveNumber * 100);
+        // Calculate wave difficulty - More enemies per wave
+        this.totalEnemiesInWave = Math.min(10 + waveNumber * 3, 40);
+        this.spawnInterval = Math.max(800, 2200 - waveNumber * 80);
         
         console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies`);
     }
@@ -509,7 +551,7 @@ class WaveManager {
         if (this.enemiesSpawned < this.totalEnemiesInWave) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
-                this.spawnEnemy();
+                this.spawnEnemy(player);
                 this.spawnTimer = 0;
             }
         }
@@ -520,29 +562,18 @@ class WaveManager {
         }
     }
 
-    spawnEnemy() {
-        // Choose spawn position (from edges of screen)
-        const side = Utils.randomInt(0, 3);
-        let x, y;
+    spawnEnemy(player) {
+        if (!player || !player.mainTank) return;
         
-        switch (side) {
-            case 0: // Top
-                x = Utils.random(50, 750);
-                y = 0;
-                break;
-            case 1: // Right
-                x = 800;
-                y = Utils.random(50, 550);
-                break;
-            case 2: // Bottom
-                x = Utils.random(50, 750);
-                y = 600;
-                break;
-            case 3: // Left
-                x = 0;
-                y = Utils.random(50, 550);
-                break;
-        }
+        // Spawn enemies around player position (off-screen but near player)
+        const playerX = player.mainTank.x;
+        const playerY = player.mainTank.y;
+        const spawnDistance = 400; // Distance from player to spawn
+        
+        // Choose random angle around player
+        const angle = Math.random() * Math.PI * 2;
+        const x = playerX + Math.cos(angle) * spawnDistance;
+        const y = playerY + Math.sin(angle) * spawnDistance;
         
         // Choose enemy type based on wave number
         const enemyType = this.chooseEnemyType();

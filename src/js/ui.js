@@ -253,7 +253,9 @@ class GameUI {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            this.gameEngine.player.manualShoot(centerX, centerY);
+            // Pass enemies array for auto-aim
+            const enemies = this.gameEngine.waveManager ? this.gameEngine.waveManager.enemies : [];
+            this.gameEngine.player.manualShoot(centerX, centerY, enemies);
         }
     }
 

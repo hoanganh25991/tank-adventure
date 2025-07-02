@@ -61,8 +61,8 @@ class Tank {
             bullet.y += Math.sin(bullet.angle) * bullet.speed;
             bullet.life -= deltaTime;
             
-            // Remove bullets that are out of bounds or expired
-            if (bullet.life <= 0 || bullet.x < 0 || bullet.x > 800 || bullet.y < 0 || bullet.y > 600) {
+            // Remove expired bullets (no bounds checking for endless world)
+            if (bullet.life <= 0) {
                 this.bullets.splice(i, 1);
             }
         }
@@ -238,6 +238,9 @@ class Player {
         this.autoShootTimer = 0;
         this.autoShootInterval = 800; // milliseconds
         
+        // Auto-aim system (for manual shooting)
+        this.autoAimEnabled = true;
+        
         // Stats
         this.level = 1;
         this.experience = 0;
@@ -333,13 +336,54 @@ class Player {
         }
     }
 
-    manualShoot(targetX, targetY) {
+    findNearestEnemy(enemies) {
+        if (!enemies || enemies.length === 0) return null;
+        
+        let nearestEnemy = null;
+        let nearestDistance = Infinity;
+        
+        for (const enemy of enemies) {
+            if (!enemy.isAlive) continue;
+            
+            const distance = Utils.distance(this.mainTank.x, this.mainTank.y, enemy.x, enemy.y);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+        
+        // Mark the nearest enemy as targeted for visual feedback
+        if (nearestEnemy) {
+            // Clear previous target markers
+            for (const enemy of enemies) {
+                enemy.isTargeted = false;
+            }
+            nearestEnemy.isTargeted = true;
+        }
+        
+        return nearestEnemy;
+    }
+
+    manualShoot(targetX = null, targetY = null, enemies = []) {
+        if (!this.mainTank.isAlive) return;
+        
+        // If auto-aim is enabled and we have enemies, aim at nearest enemy
+        if (this.autoAimEnabled && enemies.length > 0) {
+            const nearestEnemy = this.findNearestEnemy(enemies);
+            if (nearestEnemy) {
+                this.mainTank.shoot(nearestEnemy.x, nearestEnemy.y);
+                return;
+            }
+        }
+        
+        // Fallback to manual target or current facing direction
         this.mainTank.shoot(targetX, targetY);
     }
 
     setMoveTarget(x, y) {
-        this.targetX = Utils.clamp(x, 50, 750);
-        this.targetY = Utils.clamp(y, 50, 550);
+        // Allow endless movement - no boundaries
+        this.targetX = x;
+        this.targetY = y;
     }
 
     getAllBullets() {
