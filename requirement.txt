@@ -1,0 +1,30 @@
+#### Core Business Logic
+
+Game focus on mobile and tablet with touch screen.
+
+1. **Player and Mini Tanks:**
+   - The player controls a large tank, surrounded by five mini tanks.
+   - Movement is synchronized and controlled via a virutal joystick on mobile screen on the bottom-left.
+   - Player touch to skill buttons and primary shoot button on the bottom-right.
+
+2. **Battle Mechanics:**
+   - Engage in battles against auto-deployed enemy troops.
+   - Enemies appear in increasing waves, growing stronger with each level.
+   - After each wave, players choose from skill options (active/passive) to enhance their capabilities.
+   - Skills reset periodically during battles.
+   - Each battle can have 3-10 waves, we just design that to increase difficulty over time.
+
+3. **Progression and Upgrades:**
+   - Battle results are summarized, with levels awarded based on performance.
+   - Post-battle, players access a base screen to upgrade tanks and mini tanks.
+   - A business system supports various upgrade paths.
+
+4. **Skill Management:**
+   - Active skills are auto-cast; players focus on movement control.
+
+#### External Rendering Layer
+
+1. **Rendering Requirements:**
+   - 2D graphics.
+   - Implemented using HTML and JavaScript.
+   - Designed for simplicity and speed, with no compilation needed.

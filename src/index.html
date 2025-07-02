@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tank Adventure</title>
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Main Canvas -->
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="uiOverlay">
+            <!-- HUD -->
+            <div id="hud">
+                <div id="healthBar">
+                    <div id="healthFill"></div>
+                    <span id="healthText">100/100</span>
+                </div>
+                <div id="waveInfo">
+                    <span id="waveText">Wave 1</span>
+                    <span id="enemiesLeft">Enemies: 10</span>
+                </div>
+                <div id="scoreInfo">
+                    <span id="scoreText">Score: 0</span>
+                </div>
+            </div>
+            
+            <!-- Mobile Controls -->
+            <div id="mobileControls">
+                <!-- Virtual Joystick -->
+                <div id="joystickArea">
+                    <div id="joystickBase">
+                        <div id="joystickStick"></div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div id="actionButtons">
+                    <button id="primaryShootBtn" class="action-btn primary">SHOOT</button>
+                    <button id="skill1Btn" class="action-btn skill" data-skill="1">SKILL 1</button>
+                    <button id="skill2Btn" class="action-btn skill" data-skill="2">SKILL 2</button>
+                    <button id="skill3Btn" class="action-btn skill" data-skill="3">SKILL 3</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Screens -->
+        <div id="screens">
+            <!-- Main Menu -->
+            <div id="mainMenu" class="screen active">
+                <h1>Tank Adventure</h1>
+                <button id="startGameBtn" class="menu-btn">Start Battle</button>
+                <button id="upgradesBtn" class="menu-btn">Base & Upgrades</button>
+                <button id="settingsBtn" class="menu-btn">Settings</button>
+            </div>
+            
+            <!-- Battle Screen (Canvas + UI) -->
+            <div id="battleScreen" class="screen">
+                <!-- This contains the canvas and mobile controls -->
+            </div>
+            
+            <!-- Skill Selection -->
+            <div id="skillSelection" class="screen">
+                <h2>Choose Your Enhancement</h2>
+                <div id="skillOptions">
+                    <!-- Skill options will be dynamically populated -->
+                </div>
+            </div>
+            
+            <!-- Battle Results -->
+            <div id="battleResults" class="screen">
+                <h2>Battle Complete!</h2>
+                <div id="resultsContent">
+                    <div id="battleStats">
+                        <p>Wave Completed: <span id="waveCompleted">1</span></p>
+                        <p>Enemies Defeated: <span id="enemiesDefeated">0</span></p>
+                        <p>Score Earned: <span id="scoreEarned">0</span></p>
+                        <p>Experience Gained: <span id="expGained">0</span></p>
+                    </div>
+                </div>
+                <div id="resultsButtons">
+                    <button id="continueBtn" class="menu-btn">Continue</button>
+                    <button id="backToBaseBtn" class="menu-btn">Back to Base</button>
+                </div>
+            </div>
+            
+            <!-- Base/Upgrade Screen -->
+            <div id="baseScreen" class="screen">
+                <h2>Tank Base</h2>
+                <div id="baseContent">
+                    <div id="tankUpgrades">
+                        <h3>Main Tank Upgrades</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <span>Health: <span id="tankHealth">100</span></span>
+                                <button class="upgrade-btn" data-upgrade="health">Upgrade (+20) - 100 coins</button>
+                            </div>
+                            <div class="upgrade-item">
+                                <span>Damage: <span id="tankDamage">10</span></span>
+                                <button class="upgrade-btn" data-upgrade="damage">Upgrade (+5) - 150 coins</button>
+                            </div>
+                            <div class="upgrade-item">
+                                <span>Speed: <span id="tankSpeed">5</span></span>
+                                <button class="upgrade-btn" data-upgrade="speed">Upgrade (+1) - 200 coins</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="miniTankUpgrades">
+                        <h3>Mini Tank Upgrades</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <span>Mini Health: <span id="miniHealth">50</span></span>
+                                <button class="upgrade-btn" data-upgrade="miniHealth">Upgrade (+10) - 80 coins</button>
+                            </div>
+                            <div class="upgrade-item">
+                                <span>Mini Damage: <span id="miniDamage">5</span></span>
+                                <button class="upgrade-btn" data-upgrade="miniDamage">Upgrade (+2) - 120 coins</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="playerStats">
+                        <h3>Player Stats</h3>
+                        <p>Level: <span id="playerLevel">1</span></p>
+                        <p>Experience: <span id="playerExp">0</span> / <span id="playerExpNext">100</span></p>
+                        <p>Coins: <span id="playerCoins">0</span></p>
+                    </div>
+                </div>
+                <button id="backToMenuBtn" class="menu-btn">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <h2>Loading...</h2>
+            <div class="loading-bar">
+                <div id="loadingProgress"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/skills.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/game-engine.js"></script>
+</body>
+</html>
