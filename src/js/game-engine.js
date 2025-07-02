@@ -45,6 +45,7 @@ class GameEngine {
         };
         
         this.initialize();
+        this.initializeTankRendering();
     }
 
     async initialize() {
@@ -366,7 +367,9 @@ class GameEngine {
         }
         
         // Check if wave is complete
-        if (this.waveManager.isWaveComplete()) {
+        if (this.waveManager.isWaveComplete() && !this.waveCompleted) {
+            this.waveCompleted = true; // Prevent multiple skill selections for the same wave
+            
             if (this.currentWave >= this.maxWaves) {
                 this.endBattle(true); // Player won all waves
             } else {
@@ -397,6 +400,7 @@ class GameEngine {
     }
 
     showSkillSelection() {
+        console.log(`Showing skill selection after wave ${this.currentWave}`);
         this.currentScene = 'skillSelection';
         this.waveManager.pauseWave();
         
@@ -409,6 +413,7 @@ class GameEngine {
         
         this.currentScene = 'battle';
         this.currentWave = 1;
+        this.waveCompleted = false;
         
         // Reset battle stats
         this.battleStats = {
@@ -448,8 +453,14 @@ class GameEngine {
     }
 
     resumeBattle() {
+        console.log(`Resuming battle, starting wave ${this.currentWave + 1}`);
         this.currentScene = 'battle';
-        this.waveManager.resumeWave();
+        
+        // Start the next wave after skill selection
+        this.currentWave++;
+        this.waveCompleted = false; // Reset wave completion flag for new wave
+        this.waveManager.startWave(this.currentWave);
+        
         this.ui.showScreen('battleScreen');
     }
 
@@ -478,7 +489,7 @@ class GameEngine {
         
         // Draw player
         if (this.player) {
-            this.player.draw(this.ctx);
+            this.player.draw(this.ctx, this);
         }
         
         // Draw enemies
@@ -665,10 +676,164 @@ class GameEngine {
         // upgradeManager loads automatically in constructor
     }
 
+    // Enhanced Tank Rendering System
+    initializeTankRendering() {
+        // Color cache for tank rendering
+        this.colorCache = new Map();
+        this.colorCache.set('player', '#3498db');
+        this.colorCache.set('mini_tank', '#2ecc71');
+        
+        // Debug flags
+        this.showCollisionBoxes = false;
+        this.hasLoggedTankRender = false;
+    }
+
+    /**
+     * Render tank (enhanced version)
+     */
+    renderTank(tank, color) {
+        const { x: positionX, y: positionY, size: radius } = tank;
+        
+        this.ctx.save();
+        this.ctx.translate(positionX, positionY);
+        
+        // Get tank rotation angle from tank.angle
+        let rotation = tank.angle || 0;
+        this.ctx.rotate(rotation);
+        
+        // Debug: log first tank render
+        if (!this.hasLoggedTankRender) {
+            console.log('Rendering enhanced tank:', tank.type, 'position:', {x: positionX, y: positionY}, 'color:', color, 'radius:', radius);
+            this.hasLoggedTankRender = true;
+        }
+        
+        // Tank body (rectangular base)
+        this.ctx.fillStyle = color;
+        const bodyWidth = radius * 1.6;
+        const bodyHeight = radius * 1.2;
+        
+        // Main tank body
+        this.ctx.fillRect(-bodyWidth/2, -bodyHeight/2, bodyWidth, bodyHeight);
+        
+        // Tank body outline
+        this.ctx.strokeStyle = this.darkenColor(color, 0.3);
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(-bodyWidth/2, -bodyHeight/2, bodyWidth, bodyHeight);
+        
+        // Tank turret (smaller rectangle on top)
+        const turretWidth = radius * 1.0;
+        const turretHeight = radius * 0.8;
+        this.ctx.fillStyle = this.lightenColor(color, 0.1);
+        this.ctx.fillRect(-turretWidth/2, -turretHeight/2, turretWidth, turretHeight);
+        this.ctx.strokeStyle = this.darkenColor(color, 0.3);
+        this.ctx.strokeRect(-turretWidth/2, -turretHeight/2, turretWidth, turretHeight);
+        
+        // Tank gun barrel with muzzle flash effect
+        this.ctx.fillStyle = this.darkenColor(color, 0.2);
+        const barrelLength = radius * 1.2;
+        const barrelWidth = radius * 0.15;
+        this.ctx.fillRect(0, -barrelWidth/2, barrelLength, barrelWidth);
+        this.ctx.strokeStyle = this.darkenColor(color, 0.4);
+        this.ctx.strokeRect(0, -barrelWidth/2, barrelLength, barrelWidth);
+        
+        // Muzzle flash effect
+        if (tank.muzzleFlash && tank.muzzleFlash > 0) {
+            this.ctx.fillStyle = `rgba(255, 255, 0, ${tank.muzzleFlash * 0.8})`;
+            this.ctx.beginPath();
+            this.ctx.arc(barrelLength, 0, barrelWidth * 2, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // Tank treads (side strips)
+        this.ctx.fillStyle = this.darkenColor(color, 0.4);
+        const treadWidth = radius * 0.2;
+        // Left tread
+        this.ctx.fillRect(-bodyWidth/2, -bodyHeight/2 - treadWidth/2, bodyWidth, treadWidth);
+        // Right tread  
+        this.ctx.fillRect(-bodyWidth/2, bodyHeight/2 - treadWidth/2, bodyWidth, treadWidth);
+        
+        // Add tank type indicator (visual distinction)
+        if (tank.type === 'main') {
+            // Main tank has a commander hatch
+            this.ctx.fillStyle = this.lightenColor(color, 0.2);
+            this.ctx.beginPath();
+            this.ctx.arc(-turretWidth/4, 0, radius * 0.15, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.strokeStyle = this.darkenColor(color, 0.3);
+            this.ctx.stroke();
+        } else if (tank.type === 'mini') {
+            // Mini tanks have a smaller profile with antenna
+            this.ctx.strokeStyle = this.darkenColor(color, 0.2);
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(-turretWidth/3, 0);
+            this.ctx.lineTo(-turretWidth/3, -radius * 0.4);
+            this.ctx.stroke();
+        }
+        
+        // Hit flash effect
+        if (tank.hitFlash && tank.hitFlash > 0) {
+            this.ctx.fillStyle = `rgba(255, 0, 0, ${tank.hitFlash * 0.3})`;
+            this.ctx.fillRect(-bodyWidth/2, -bodyHeight/2, bodyWidth, bodyHeight);
+        }
+        
+        // Collision box (debug)
+        if (this.showCollisionBoxes) {
+            this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
+            this.ctx.lineWidth = 1;
+            this.ctx.strokeRect(-radius, -radius, radius * 2, radius * 2);
+        }
+        
+        this.ctx.restore();
+    }
+
+    /**
+     * Helper function to darken a color
+     */
+    darkenColor(color, factor) {
+        // Convert hex to RGB
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Darken by factor
+        const newR = Math.max(0, Math.floor(r * (1 - factor)));
+        const newG = Math.max(0, Math.floor(g * (1 - factor)));
+        const newB = Math.max(0, Math.floor(b * (1 - factor)));
+        
+        // Convert back to hex
+        return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+    }
+
+    /**
+     * Helper function to lighten a color
+     */
+    lightenColor(color, factor) {
+        // Convert hex to RGB
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Lighten by factor
+        const newR = Math.min(255, Math.floor(r + (255 - r) * factor));
+        const newG = Math.min(255, Math.floor(g + (255 - g) * factor));
+        const newB = Math.min(255, Math.floor(b + (255 - b) * factor));
+        
+        // Convert back to hex
+        return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+    }
+
     // Debug methods
     toggleDebug() {
         this.debugMode = !this.debugMode;
         console.log('Debug mode:', this.debugMode);
+    }
+    
+    toggleCollisionBoxes() {
+        this.showCollisionBoxes = !this.showCollisionBoxes;
+        console.log('Collision boxes:', this.showCollisionBoxes);
     }
 
     resetGame() {

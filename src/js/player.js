@@ -117,9 +117,28 @@ class Tank {
         }
     }
 
-    draw(ctx) {
+    draw(ctx, gameEngine = null) {
         if (!this.isAlive) return;
         
+        // Use enhanced rendering if game engine is provided
+        if (gameEngine && gameEngine.renderTank) {
+            const color = this.type === 'main' ? '#3498db' : '#2ecc71';
+            gameEngine.renderTank(this, color);
+        } else {
+            // Fallback to original rendering
+            this.drawOriginal(ctx);
+        }
+        
+        // Health bar (for mini tanks)
+        if (this.type === 'mini' && this.health < this.maxHealth) {
+            this.drawHealthBar(ctx);
+        }
+        
+        // Draw bullets
+        this.drawBullets(ctx);
+    }
+
+    drawOriginal(ctx) {
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
@@ -132,7 +151,7 @@ class Tank {
         }
         
         // Tank body
-        const bodyColor = this.type === 'main' ? '#4a9eff' : '#44aa44';
+        const bodyColor = this.type === 'main' ? '#3498db' : '#2ecc71';
         ctx.fillStyle = bodyColor;
         ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
         
@@ -142,7 +161,7 @@ class Tank {
         ctx.fillRect(-this.size, this.size * 0.5, this.size * 2, this.size * 0.3);
         
         // Tank turret
-        ctx.fillStyle = this.type === 'main' ? '#6bb6ff' : '#66cc66';
+        ctx.fillStyle = this.type === 'main' ? '#5dade2' : '#58d68d';
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.7, 0, Math.PI * 2);
         ctx.fill();
@@ -160,14 +179,6 @@ class Tank {
         }
         
         ctx.restore();
-        
-        // Health bar (for mini tanks)
-        if (this.type === 'mini' && this.health < this.maxHealth) {
-            this.drawHealthBar(ctx);
-        }
-        
-        // Draw bullets
-        this.drawBullets(ctx);
     }
 
     drawHealthBar(ctx) {
@@ -239,6 +250,12 @@ class Player {
         this.moveDirectionY = 0;
         this.moveIntensity = 0;
         
+        // Smooth movement variables
+        this.currentVelocityX = 0;
+        this.currentVelocityY = 0;
+        this.acceleration = 0.3; // How quickly to reach target speed
+        this.deceleration = 0.4; // How quickly to stop
+        
         // Auto-shoot for mini tanks
         this.autoShootTimer = 0;
         this.autoShootInterval = 800; // milliseconds
@@ -276,23 +293,35 @@ class Player {
     updateMovement(deltaTime) {
         const mainTank = this.mainTank;
         
-        // Use direction-based movement for smooth, consistent control
+        // Calculate target velocity based on joystick input
+        let targetVelocityX = 0;
+        let targetVelocityY = 0;
+        
         if (this.moveIntensity > 0.1) {
             this.isMoving = true;
-            
-            // Calculate movement based on joystick direction and intensity
-            const moveX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
-            const moveY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
-            
-            // Move main tank
-            mainTank.x += moveX;
-            mainTank.y += moveY;
-            
-            // Update target position for reference
-            this.targetX = mainTank.x;
-            this.targetY = mainTank.y;
-            
-            // Move mini tanks in formation
+            targetVelocityX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
+            targetVelocityY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
+        } else {
+            this.isMoving = false;
+        }
+        
+        // Smooth acceleration/deceleration
+        const deltaTimeSeconds = deltaTime / 1000; // Convert to seconds for consistent movement
+        const smoothingFactor = this.isMoving ? this.acceleration : this.deceleration;
+        
+        this.currentVelocityX = Utils.lerp(this.currentVelocityX, targetVelocityX, smoothingFactor);
+        this.currentVelocityY = Utils.lerp(this.currentVelocityY, targetVelocityY, smoothingFactor);
+        
+        // Apply velocity to position
+        mainTank.x += this.currentVelocityX * deltaTimeSeconds;
+        mainTank.y += this.currentVelocityY * deltaTimeSeconds;
+        
+        // Update target position for reference
+        this.targetX = mainTank.x;
+        this.targetY = mainTank.y;
+        
+        // Move mini tanks in formation (only if there's significant movement)
+        if (Math.abs(this.currentVelocityX) > 0.1 || Math.abs(this.currentVelocityY) > 0.1) {
             const positions = [
                 { x: -60, y: -60 }, // Top-left
                 { x: 60, y: -60 },  // Top-right
@@ -308,12 +337,9 @@ class Player {
                 const targetY = mainTank.y + targetPos.y;
                 
                 // Smooth follow movement
-                miniTank.x = Utils.lerp(miniTank.x, targetX, 0.1);
-                miniTank.y = Utils.lerp(miniTank.y, targetY, 0.1);
+                miniTank.x = Utils.lerp(miniTank.x, targetX, 0.15);
+                miniTank.y = Utils.lerp(miniTank.y, targetY, 0.15);
             }
-        } else {
-            // Stop moving when joystick is released
-            this.isMoving = false;
         }
     }
 
@@ -466,13 +492,13 @@ class Player {
         this.coins += amount;
     }
 
-    draw(ctx) {
+    draw(ctx, gameEngine = null) {
         // Draw main tank
-        this.mainTank.draw(ctx);
+        this.mainTank.draw(ctx, gameEngine);
         
         // Draw mini tanks
         for (const miniTank of this.miniTanks) {
-            miniTank.draw(ctx);
+            miniTank.draw(ctx, gameEngine);
         }
         
         // Draw formation lines (debug)

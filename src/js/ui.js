@@ -9,26 +9,30 @@ class VirtualJoystick {
         this.currentX = 0;
         this.currentY = 0;
         this.maxDistance = 35; // Maximum distance from center
+        this.touchId = null; // Track specific touch for multi-touch support
         
         this.setupEvents();
     }
 
     setupEvents() {
-        // Touch events
+        // Touch events on joystick area
         this.base.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-        this.base.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        this.base.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        
+        // Global touch events to handle movement outside joystick area
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
         
         // Mouse events for desktop testing
         this.base.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        this.base.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        this.base.addEventListener('mouseup', this.handleMouseUp.bind(this));
-        this.base.addEventListener('mouseleave', this.handleMouseUp.bind(this));
+        document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+        document.addEventListener('mouseup', this.handleMouseUp.bind(this));
     }
 
     handleTouchStart(event) {
         event.preventDefault();
         this.isActive = true;
+        this.touchId = event.touches[0].identifier; // Track specific touch
         this.baseRect = this.base.getBoundingClientRect();
         const touch = event.touches[0];
         this.updateStickPosition(touch.clientX, touch.clientY);
@@ -36,14 +40,36 @@ class VirtualJoystick {
 
     handleTouchMove(event) {
         if (!this.isActive) return;
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.updateStickPosition(touch.clientX, touch.clientY);
+        
+        // Find the touch that belongs to this joystick
+        let relevantTouch = null;
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === this.touchId) {
+                relevantTouch = event.touches[i];
+                break;
+            }
+        }
+        
+        if (relevantTouch) {
+            event.preventDefault();
+            this.updateStickPosition(relevantTouch.clientX, relevantTouch.clientY);
+        }
     }
 
     handleTouchEnd(event) {
-        event.preventDefault();
-        this.resetStick();
+        // Check if our tracked touch ended
+        let touchEnded = true;
+        for (let i = 0; i < event.touches.length; i++) {
+            if (event.touches[i].identifier === this.touchId) {
+                touchEnded = false;
+                break;
+            }
+        }
+        
+        if (touchEnded) {
+            event.preventDefault();
+            this.resetStick();
+        }
     }
 
     handleMouseDown(event) {
@@ -93,6 +119,7 @@ class VirtualJoystick {
         this.currentX = 0;
         this.currentY = 0;
         this.baseRect = null;
+        this.touchId = null;
     }
 
     getDirection() {
@@ -133,6 +160,7 @@ class GameUI {
         );
         
         this.damageTexts = [];
+        this.skillSelectionInProgress = false;
         
         this.setupEventListeners();
         this.updateInterval = setInterval(() => this.updateHUD(), 100);
@@ -410,9 +438,17 @@ class GameUI {
 
     selectSkill(skillId) {
         // Prevent multiple selections
-        if (this.gameEngine.currentScene !== 'skillSelection') {
+        if (this.gameEngine.currentScene !== 'skillSelection' || this.skillSelectionInProgress) {
             return;
         }
+        
+        this.skillSelectionInProgress = true;
+        
+        // Visual feedback - disable all skill options
+        document.querySelectorAll('.skill-option').forEach(option => {
+            option.style.pointerEvents = 'none';
+            option.style.opacity = '0.6';
+        });
         
         this.gameEngine.skillManager.addSkill(skillId);
         this.gameEngine.resumeBattle();

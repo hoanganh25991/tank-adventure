@@ -303,6 +303,12 @@ body {
     line-height: 1.4;
 }
 
+.skill-option.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Battle Results */
 #battleResults {
     background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
@@ -544,6 +550,34 @@ body {
     
     #hud {
         top: 10px;
+    }
+}
+
+/* Extra small screens (iPhone SE, iPhone 12 mini, etc.) */
+@media (max-width: 390px) {
+    #skillOptions {
+        gap: 5px;
+        padding: 0 3px;
+    }
+    
+    .skill-option {
+        padding: 10px 5px;
+        border-radius: 8px;
+    }
+    
+    .skill-option h3 {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+    
+    .skill-option p {
+        font-size: 10px;
+        line-height: 1.2;
+    }
+    
+    #skillSelection h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
     }
 }
 
