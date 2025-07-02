@@ -1,30 +1,21 @@
-#### Core Business Logic
+**Core Business Logic**
 
-Game focus on mobile and tablet with touch screen.
+- **Platform:** Mobile and tablet with touch screen.
+- **Player and Mini Tanks:**
+  - Control a large tank with five mini tanks via a virtual joystick (bottom-left).
+  - Main tank auto-aims; skill and shoot buttons on the bottom-right.
+- **Battle Mechanics:**
+  - Fight auto-deployed enemy troops in waves, increasing in strength.
+  - Choose one skill (active/passive) after each wave; skills reset periodically.
+  - Battles consist of 3-10 waves, increasing in difficulty.
+- **Progression and Upgrades:**
+  - Levels awarded based on battle performance.
+  - Upgrade tanks and mini tanks post-battle with various upgrade paths.
+- **Skill Management:**
+  - Active skills auto-cast; focus on movement control.
 
-1. **Player and Mini Tanks:**
-   - The player controls a large tank, surrounded by five mini tanks.
-   - Movement is synchronized and controlled via a virutal joystick on mobile screen on the bottom-left.
-   - Player touch to skill buttons and primary shoot button on the bottom-right.
+**External Rendering Layer**
 
-2. **Battle Mechanics:**
-   - Engage in battles against auto-deployed enemy troops.
-   - Enemies appear in increasing waves, growing stronger with each level.
-   - After each wave, players choose from skill options (active/passive) to enhance their capabilities.
-   - Skills reset periodically during battles.
-   - Each battle can have 3-10 waves, we just design that to increase difficulty over time.
-
-3. **Progression and Upgrades:**
-   - Battle results are summarized, with levels awarded based on performance.
-   - Post-battle, players access a base screen to upgrade tanks and mini tanks.
-   - A business system supports various upgrade paths.
-
-4. **Skill Management:**
-   - Active skills are auto-cast; players focus on movement control.
-
-#### External Rendering Layer
-
-1. **Rendering Requirements:**
-   - 2D graphics.
-   - Implemented using HTML and JavaScript.
-   - Designed for simplicity and speed, with no compilation needed.
+- **Rendering Requirements:**
+  - 2D graphics using HTML and JavaScript.
+  - Designed for simplicity and speed, no compilation needed.
