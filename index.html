@@ -183,44 +183,86 @@
             <!-- Base/Upgrade Screen -->
             <div id="baseScreen" class="screen">
                 <h2>Tank Base</h2>
+                
+                <!-- Player Stats - Horizontal Layout at Top -->
+                <div id="playerStats">
+                    <div class="stat-item">
+                        <span class="stat-label">Level</span>
+                        <span class="stat-value" id="playerLevel">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Experience</span>
+                        <span class="stat-value"><span id="playerExp">0</span> / <span id="playerExpNext">100</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Coins</span>
+                        <span class="stat-value" id="playerCoins">0</span>
+                    </div>
+                </div>
+                
                 <div id="baseContent">
-                    <div id="tankUpgrades">
-                        <h3>Main Tank Upgrades</h3>
-                        <div class="upgrade-section">
-                            <div class="upgrade-item">
-                                <span>Health: <span id="tankHealth">100</span></span>
-                                <button class="upgrade-btn" data-upgrade="health">Upgrade (+20) - 100 coins</button>
-                            </div>
-                            <div class="upgrade-item">
-                                <span>Damage: <span id="tankDamage">10</span></span>
-                                <button class="upgrade-btn" data-upgrade="damage">Upgrade (+5) - 150 coins</button>
-                            </div>
-                            <div class="upgrade-item">
-                                <span>Speed: <span id="tankSpeed">5</span></span>
-                                <button class="upgrade-btn" data-upgrade="speed">Upgrade (+1) - 200 coins</button>
+                    <div class="upgrades-grid">
+                        <div id="tankUpgrades" class="upgrade-category">
+                            <h3>🚗 Main Tank</h3>
+                            <div class="upgrade-section">
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">❤️ Health</span>
+                                        <span class="upgrade-current" id="tankHealth">100</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="health">
+                                        <span class="upgrade-cost">100💰</span>
+                                        <span class="upgrade-bonus">+20</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">⚔️ Damage</span>
+                                        <span class="upgrade-current" id="tankDamage">10</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="damage">
+                                        <span class="upgrade-cost">150💰</span>
+                                        <span class="upgrade-bonus">+5</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">💨 Speed</span>
+                                        <span class="upgrade-current" id="tankSpeed">5</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="speed">
+                                        <span class="upgrade-cost">200💰</span>
+                                        <span class="upgrade-bonus">+1</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div id="miniTankUpgrades">
-                        <h3>Mini Tank Upgrades</h3>
-                        <div class="upgrade-section">
-                            <div class="upgrade-item">
-                                <span>Mini Health: <span id="miniHealth">50</span></span>
-                                <button class="upgrade-btn" data-upgrade="miniHealth">Upgrade (+10) - 80 coins</button>
-                            </div>
-                            <div class="upgrade-item">
-                                <span>Mini Damage: <span id="miniDamage">5</span></span>
-                                <button class="upgrade-btn" data-upgrade="miniDamage">Upgrade (+2) - 120 coins</button>
+                        
+                        <div id="miniTankUpgrades" class="upgrade-category">
+                            <h3>🚙 Mini Tanks</h3>
+                            <div class="upgrade-section">
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">❤️ Health</span>
+                                        <span class="upgrade-current" id="miniHealth">50</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="miniHealth">
+                                        <span class="upgrade-cost">80💰</span>
+                                        <span class="upgrade-bonus">+10</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">⚔️ Damage</span>
+                                        <span class="upgrade-current" id="miniDamage">5</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="miniDamage">
+                                        <span class="upgrade-cost">120💰</span>
+                                        <span class="upgrade-bonus">+2</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div id="playerStats">
-                        <h3>Player Stats</h3>
-                        <p>Level: <span id="playerLevel">1</span></p>
-                        <p>Experience: <span id="playerExp">0</span> / <span id="playerExpNext">100</span></p>
-                        <p>Coins: <span id="playerCoins">0</span></p>
                     </div>
                 </div>
                 <button id="backToMenuBtn" class="menu-btn">Back to Menu</button>
