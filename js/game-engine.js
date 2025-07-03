@@ -39,7 +39,9 @@ class GameEngine {
         
         // Battle state
         this.currentWave = 1;
-        this.maxWaves = 10;
+        this.maxWaves = 10; // Default max waves
+        this.battleType = 'standard'; // 'quick', 'standard', 'extended'
+        this.battleTitle = 'Standard Battle';
         this.battleStats = {
             enemiesDefeated: 0,
             scoreEarned: 0,
@@ -804,12 +806,32 @@ class GameEngine {
         this.ui.showSkillSelection(skillChoices);
     }
 
-    startBattle() {
-        console.log('Starting battle...');
+    startBattle(battleType = 'standard') {
+        console.log(`Starting ${battleType} battle...`);
         
         this.currentScene = 'battle';
         this.currentWave = 1;
         this.waveCompleted = false;
+        
+        // Set battle type and max waves
+        this.battleType = battleType;
+        switch (battleType) {
+            case 'quick':
+                this.maxWaves = 3;
+                this.battleTitle = '⚡ Quick Battle (3 Waves)';
+                break;
+            case 'standard':
+                this.maxWaves = 5;
+                this.battleTitle = '🔥 Standard Battle (5 Waves)';
+                break;
+            case 'extended':
+                this.maxWaves = 10;
+                this.battleTitle = '💪 Extended Battle (10 Waves)';
+                break;
+            default:
+                this.maxWaves = 5;
+                this.battleTitle = '🔥 Standard Battle (5 Waves)';
+        }
         
         // Clear active skills for new battle session
         this.skillManager.clearActiveSkills();
@@ -838,6 +860,11 @@ class GameEngine {
         
         // Show battle screen
         this.ui.showScreen('battleScreen');
+        
+        // Show battle title notification
+        if (this.ui) {
+            this.ui.showNotification(this.battleTitle, 'battle');
+        }
     }
 
     continueToNextWave() {

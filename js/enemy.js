@@ -50,12 +50,31 @@ class Enemy {
         const wave = window.gameEngine && window.gameEngine.waveManager ? 
                     window.gameEngine.waveManager.currentWave : 1;
         
-        // Enhanced progressive scaling factors for stronger enemies
-        const healthScaling = 1 + (wave - 1) * 0.25; // 25% health increase per wave
-        const damageScaling = 1 + (wave - 1) * 0.20; // 20% damage increase per wave
-        const speedScaling = 1 + (wave - 1) * 0.10; // 10% speed increase per wave
-        const valueScaling = 1 + (wave - 1) * 0.15; // 15% value increase per wave
-        const shieldScaling = 1 + (wave - 1) * 0.30; // 30% shield increase per wave
+        // Get player level for additional scaling
+        const playerLevel = window.gameEngine && window.gameEngine.player ? 
+                    window.gameEngine.player.level : 1;
+        
+        // Enhanced progressive scaling factors based on both wave and player level
+        // Wave scaling - increases difficulty within a battle
+        const waveHealthScaling = 1 + (wave - 1) * 0.25; // 25% health increase per wave
+        const waveDamageScaling = 1 + (wave - 1) * 0.20; // 20% damage increase per wave
+        const waveSpeedScaling = 1 + (wave - 1) * 0.10; // 10% speed increase per wave
+        const waveValueScaling = 1 + (wave - 1) * 0.15; // 15% value increase per wave
+        const waveShieldScaling = 1 + (wave - 1) * 0.30; // 30% shield increase per wave
+        
+        // Level scaling - increases base difficulty as player progresses
+        const levelHealthScaling = 1 + (playerLevel - 1) * 0.15; // 15% health increase per level
+        const levelDamageScaling = 1 + (playerLevel - 1) * 0.12; // 12% damage increase per level
+        const levelSpeedScaling = 1 + (playerLevel - 1) * 0.05; // 5% speed increase per level
+        const levelValueScaling = 1 + (playerLevel - 1) * 0.10; // 10% value increase per level
+        const levelShieldScaling = 1 + (playerLevel - 1) * 0.20; // 20% shield increase per level
+        
+        // Combined scaling factors
+        const healthScaling = waveHealthScaling * levelHealthScaling;
+        const damageScaling = waveDamageScaling * levelDamageScaling;
+        const speedScaling = waveSpeedScaling * levelSpeedScaling;
+        const valueScaling = waveValueScaling * levelValueScaling;
+        const shieldScaling = waveShieldScaling * levelShieldScaling;
         
         switch (type) {
             case 'basic': // Armored Infantry Tank

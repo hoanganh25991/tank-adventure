@@ -244,6 +244,35 @@ class Tank {
         ctx.strokeStyle = 'rgba(139, 69, 19, 0.8)'; // Rich brown border
         ctx.lineWidth = 1;
         ctx.strokeRect(this.x - barWidth / 2, barY, barWidth, barHeight);
+        
+        // Show level for main tank
+        if (this.type === 'main' && window.gameEngine && window.gameEngine.player) {
+            const level = window.gameEngine.player.level;
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`Lv.${level}`, this.x, barY - 2);
+            
+            // Add a small badge/background for the level
+            const textWidth = ctx.measureText(`Lv.${level}`).width;
+            const badgeWidth = textWidth + 8;
+            const badgeHeight = 14;
+            const badgeY = barY - 16;
+            
+            // Badge background
+            ctx.fillStyle = 'rgba(139, 69, 19, 0.8)'; // Rich brown background
+            ctx.fillRect(this.x - badgeWidth / 2, badgeY, badgeWidth, badgeHeight);
+            
+            // Badge border
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)'; // Gold border
+            ctx.lineWidth = 1;
+            ctx.strokeRect(this.x - badgeWidth / 2, badgeY, badgeWidth, badgeHeight);
+            
+            // Level text (redraw on top)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText(`Lv.${level}`, this.x, barY - 2);
+        }
     }
 
     drawBullets(ctx) {
