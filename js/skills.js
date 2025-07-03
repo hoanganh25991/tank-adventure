@@ -16,7 +16,7 @@ class Skill {
         this.maxLevel = 5;
     }
 
-    activate(player, enemies) {
+    activate(player, enemies, effectsManager = null) {
         if (this.type === 'passive') return; // Passive skills are always active
         if (this.remainingCooldown > 0) return; // On cooldown
         
@@ -24,11 +24,22 @@ class Skill {
         this.remainingDuration = this.duration;
         this.remainingCooldown = this.cooldown;
         
+        // Trigger cast effects
+        if (effectsManager) {
+            const playerPos = { x: player.mainTank.x, y: player.mainTank.y };
+            effectsManager.triggerCastEffect(this.effect.type, playerPos.x, playerPos.y);
+            
+            // Start during effects if skill has duration
+            if (this.duration > 0) {
+                effectsManager.startDuringEffect(this.effect.type, this);
+            }
+        }
+        
         // Apply immediate effects
         this.applyEffect(player, enemies);
     }
 
-    update(deltaTime, player, enemies) {
+    update(deltaTime, player, enemies, effectsManager = null) {
         // Update cooldown
         if (this.remainingCooldown > 0) {
             this.remainingCooldown -= deltaTime;
@@ -38,6 +49,12 @@ class Skill {
         if (this.isActive && this.duration > 0) {
             this.remainingDuration -= deltaTime;
             if (this.remainingDuration <= 0) {
+                // Trigger exit effects before deactivating
+                if (effectsManager) {
+                    const playerPos = { x: player.mainTank.x, y: player.mainTank.y };
+                    effectsManager.triggerExitEffect(this.effect.type, playerPos.x, playerPos.y);
+                }
+                
                 this.isActive = false;
                 this.removeEffect(player);
             }
@@ -196,6 +213,9 @@ class SkillManager {
         this.autoCastEnabled = true;
         this.autoCastInterval = 2000; // Try to cast skills every 2 seconds
         this.lastAutoCast = 0;
+        
+        // Effects manager reference (set by game engine)
+        this.effectsManager = null;
     }
 
     createSkillDatabase() {
@@ -246,7 +266,7 @@ class SkillManager {
     update(deltaTime, player, enemies) {
         // Update all active skills
         for (const skill of this.activeSkills) {
-            skill.update(deltaTime, player, enemies);
+            skill.update(deltaTime, player, enemies, this.effectsManager);
         }
         
         // Auto-cast skills if enabled
@@ -295,7 +315,7 @@ class SkillManager {
             }
             
             if (shouldCast) {
-                skill.activate(player, enemies);
+                skill.activate(player, enemies, this.effectsManager);
                 break; // Only cast one skill per cycle
             }
         }
@@ -368,7 +388,7 @@ class SkillManager {
         const skill = this.skillSlots[slotIndex];
         if (!skill || !skill.isReady()) return false;
         
-        skill.activate(player, enemies);
+        skill.activate(player, enemies, this.effectsManager);
         return true;
     }
 

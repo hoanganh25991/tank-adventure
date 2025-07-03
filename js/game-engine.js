@@ -18,6 +18,10 @@ class GameEngine {
         this.upgradeManager = new UpgradeManager();
         this.ui = null;
         
+        // Effects system
+        this.skillEffects = new SkillEffects(this);
+        this.skillManager.effectsManager = this.skillEffects;
+        
         // Game settings
         this.targetFPS = 60;
         this.frameTime = 1000 / this.targetFPS;
@@ -180,6 +184,9 @@ class GameEngine {
     }
 
     updateEffects(deltaTime) {
+        // Update skill effects
+        this.skillEffects.update(deltaTime);
+        
         // Update explosions
         for (let i = this.explosions.length - 1; i >= 0; i--) {
             const explosion = this.explosions[i];
@@ -539,6 +546,9 @@ class GameEngine {
     }
 
     renderEffects() {
+        // Draw skill effects
+        this.skillEffects.render();
+        
         // Draw explosions
         for (const explosion of this.explosions) {
             this.ctx.save();
