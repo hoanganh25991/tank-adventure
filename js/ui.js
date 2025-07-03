@@ -248,31 +248,31 @@ class GameUI {
             btn.addEventListener('mousedown', handler);
         });
         
-        // Menu buttons
-        this.elements.startGameBtn.addEventListener('click', () => {
+        // Menu buttons - Enhanced for mobile touch support
+        this.setupMobileButton(this.elements.startGameBtn, () => {
             this.gameEngine.startBattle();
         });
         
-        this.elements.upgradesBtn.addEventListener('click', () => {
+        this.setupMobileButton(this.elements.upgradesBtn, () => {
             this.showScreen('baseScreen');
         });
         
-        this.elements.continueBtn.addEventListener('click', () => {
+        this.setupMobileButton(this.elements.continueBtn, () => {
             this.gameEngine.continueToNextWave();
         });
         
-        this.elements.backToBaseBtn.addEventListener('click', () => {
+        this.setupMobileButton(this.elements.backToBaseBtn, () => {
             this.showScreen('baseScreen');
         });
         
-        this.elements.backToMenuBtn.addEventListener('click', () => {
+        this.setupMobileButton(this.elements.backToMenuBtn, () => {
             this.showScreen('mainMenu');
         });
         
-        // Upgrade buttons
+        // Upgrade buttons - Enhanced for mobile touch support
         document.querySelectorAll('.upgrade-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const upgradeType = e.target.getAttribute('data-upgrade');
+            this.setupMobileButton(btn, () => {
+                const upgradeType = btn.getAttribute('data-upgrade');
                 this.handleUpgrade(upgradeType);
             });
         });
@@ -567,6 +567,71 @@ class GameUI {
         canvas.style.height = `${height}px`;
         canvas.style.left = `${(containerRect.width - width) / 2}px`;
         canvas.style.top = `${(containerRect.height - height) / 2}px`;
+    }
+
+    setupMobileButton(button, callback) {
+        if (!button) return;
+        
+        let touchStarted = false;
+        let touchMoved = false;
+        
+        // Enhanced touch support for iPhone Safari
+        const handleTouchStart = (e) => {
+            e.preventDefault();
+            touchStarted = true;
+            touchMoved = false;
+            
+            // Add visual feedback
+            button.style.transform = 'scale(0.95)';
+            button.style.opacity = '0.8';
+        };
+        
+        const handleTouchMove = (e) => {
+            if (touchStarted) {
+                touchMoved = true;
+            }
+        };
+        
+        const handleTouchEnd = (e) => {
+            e.preventDefault();
+            
+            // Reset visual feedback
+            button.style.transform = 'scale(1)';
+            button.style.opacity = '1';
+            
+            // Only trigger callback if touch didn't move (actual tap)
+            if (touchStarted && !touchMoved) {
+                console.log('Button touched:', button.id);
+                callback();
+            }
+            
+            touchStarted = false;
+            touchMoved = false;
+        };
+        
+        const handleClick = (e) => {
+            e.preventDefault();
+            console.log('Button clicked:', button.id);
+            callback();
+        };
+        
+        // Add event listeners
+        button.addEventListener('touchstart', handleTouchStart, { passive: false });
+        button.addEventListener('touchmove', handleTouchMove, { passive: false });
+        button.addEventListener('touchend', handleTouchEnd, { passive: false });
+        button.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        
+        // Keep click for desktop/fallback
+        button.addEventListener('click', handleClick);
+        
+        // Prevent default behaviors that might interfere
+        button.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        // Make sure button is touchable
+        button.style.touchAction = 'manipulation';
+        button.style.userSelect = 'none';
+        button.style.webkitUserSelect = 'none';
+        button.style.webkitTouchCallout = 'none';
     }
 
     destroy() {

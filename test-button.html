@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Button Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .test-btn {
+            padding: 20px 40px;
+            margin: 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #4a9eff, #2a7eff);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            z-index: 10;
+        }
+        
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Touch Test</h1>
+    <p>Test the button functionality on iPhone Safari:</p>
+    
+    <button id="testButton" class="test-btn">Test Button</button>
+    
+    <div id="results">
+        <h3>Test Results:</h3>
+        <div id="log"></div>
+    </div>
+    
+    <script>
+        const button = document.getElementById('testButton');
+        const log = document.getElementById('log');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        let touchStarted = false;
+        let touchMoved = false;
+        
+        // Enhanced touch support for iPhone Safari
+        const handleTouchStart = (e) => {
+            e.preventDefault();
+            touchStarted = true;
+            touchMoved = false;
+            
+            addLog('Touch started');
+            
+            // Add visual feedback
+            button.style.transform = 'scale(0.95)';
+            button.style.opacity = '0.8';
+        };
+        
+        const handleTouchMove = (e) => {
+            if (touchStarted) {
+                touchMoved = true;
+                addLog('Touch moved');
+            }
+        };
+        
+        const handleTouchEnd = (e) => {
+            e.preventDefault();
+            
+            addLog('Touch ended');
+            
+            // Reset visual feedback
+            button.style.transform = 'scale(1)';
+            button.style.opacity = '1';
+            
+            // Only trigger callback if touch didn't move (actual tap)
+            if (touchStarted && !touchMoved) {
+                addLog('✅ BUTTON TAPPED SUCCESSFULLY!');
+                alert('Button worked!');
+            }
+            
+            touchStarted = false;
+            touchMoved = false;
+        };
+        
+        const handleClick = (e) => {
+            e.preventDefault();
+            addLog('Click event triggered');
+            alert('Button clicked!');
+        };
+        
+        // Add event listeners
+        button.addEventListener('touchstart', handleTouchStart, { passive: false });
+        button.addEventListener('touchmove', handleTouchMove, { passive: false });
+        button.addEventListener('touchend', handleTouchEnd, { passive: false });
+        button.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        
+        // Keep click for desktop/fallback
+        button.addEventListener('click', handleClick);
+        
+        // Prevent default behaviors that might interfere
+        button.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        addLog('Button test page loaded');
+    </script>
+</body>
+</html>
