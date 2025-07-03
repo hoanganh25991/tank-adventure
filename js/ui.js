@@ -581,21 +581,29 @@ class GameUI {
         const container = document.getElementById('gameContainer');
         
         const containerRect = container.getBoundingClientRect();
-        const aspectRatio = 800 / 600; // Game's aspect ratio
         
-        let width = containerRect.width;
-        let height = containerRect.height;
+        // Get device pixel ratio for crisp rendering
+        const dpr = window.devicePixelRatio || 1;
         
-        if (width / height > aspectRatio) {
-            width = height * aspectRatio;
-        } else {
-            height = width / aspectRatio;
-        }
+        // Set canvas size to full container size
+        const width = containerRect.width;
+        const height = containerRect.height;
         
+        // Set the internal canvas resolution
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        
+        // Set the CSS size (what the user sees)
         canvas.style.width = `${width}px`;
         canvas.style.height = `${height}px`;
-        canvas.style.left = `${(containerRect.width - width) / 2}px`;
-        canvas.style.top = `${(containerRect.height - height) / 2}px`;
+        canvas.style.left = '0px';
+        canvas.style.top = '0px';
+        
+        // Scale the context to match the device pixel ratio
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        
+        console.log(`Canvas resized to: ${width}x${height} (${canvas.width}x${canvas.height} internal)`);
     }
 
     setupMobileButton(button, callback) {
