@@ -51,8 +51,34 @@
         
         <!-- Game Screens -->
         <div id="screens">
+            <!-- Orientation Screen -->
+            <div id="orientationScreen" class="screen active">
+                <div class="orientation-content">
+                    <div class="orientation-icon">
+                        <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Phone/device outline -->
+                            <rect x="10" y="20" width="40" height="70" rx="8" fill="none" stroke="#8b4513" stroke-width="3"/>
+                            <rect x="15" y="25" width="30" height="60" rx="2" fill="#c8a882"/>
+                            
+                            <!-- Rotation arrow -->
+                            <path d="M 60 45 Q 75 30 90 45" fill="none" stroke="#8b4513" stroke-width="3" stroke-linecap="round"/>
+                            <polygon points="85,40 90,45 85,50" fill="#8b4513"/>
+                            
+                            <!-- Phone/device outline (rotated) -->
+                            <rect x="70" y="10" width="70" height="40" rx="8" fill="none" stroke="#9acd32" stroke-width="3"/>
+                            <rect x="75" y="15" width="60" height="30" rx="2" fill="#9acd32" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <h2>Rotate Your Device</h2>
+                    <p>Please rotate your device to landscape mode for the best gaming experience.</p>
+                    <div class="orientation-tip">
+                        <p>🎮 Tank Adventure works best in landscape orientation</p>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Main Menu -->
-            <div id="mainMenu" class="screen active">
+            <div id="mainMenu" class="screen">
                 <h1>Tank Adventure</h1>
                 <button id="startGameBtn" class="menu-btn">Start Battle</button>
                 <button id="upgradesBtn" class="menu-btn">Base & Upgrades</button>
@@ -148,6 +174,7 @@
     </div>
     
     <!-- Scripts -->
+    <script src="js/orientation.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/player.js"></script>
     <script src="js/enemy.js"></script>
