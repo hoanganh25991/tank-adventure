@@ -28,6 +28,21 @@ class Enemy {
         
         // Animation
         this.animationTimer = 0;
+        
+        // Special abilities and status effects
+        this.abilities = [];
+        this.shield = 0; // Shield points that absorb damage
+        this.maxShield = 0;
+        this.shieldRegenRate = 0;
+        this.shieldRegenDelay = 0;
+        this.lastDamageTime = 0;
+        this.specialCooldown = 0;
+        this.maxSpecialCooldown = 0;
+        this.statusEffects = new Map(); // Store temporary effects
+        this.damageResistance = 0; // Percentage damage reduction
+        this.criticalChance = 0; // Chance for critical hits
+        this.multiShotCount = 1; // Number of bullets per shot
+        this.homingBullets = false; // Whether bullets home in on target
     }
 
     setStatsForType(type) {
@@ -35,76 +50,166 @@ class Enemy {
         const wave = window.gameEngine && window.gameEngine.waveManager ? 
                     window.gameEngine.waveManager.currentWave : 1;
         
-        // Progressive scaling factors
-        const healthScaling = 1 + (wave - 1) * 0.15; // 15% health increase per wave
-        const damageScaling = 1 + (wave - 1) * 0.12; // 12% damage increase per wave
-        const speedScaling = 1 + (wave - 1) * 0.08; // 8% speed increase per wave
-        const valueScaling = 1 + (wave - 1) * 0.1; // 10% value increase per wave
+        // Enhanced progressive scaling factors for stronger enemies
+        const healthScaling = 1 + (wave - 1) * 0.25; // 25% health increase per wave
+        const damageScaling = 1 + (wave - 1) * 0.20; // 20% damage increase per wave
+        const speedScaling = 1 + (wave - 1) * 0.10; // 10% speed increase per wave
+        const valueScaling = 1 + (wave - 1) * 0.15; // 15% value increase per wave
+        const shieldScaling = 1 + (wave - 1) * 0.30; // 30% shield increase per wave
         
         switch (type) {
-            case 'basic':
-                this.maxHealth = Math.floor(30 * healthScaling);
+            case 'basic': // Armored Infantry Tank
+                this.maxHealth = Math.floor(120 * healthScaling); // 4x stronger
                 this.health = this.maxHealth;
-                this.damage = Math.floor(8 * damageScaling);
-                this.speed = Math.min(1.5 * speedScaling, 2.5); // Cap speed
-                this.size = 20;
+                this.damage = Math.floor(25 * damageScaling); // 3x stronger
+                this.speed = Math.min(1.8 * speedScaling, 3.2);
+                this.size = 22;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = Math.max(1000 - wave * 20, 500); // Faster shooting as waves progress
-                this.range = 120;
-                this.color = '#ff6666';
-                this.value = Math.floor(10 * valueScaling);
-                break;
-                
-            case 'heavy':
-                this.maxHealth = Math.floor(80 * healthScaling);
-                this.health = this.maxHealth;
-                this.damage = Math.floor(15 * damageScaling);
-                this.speed = Math.min(0.8 * speedScaling, 1.8); // Cap speed
-                this.size = 30;
-                this.shootCooldown = 0;
-                this.maxShootCooldown = Math.max(1500 - wave * 30, 700);
-                this.range = 140;
-                this.color = '#cc4444';
-                this.value = Math.floor(25 * valueScaling);
-                break;
-                
-            case 'fast':
-                this.maxHealth = Math.floor(20 * healthScaling);
-                this.health = this.maxHealth;
-                this.damage = Math.floor(6 * damageScaling);
-                this.speed = Math.min(3 * speedScaling, 4.5); // Cap speed
-                this.size = 15;
-                this.shootCooldown = 0;
-                this.maxShootCooldown = Math.max(600 - wave * 15, 300);
-                this.range = 100;
-                this.color = '#ff9944';
+                this.maxShootCooldown = Math.max(800 - wave * 15, 400);
+                this.range = 130;
+                this.color = '#ff4444'; // Deep red
+                this.secondaryColor = '#aa2222'; // Darker red
                 this.value = Math.floor(15 * valueScaling);
+                this.damageResistance = 0.1; // 10% damage reduction
+                this.abilities = ['basic_armor'];
                 break;
                 
-            case 'sniper':
-                this.maxHealth = Math.floor(25 * healthScaling);
+            case 'heavy': // Siege Tank
+                this.maxHealth = Math.floor(300 * healthScaling); // 4x stronger
                 this.health = this.maxHealth;
-                this.damage = Math.floor(20 * damageScaling);
-                this.speed = Math.min(1 * speedScaling, 2); // Cap speed
+                this.damage = Math.floor(45 * damageScaling); // 3x stronger
+                this.speed = Math.min(1.0 * speedScaling, 2.0);
+                this.size = 35;
+                this.shootCooldown = 0;
+                this.maxShootCooldown = Math.max(1200 - wave * 25, 600);
+                this.range = 160;
+                this.color = '#8B4513'; // Brown/bronze
+                this.secondaryColor = '#654321';
+                this.value = Math.floor(40 * valueScaling);
+                this.maxShield = Math.floor(100 * shieldScaling);
+                this.shield = this.maxShield;
+                this.shieldRegenRate = 5; // Shield regenerates
+                this.shieldRegenDelay = 3000; // 3 seconds after taking damage
+                this.damageResistance = 0.25; // 25% damage reduction
+                this.abilities = ['heavy_armor', 'explosive_shells'];
+                this.multiShotCount = 2; // Fires 2 bullets
+                break;
+                
+            case 'fast': // Assault Raider
+                this.maxHealth = Math.floor(80 * healthScaling); // 4x stronger
+                this.health = this.maxHealth;
+                this.damage = Math.floor(20 * damageScaling); // 3x stronger
+                this.speed = Math.min(4.5 * speedScaling, 6.5);
                 this.size = 18;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = Math.max(2000 - wave * 40, 1000);
-                this.range = 180;
-                this.color = '#9944ff';
-                this.value = Math.floor(20 * valueScaling);
+                this.maxShootCooldown = Math.max(400 - wave * 10, 200);
+                this.range = 110;
+                this.color = '#FF6600'; // Orange
+                this.secondaryColor = '#CC4400';
+                this.value = Math.floor(25 * valueScaling);
+                this.criticalChance = 0.2; // 20% critical hit chance
+                this.abilities = ['speed_boost', 'critical_strikes'];
                 break;
                 
-            case 'boss':
+            case 'sniper': // Precision Marksman
+                this.maxHealth = Math.floor(150 * healthScaling); // 6x stronger
+                this.health = this.maxHealth;
+                this.damage = Math.floor(80 * damageScaling); // 4x stronger
+                this.speed = Math.min(1.2 * speedScaling, 2.5);
+                this.size = 20;
+                this.shootCooldown = 0;
+                this.maxShootCooldown = Math.max(1800 - wave * 30, 900);
+                this.range = 250;
+                this.color = '#9966FF'; // Purple
+                this.secondaryColor = '#6633CC';
+                this.value = Math.floor(35 * valueScaling);
+                this.damageResistance = 0.15;
+                this.abilities = ['precision_targeting', 'armor_piercing'];
+                this.homingBullets = true; // Bullets track targets
+                break;
+                
+            case 'elite': // Elite Guardian (New Type)
+                this.maxHealth = Math.floor(250 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(35 * damageScaling);
+                this.speed = Math.min(2.2 * speedScaling, 3.5);
+                this.size = 28;
+                this.shootCooldown = 0;
+                this.maxShootCooldown = Math.max(1000 - wave * 20, 500);
+                this.range = 180;
+                this.color = '#00FFFF'; // Cyan
+                this.secondaryColor = '#0099CC';
+                this.value = Math.floor(50 * valueScaling);
+                this.maxShield = Math.floor(150 * shieldScaling);
+                this.shield = this.maxShield;
+                this.shieldRegenRate = 8;
+                this.shieldRegenDelay = 2500;
+                this.damageResistance = 0.2;
+                this.criticalChance = 0.15;
+                this.abilities = ['energy_shield', 'plasma_burst', 'tactical_retreat'];
+                this.maxSpecialCooldown = 5000;
+                break;
+                
+            case 'berserker': // Berserker Destroyer (New Type)
+                this.maxHealth = Math.floor(180 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(30 * damageScaling);
+                this.speed = Math.min(3.8 * speedScaling, 5.5);
+                this.size = 24;
+                this.shootCooldown = 0;
+                this.maxShootCooldown = Math.max(600 - wave * 15, 300);
+                this.range = 120;
+                this.color = '#FF0066'; // Hot pink/red
+                this.secondaryColor = '#CC0044';
+                this.value = Math.floor(45 * valueScaling);
+                this.criticalChance = 0.3;
+                this.abilities = ['berserker_rage', 'ramming_attack', 'blood_frenzy'];
+                this.multiShotCount = 3;
+                this.maxSpecialCooldown = 4000;
+                break;
+                
+            case 'support': // Support Commander (New Type)
                 this.maxHealth = Math.floor(200 * healthScaling);
                 this.health = this.maxHealth;
-                this.damage = Math.floor(25 * damageScaling);
-                this.speed = Math.min(1.2 * speedScaling, 2.2); // Cap speed
-                this.size = 40;
+                this.damage = Math.floor(20 * damageScaling);
+                this.speed = Math.min(1.5 * speedScaling, 2.8);
+                this.size = 26;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = Math.max(800 - wave * 20, 400);
-                this.range = 160;
-                this.color = '#ff4444';
-                this.value = Math.floor(100 * valueScaling);
+                this.maxShootCooldown = Math.max(1400 - wave * 25, 700);
+                this.range = 200;
+                this.color = '#00FF00'; // Green
+                this.secondaryColor = '#00AA00';
+                this.value = Math.floor(60 * valueScaling);
+                this.maxShield = Math.floor(80 * shieldScaling);
+                this.shield = this.maxShield;
+                this.shieldRegenRate = 12;
+                this.shieldRegenDelay = 2000;
+                this.abilities = ['heal_allies', 'damage_boost', 'shield_generator'];
+                this.maxSpecialCooldown = 6000;
+                break;
+                
+            case 'boss': // Dreadnought Commander
+                this.maxHealth = Math.floor(800 * healthScaling); // 4x stronger
+                this.health = this.maxHealth;
+                this.damage = Math.floor(60 * damageScaling); // 2.4x stronger
+                this.speed = Math.min(1.8 * speedScaling, 3.2);
+                this.size = 50;
+                this.shootCooldown = 0;
+                this.maxShootCooldown = Math.max(600 - wave * 15, 300);
+                this.range = 200;
+                this.color = '#FF1493'; // Deep pink/magenta
+                this.secondaryColor = '#CC0066';
+                this.value = Math.floor(200 * valueScaling);
+                this.maxShield = Math.floor(300 * shieldScaling);
+                this.shield = this.maxShield;
+                this.shieldRegenRate = 15;
+                this.shieldRegenDelay = 1500;
+                this.damageResistance = 0.35; // 35% damage reduction
+                this.criticalChance = 0.25;
+                this.multiShotCount = 4;
+                this.homingBullets = true;
+                this.abilities = ['boss_barrage', 'summon_minions', 'defensive_matrix', 'devastating_beam'];
+                this.maxSpecialCooldown = 3000;
                 break;
         }
     }
@@ -124,6 +229,27 @@ class Enemy {
         if (this.muzzleFlash > 0) {
             this.muzzleFlash -= deltaTime * 5;
         }
+        if (this.specialCooldown > 0) {
+            this.specialCooldown -= deltaTime;
+        }
+        
+        // Shield regeneration
+        if (this.maxShield > 0 && this.shield < this.maxShield) {
+            if (Date.now() - this.lastDamageTime > this.shieldRegenDelay) {
+                this.shield = Math.min(this.maxShield, this.shield + this.shieldRegenRate * deltaTime / 1000);
+            }
+        }
+        
+        // Update status effects
+        for (const [effect, data] of this.statusEffects) {
+            data.duration -= deltaTime;
+            if (data.duration <= 0) {
+                this.statusEffects.delete(effect);
+            }
+        }
+        
+        // Execute special abilities
+        this.updateSpecialAbilities(deltaTime, player);
         
         // AI behavior
         this.updateAI(deltaTime, player);
@@ -136,6 +262,16 @@ class Enemy {
         // Update bullets
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
+            
+            // Homing bullet logic
+            if (bullet.isHoming && bullet.target && bullet.target.isAlive) {
+                const targetAngle = Utils.angle(bullet.x, bullet.y, bullet.target.x, bullet.target.y);
+                const turnSpeed = 0.03; // How fast bullets can turn
+                const angleDiff = targetAngle - bullet.angle;
+                const normalizedAngleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+                bullet.angle += normalizedAngleDiff * turnSpeed;
+            }
+            
             bullet.x += Math.cos(bullet.angle) * bullet.speed;
             bullet.y += Math.sin(bullet.angle) * bullet.speed;
             bullet.life -= deltaTime;
@@ -307,25 +443,50 @@ class Enemy {
         if (this.shootCooldown <= 0 && target && target.isAlive) {
             const angle = Utils.angle(this.x, this.y, target.x, target.y);
             
-            // Add some inaccuracy except for snipers
-            let finalAngle = angle;
-            if (this.type !== 'sniper') {
-                const inaccuracy = this.type === 'fast' ? 0.2 : 0.1;
-                finalAngle += (Math.random() - 0.5) * inaccuracy;
+            // Fire multiple bullets for multi-shot enemies
+            for (let i = 0; i < this.multiShotCount; i++) {
+                // Add some inaccuracy except for snipers
+                let finalAngle = angle;
+                if (this.type !== 'sniper') {
+                    const inaccuracy = this.type === 'fast' ? 0.2 : 0.1;
+                    finalAngle += (Math.random() - 0.5) * inaccuracy;
+                }
+                
+                // Add spread for multi-shot
+                if (this.multiShotCount > 1) {
+                    const spread = 0.3; // radians
+                    const offset = (i - (this.multiShotCount - 1) / 2) * spread / (this.multiShotCount - 1);
+                    finalAngle += offset;
+                }
+                
+                // Calculate damage (with critical hit chance)
+                let bulletDamage = this.damage;
+                let isCritical = false;
+                if (Math.random() < this.criticalChance) {
+                    bulletDamage *= 2;
+                    isCritical = true;
+                }
+                
+                const bulletSpeed = this.type === 'sniper' ? 12 : 
+                                  this.type === 'fast' ? 8 : 6;
+                
+                const bullet = {
+                    x: this.x + Math.cos(finalAngle) * this.size,
+                    y: this.y + Math.sin(finalAngle) * this.size,
+                    angle: finalAngle,
+                    speed: bulletSpeed,
+                    damage: bulletDamage,
+                    life: this.type === 'sniper' ? 2000 : 1500,
+                    owner: 'enemy',
+                    isHoming: this.homingBullets,
+                    target: this.homingBullets ? target : null,
+                    isCritical: isCritical,
+                    enemyType: this.type
+                };
+                
+                this.bullets.push(bullet);
             }
             
-            const bulletSpeed = this.type === 'sniper' ? 12 : 6;
-            const bullet = {
-                x: this.x + Math.cos(finalAngle) * this.size,
-                y: this.y + Math.sin(finalAngle) * this.size,
-                angle: finalAngle,
-                speed: bulletSpeed,
-                damage: this.damage,
-                life: 1500, // Reduced from 3000 to 1500ms for shorter range
-                owner: 'enemy'
-            };
-            
-            this.bullets.push(bullet);
             this.shootCooldown = this.maxShootCooldown;
             this.muzzleFlash = 1.0;
         }
@@ -334,8 +495,34 @@ class Enemy {
     takeDamage(damage) {
         if (!this.isAlive) return false;
         
-        this.health -= damage;
-        this.hitFlash = 1.0;
+        // Record damage time for shield regeneration
+        this.lastDamageTime = Date.now();
+        
+        // Apply damage resistance
+        let finalDamage = damage * (1 - this.damageResistance);
+        
+        // Shield absorbs damage first
+        if (this.shield > 0) {
+            const shieldDamage = Math.min(this.shield, finalDamage);
+            this.shield -= shieldDamage;
+            finalDamage -= shieldDamage;
+            
+            // Shield break effect
+            if (this.shield <= 0) {
+                this.statusEffects.set('shield_broken', { duration: 1000 });
+            }
+        }
+        
+        // Apply remaining damage to health
+        if (finalDamage > 0) {
+            this.health -= finalDamage;
+            this.hitFlash = 1.0;
+            
+            // Trigger defensive abilities when low health
+            if (this.health <= this.maxHealth * 0.3 && this.specialCooldown <= 0) {
+                this.triggerDefensiveAbility();
+            }
+        }
         
         if (this.health <= 0) {
             this.health = 0;
@@ -343,6 +530,179 @@ class Enemy {
             return true;
         }
         return false;
+    }
+
+    updateSpecialAbilities(deltaTime, player) {
+        // Execute type-specific special abilities
+        if (this.specialCooldown <= 0 && this.maxSpecialCooldown > 0) {
+            switch (this.type) {
+                case 'elite':
+                    this.eliteSpecialAbility(player);
+                    break;
+                case 'berserker':
+                    this.berserkerSpecialAbility(player);
+                    break;
+                case 'support':
+                    this.supportSpecialAbility(player);
+                    break;
+                case 'boss':
+                    this.bossSpecialAbility(player);
+                    break;
+            }
+        }
+    }
+
+    triggerDefensiveAbility() {
+        // Emergency defensive abilities when health is low
+        if (this.abilities.includes('tactical_retreat')) {
+            this.speed *= 1.5;
+            this.statusEffects.set('tactical_retreat', { duration: 3000 });
+            this.specialCooldown = this.maxSpecialCooldown;
+        } else if (this.abilities.includes('defensive_matrix')) {
+            this.damageResistance = Math.min(this.damageResistance + 0.3, 0.8);
+            this.statusEffects.set('defensive_matrix', { duration: 5000 });
+            this.specialCooldown = this.maxSpecialCooldown;
+        }
+    }
+
+    eliteSpecialAbility(player) {
+        const abilityChoice = Math.random();
+        
+        if (abilityChoice < 0.4) {
+            // Plasma Burst - rapid fire
+            this.statusEffects.set('plasma_burst', { duration: 3000 });
+            this.maxShootCooldown *= 0.3; // 70% faster shooting
+        } else if (abilityChoice < 0.8) {
+            // Shield Boost
+            this.shield = Math.min(this.maxShield, this.shield + this.maxShield * 0.5);
+            this.shieldRegenRate *= 2;
+            this.statusEffects.set('shield_boost', { duration: 4000 });
+        } else {
+            // Tactical Retreat with shield regeneration
+            this.triggerDefensiveAbility();
+        }
+        
+        this.specialCooldown = this.maxSpecialCooldown;
+    }
+
+    berserkerSpecialAbility(player) {
+        const abilityChoice = Math.random();
+        
+        if (abilityChoice < 0.5) {
+            // Berserker Rage - increased damage and speed
+            this.damage *= 1.5;
+            this.speed *= 1.4;
+            this.maxShootCooldown *= 0.5;
+            this.statusEffects.set('berserker_rage', { duration: 5000 });
+        } else {
+            // Blood Frenzy - heal on kill (simplified as health boost)
+            this.health = Math.min(this.maxHealth, this.health + this.maxHealth * 0.3);
+            this.statusEffects.set('blood_frenzy', { duration: 3000 });
+        }
+        
+        this.specialCooldown = this.maxSpecialCooldown;
+    }
+
+    supportSpecialAbility(player) {
+        // Support abilities affect nearby enemies
+        const nearbyEnemies = this.getNearbyEnemies(150);
+        
+        const abilityChoice = Math.random();
+        
+        if (abilityChoice < 0.4) {
+            // Heal nearby allies
+            for (const enemy of nearbyEnemies) {
+                enemy.health = Math.min(enemy.maxHealth, enemy.health + enemy.maxHealth * 0.2);
+                enemy.statusEffects.set('healed', { duration: 500 });
+            }
+        } else if (abilityChoice < 0.8) {
+            // Damage boost to nearby allies
+            for (const enemy of nearbyEnemies) {
+                enemy.damage *= 1.3;
+                enemy.statusEffects.set('damage_boost', { duration: 4000 });
+            }
+        } else {
+            // Shield generator
+            for (const enemy of nearbyEnemies) {
+                if (enemy.maxShield > 0) {
+                    enemy.shield = Math.min(enemy.maxShield, enemy.shield + enemy.maxShield * 0.4);
+                }
+            }
+        }
+        
+        this.specialCooldown = this.maxSpecialCooldown;
+    }
+
+    bossSpecialAbility(player) {
+        const abilityChoice = Math.random();
+        
+        if (abilityChoice < 0.3) {
+            // Boss Barrage - rapid multi-shot
+            this.multiShotCount = 8;
+            this.maxShootCooldown *= 0.2;
+            this.statusEffects.set('boss_barrage', { duration: 3000 });
+        } else if (abilityChoice < 0.6) {
+            // Defensive Matrix - massive damage reduction
+            this.damageResistance = Math.min(this.damageResistance + 0.5, 0.9);
+            this.statusEffects.set('defensive_matrix', { duration: 4000 });
+        } else {
+            // Devastating Beam - high damage homing shot
+            if (player && player.mainTank && player.mainTank.isAlive) {
+                const angle = Utils.angle(this.x, this.y, player.mainTank.x, player.mainTank.y);
+                const bullet = {
+                    x: this.x,
+                    y: this.y,
+                    angle: angle,
+                    speed: 4, // Slower but deadly
+                    damage: this.damage * 3,
+                    life: 3000,
+                    owner: 'enemy',
+                    isHoming: true,
+                    target: player.mainTank,
+                    isCritical: true,
+                    isDeadly: true,
+                    enemyType: 'boss'
+                };
+                this.bullets.push(bullet);
+            }
+        }
+        
+        this.specialCooldown = this.maxSpecialCooldown;
+    }
+
+    getNearbyEnemies(range) {
+        if (!window.gameEngine || !window.gameEngine.waveManager) return [];
+        
+        const nearbyEnemies = [];
+        for (const enemy of window.gameEngine.waveManager.enemies) {
+            if (enemy !== this && enemy.isAlive) {
+                const distance = Utils.distance(this.x, this.y, enemy.x, enemy.y);
+                if (distance <= range) {
+                    nearbyEnemies.push(enemy);
+                }
+            }
+        }
+        return nearbyEnemies;
+    }
+
+    drawStatusEffects(ctx) {
+        // Draw various status effect glows and indicators
+        if (this.statusEffects.has('berserker_rage')) {
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#FF0066';
+        } else if (this.statusEffects.has('plasma_burst')) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00FFFF';
+        } else if (this.statusEffects.has('defensive_matrix')) {
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = '#FFD700';
+        } else if (this.statusEffects.has('tactical_retreat')) {
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#00FF00';
+        } else if (this.statusEffects.has('boss_barrage')) {
+            ctx.shadowBlur = 25;
+            ctx.shadowColor = '#FF1493';
+        }
     }
 
     draw(ctx) {
@@ -359,24 +719,98 @@ class Enemy {
             ctx.shadowColor = 'red';
         }
         
-        // Tank body (different shapes for different types)
+        // Status effect glows
+        this.drawStatusEffects(ctx);
+        
+        // Tank body (unique shapes for different types)
         ctx.fillStyle = this.color;
         
-        if (this.type === 'boss') {
-            // Hexagonal shape for boss
-            ctx.beginPath();
-            for (let i = 0; i < 6; i++) {
-                const angle = (i * Math.PI * 2) / 6;
-                const x = Math.cos(angle) * this.size;
-                const y = Math.sin(angle) * this.size;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fill();
-        } else {
-            // Standard rectangular tank
-            ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
+        switch (this.type) {
+            case 'boss':
+                // Hexagonal shape for boss
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI * 2) / 6;
+                    const x = Math.cos(angle) * this.size;
+                    const y = Math.sin(angle) * this.size;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                break;
+                
+            case 'heavy':
+                // Larger, more armored look
+                ctx.fillRect(-this.size * 1.1, -this.size * 0.7, this.size * 2.2, this.size * 1.4);
+                // Add armor plating
+                ctx.fillStyle = this.secondaryColor;
+                ctx.fillRect(-this.size * 0.9, -this.size * 0.5, this.size * 1.8, this.size * 0.3);
+                ctx.fillRect(-this.size * 0.9, this.size * 0.2, this.size * 1.8, this.size * 0.3);
+                break;
+                
+            case 'fast':
+                // Sleeker, more angular design
+                ctx.beginPath();
+                ctx.moveTo(-this.size * 0.8, -this.size * 0.5);
+                ctx.lineTo(this.size * 1.2, -this.size * 0.3);
+                ctx.lineTo(this.size * 1.2, this.size * 0.3);
+                ctx.lineTo(-this.size * 0.8, this.size * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                break;
+                
+            case 'sniper':
+                // Longer, more streamlined
+                ctx.fillRect(-this.size * 0.8, -this.size * 0.5, this.size * 1.6, this.size);
+                // Add scope
+                ctx.fillStyle = this.secondaryColor;
+                ctx.beginPath();
+                ctx.arc(this.size * 0.3, 0, this.size * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+                
+            case 'elite':
+                // Octagonal elite design
+                ctx.beginPath();
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI * 2) / 8;
+                    const x = Math.cos(angle) * this.size * 0.9;
+                    const y = Math.sin(angle) * this.size * 0.7;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                break;
+                
+            case 'berserker':
+                // Spiky, aggressive design
+                ctx.beginPath();
+                ctx.moveTo(-this.size, 0);
+                ctx.lineTo(-this.size * 0.5, -this.size * 0.8);
+                ctx.lineTo(this.size * 0.5, -this.size * 0.6);
+                ctx.lineTo(this.size * 1.1, 0);
+                ctx.lineTo(this.size * 0.5, this.size * 0.6);
+                ctx.lineTo(-this.size * 0.5, this.size * 0.8);
+                ctx.closePath();
+                ctx.fill();
+                break;
+                
+            case 'support':
+                // Rounded, support-oriented design
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                // Add support equipment
+                ctx.fillStyle = this.secondaryColor;
+                ctx.fillRect(-this.size * 0.4, -this.size * 0.2, this.size * 0.8, this.size * 0.4);
+                break;
+                
+            default: // basic
+                // Standard rectangular tank
+                ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
+                break;
         }
         
         // Tank tracks
@@ -436,8 +870,8 @@ class Enemy {
         
         ctx.restore();
         
-        // Health bar
-        if (this.health < this.maxHealth) {
+        // Health and shield bars
+        if (this.health < this.maxHealth || this.shield > 0) {
             this.drawHealthBar(ctx);
         }
         
@@ -451,18 +885,71 @@ class Enemy {
     }
 
     drawHealthBar(ctx) {
-        const barWidth = this.size * 2;
-        const barHeight = 4;
-        const barY = this.y - this.size - 15;
+        const barWidth = this.size * 2.5;
+        const barHeight = 6;
+        let barY = this.y - this.size - 20;
         
-        // Background
+        // Shield bar (if shield exists)
+        if (this.maxShield > 0) {
+            const shieldPercent = this.shield / this.maxShield;
+            
+            // Shield background
+            ctx.fillStyle = 'rgba(0, 100, 255, 0.3)';
+            ctx.fillRect(this.x - barWidth / 2, barY, barWidth, barHeight);
+            
+            // Shield
+            ctx.fillStyle = shieldPercent > 0.5 ? 'rgba(0, 150, 255, 0.9)' : 
+                          shieldPercent > 0.25 ? 'rgba(100, 200, 255, 0.9)' : 'rgba(150, 220, 255, 0.9)';
+            ctx.fillRect(this.x - barWidth / 2, barY, barWidth * shieldPercent, barHeight);
+            
+            // Shield border
+            ctx.strokeStyle = 'rgba(0, 200, 255, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(this.x - barWidth / 2, barY, barWidth, barHeight);
+            
+            barY += barHeight + 2; // Move health bar down
+        }
+        
+        // Health bar background
         ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth, barHeight);
         
         // Health
         const healthPercent = this.health / this.maxHealth;
-        ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
+        let healthColor;
+        if (healthPercent > 0.7) {
+            healthColor = 'rgba(0, 255, 0, 0.9)'; // Green
+        } else if (healthPercent > 0.4) {
+            healthColor = 'rgba(255, 255, 0, 0.9)'; // Yellow
+        } else if (healthPercent > 0.2) {
+            healthColor = 'rgba(255, 150, 0, 0.9)'; // Orange
+        } else {
+            healthColor = 'rgba(255, 50, 50, 0.9)'; // Red
+        }
+        
+        ctx.fillStyle = healthColor;
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth * healthPercent, barHeight);
+        
+        // Health bar border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(this.x - barWidth / 2, barY, barWidth, barHeight);
+        
+        // Damage resistance indicator
+        if (this.damageResistance > 0) {
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${Math.floor(this.damageResistance * 100)}%`, this.x + barWidth / 2 + 15, barY + barHeight / 2 + 3);
+        }
+        
+        // Special ability indicator
+        if (this.maxSpecialCooldown > 0 && this.specialCooldown <= 0) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('!', this.x - barWidth / 2 - 10, barY + barHeight / 2 + 3);
+        }
     }
 
     drawTargetIndicator(ctx) {
@@ -514,19 +1001,92 @@ class Enemy {
             ctx.translate(bullet.x, bullet.y);
             ctx.rotate(bullet.angle);
             
+            // Different bullet visuals based on type and properties
+            let bulletColor = '#ff6666';
+            let trailColor = 'rgba(255, 100, 100, 0.6)';
+            let bulletSize = 2.5;
+            
+            // Critical hit bullets
+            if (bullet.isCritical) {
+                bulletColor = '#FFD700';
+                trailColor = 'rgba(255, 215, 0, 0.8)';
+                bulletSize = 3.5;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#FFD700';
+            }
+            
+            // Homing bullets
+            if (bullet.isHoming) {
+                bulletColor = '#FF1493';
+                trailColor = 'rgba(255, 20, 147, 0.8)';
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = '#FF1493';
+            }
+            
+            // Deadly boss bullets
+            if (bullet.isDeadly) {
+                bulletColor = '#8B0000';
+                trailColor = 'rgba(139, 0, 0, 0.9)';
+                bulletSize = 4;
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = '#8B0000';
+            }
+            
+            // Enemy type specific bullets
+            switch (bullet.enemyType) {
+                case 'sniper':
+                    bulletColor = '#9966FF';
+                    trailColor = 'rgba(153, 102, 255, 0.8)';
+                    bulletSize = 3;
+                    break;
+                case 'heavy':
+                    bulletColor = '#8B4513';
+                    trailColor = 'rgba(139, 69, 19, 0.7)';
+                    bulletSize = 3.2;
+                    break;
+                case 'fast':
+                    bulletColor = '#FF6600';
+                    trailColor = 'rgba(255, 102, 0, 0.7)';
+                    bulletSize = 2;
+                    break;
+                case 'elite':
+                    bulletColor = '#00FFFF';
+                    trailColor = 'rgba(0, 255, 255, 0.8)';
+                    ctx.shadowBlur = 5;
+                    ctx.shadowColor = '#00FFFF';
+                    break;
+                case 'berserker':
+                    bulletColor = '#FF0066';
+                    trailColor = 'rgba(255, 0, 102, 0.8)';
+                    break;
+                case 'support':
+                    bulletColor = '#00FF00';
+                    trailColor = 'rgba(0, 255, 0, 0.7)';
+                    break;
+            }
+            
             // Bullet trail
-            ctx.strokeStyle = 'rgba(255, 100, 100, 0.6)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = trailColor;
+            ctx.lineWidth = bullet.isCritical ? 3 : (bullet.isDeadly ? 4 : 2);
             ctx.beginPath();
-            ctx.moveTo(-6, 0);
+            ctx.moveTo(-8, 0);
             ctx.lineTo(0, 0);
             ctx.stroke();
             
             // Bullet head
-            ctx.fillStyle = '#ff6666';
+            ctx.fillStyle = bulletColor;
             ctx.beginPath();
-            ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+            ctx.arc(0, 0, bulletSize, 0, Math.PI * 2);
             ctx.fill();
+            
+            // Additional effects for special bullets
+            if (bullet.isCritical) {
+                ctx.strokeStyle = '#FFA500';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(0, 0, bulletSize + 1, 0, Math.PI * 2);
+                ctx.stroke();
+            }
             
             ctx.restore();
         }
@@ -702,13 +1262,16 @@ class WaveManager {
             return 'boss';
         }
         
-        // Enhanced type probabilities based on wave
-        const types = ['basic', 'heavy', 'fast', 'sniper'];
+        // Enhanced type probabilities based on wave - including new enemy types
+        const types = ['basic', 'heavy', 'fast', 'sniper', 'elite', 'berserker', 'support'];
         const probabilities = [
-            Math.max(0.5 - wave * 0.04, 0.1), // basic (decreases faster)
-            Math.min(0.15 + wave * 0.04, 0.45),  // heavy (increases more)
-            Math.min(0.25 + wave * 0.03, 0.35),  // fast (increases)
-            Math.min(0.1 + wave * 0.025, 0.35)   // sniper (increases)
+            Math.max(0.35 - wave * 0.03, 0.05), // basic (decreases faster)
+            Math.min(0.20 + wave * 0.02, 0.30),  // heavy 
+            Math.min(0.20 + wave * 0.02, 0.25),  // fast 
+            Math.min(0.15 + wave * 0.015, 0.25), // sniper
+            wave >= 3 ? Math.min(0.05 + wave * 0.02, 0.20) : 0, // elite (unlocks wave 3)
+            wave >= 4 ? Math.min(0.03 + wave * 0.015, 0.15) : 0, // berserker (unlocks wave 4)
+            wave >= 6 ? Math.min(0.02 + wave * 0.01, 0.10) : 0   // support (unlocks wave 6)
         ];
         
         const random = Math.random();
@@ -727,13 +1290,15 @@ class WaveManager {
     chooseBurstEnemyType() {
         const wave = this.currentWave;
         
-        // Burst spawning favors aggressive enemy types
-        const types = ['fast', 'heavy', 'sniper', 'boss'];
+        // Burst spawning favors aggressive enemy types including new ones
+        const types = ['fast', 'heavy', 'sniper', 'elite', 'berserker', 'boss'];
         const probabilities = [
-            Math.min(0.4 + wave * 0.02, 0.6),  // fast (high chance)
-            Math.min(0.3 + wave * 0.03, 0.5),  // heavy (medium-high chance)
-            Math.min(0.2 + wave * 0.02, 0.4),  // sniper (medium chance)
-            Math.min(0.1 + wave * 0.01, 0.3)   // boss (low but increasing chance)
+            Math.min(0.30 + wave * 0.015, 0.45),  // fast (high chance)
+            Math.min(0.25 + wave * 0.02, 0.40),   // heavy (medium-high chance)
+            Math.min(0.15 + wave * 0.015, 0.30),  // sniper (medium chance)
+            wave >= 3 ? Math.min(0.15 + wave * 0.02, 0.35) : 0, // elite (aggressive bursts)
+            wave >= 4 ? Math.min(0.10 + wave * 0.02, 0.30) : 0, // berserker (very aggressive)
+            Math.min(0.05 + wave * 0.01, 0.25)    // boss (low but increasing chance)
         ];
         
         const random = Math.random();

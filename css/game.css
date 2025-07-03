@@ -328,6 +328,37 @@ body {
     transform: translateY(0);
 }
 
+/* Reset Button Specific Styles */
+.reset-btn {
+    background: linear-gradient(45deg, #dc2626, #ef4444) !important;
+    color: white !important;
+    border: 2px solid #991b1b;
+    margin-top: 15px;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(45deg, #b91c1c, #dc2626) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.6);
+}
+
+.reset-warning {
+    color: #fbbf24;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    background: rgba(245, 101, 101, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 4px solid #dc2626;
+}
+
 /* Battle Screen */
 #battleScreen {
     background: transparent;
@@ -1147,6 +1178,19 @@ body {
     .info-section h3 {
         font-size: 18px;
         margin-bottom: 12px;
+    }
+    
+    .reset-warning {
+        font-size: 13px;
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .reset-btn {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        margin-top: 10px !important;
     }
     
     /* Base Screen Mobile */

@@ -201,6 +201,7 @@ class GameUI {
             backToBaseBtn: document.getElementById('backToBaseBtn'),
             backToMenuBtn: document.getElementById('backToMenuBtn'),
             backToMenuFromSettingsBtn: document.getElementById('backToMenuFromSettingsBtn'),
+            resetGameBtn: document.getElementById('resetGameBtn'),
             
             // Skill Selection
             skillOptions: document.getElementById('skillOptions'),
@@ -277,6 +278,10 @@ class GameUI {
         
         this.setupMobileButton(this.elements.backToMenuFromSettingsBtn, () => {
             this.showScreen('mainMenu');
+        });
+        
+        this.setupMobileButton(this.elements.resetGameBtn, () => {
+            this.handleResetGame();
         });
         
         // Upgrade buttons - Enhanced for mobile touch support
@@ -369,6 +374,33 @@ class GameUI {
             this.showNotification(`Upgraded ${upgradeType}!`, 'success');
         } else {
             this.showNotification('Not enough coins!', 'error');
+        }
+    }
+
+    handleResetGame() {
+        // Show confirmation dialog before resetting
+        const confirmed = confirm(
+            '⚠️ WARNING: This will delete ALL your progress!\n\n' +
+            '• All tank upgrades will be lost\n' +
+            '• Your level and experience will reset\n' +
+            '• All earned coins will be removed\n' +
+            '• All unlocked skills will be lost\n\n' +
+            'This action cannot be undone. Are you sure you want to reset the game?'
+        );
+        
+        if (confirmed) {
+            // Call the resetGame function from the game engine
+            this.gameEngine.resetGame();
+            
+            // Show success notification
+            this.showNotification('Game Reset Successfully!', 'info');
+            
+            // Navigate back to main menu
+            this.showScreen('mainMenu');
+            
+            // Update all screens to reflect the reset
+            this.updateBaseScreen();
+            this.updateHUD();
         }
     }
 
