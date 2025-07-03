@@ -881,11 +881,7 @@ class GameEngine {
             }
         }
         
-        // Draw trees/vegetation
-        this.ctx.fillStyle = '#4A7C59'; // Brighter green for better visibility
-        this.ctx.strokeStyle = '#2E4A36'; // Darker green border
-        this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
-        
+        // Draw trees/vegetation with multiple types
         let treeCount = 0;
         for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
             for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
@@ -894,21 +890,58 @@ class GameEngine {
                     const treeX = x + (seed % 40) - 20;
                     const treeY = y + ((seed * 11) % 40) - 20;
                     const treeSize = 20 + (seed % 15);
+                    const treeType = (seed * 7) % 3; // 3 tree types
                     
                     // Draw tree
                     this.ctx.save();
                     this.ctx.translate(treeX, treeY);
                     
-                    // Tree trunk
-                    this.ctx.fillStyle = '#654321';
-                    this.ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
-                    
-                    // Tree foliage
-                    this.ctx.fillStyle = '#4A7C59';
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.stroke();
+                    if (treeType === 0) {
+                        // Standard tree
+                        this.ctx.fillStyle = '#654321';
+                        this.ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
+                        
+                        this.ctx.fillStyle = '#4A7C59';
+                        this.ctx.strokeStyle = '#2E4A36';
+                        this.ctx.lineWidth = 1 / this.camera.zoom;
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    } else if (treeType === 1) {
+                        // Pine tree
+                        this.ctx.fillStyle = '#654321';
+                        this.ctx.fillRect(-2, treeSize/2 - 3, 4, 8);
+                        
+                        this.ctx.fillStyle = '#2D5016';
+                        this.ctx.strokeStyle = '#1A3009';
+                        this.ctx.lineWidth = 1 / this.camera.zoom;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(0, -treeSize/2);
+                        this.ctx.lineTo(-treeSize/3, treeSize/3);
+                        this.ctx.lineTo(treeSize/3, treeSize/3);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    } else {
+                        // Bushy tree
+                        this.ctx.fillStyle = '#654321';
+                        this.ctx.fillRect(-2, treeSize/2 - 3, 4, 6);
+                        
+                        this.ctx.fillStyle = '#5A8B3A';
+                        this.ctx.strokeStyle = '#3A5B2A';
+                        this.ctx.lineWidth = 1 / this.camera.zoom;
+                        
+                        // Multiple overlapping circles for bushy effect
+                        for (let i = 0; i < 3; i++) {
+                            const offsetX = (seed * (i + 1)) % 6 - 3;
+                            const offsetY = (seed * (i + 2)) % 6 - 3;
+                            this.ctx.beginPath();
+                            this.ctx.arc(offsetX, offsetY, treeSize/3, 0, Math.PI * 2);
+                            this.ctx.fill();
+                            this.ctx.stroke();
+                        }
+                    }
                     
                     this.ctx.restore();
                     treeCount++;
@@ -916,11 +949,7 @@ class GameEngine {
             }
         }
         
-        // Draw water/ponds
-        this.ctx.fillStyle = '#4A90B8'; // Brighter blue for better visibility
-        this.ctx.strokeStyle = '#2B5A7A'; // Darker blue border
-        this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
-        
+        // Draw water/ponds with animated effect
         let waterCount = 0;
         for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
             for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
@@ -930,14 +959,32 @@ class GameEngine {
                     const waterY = y + ((seed * 13) % 60) - 30;
                     const waterSize = 30 + (seed % 25);
                     
+                    // Animated water effect
+                    const time = Date.now() * 0.001;
+                    const waveOffset = Math.sin(time + seed * 0.1) * 0.1;
+                    
                     // Draw water
                     this.ctx.save();
                     this.ctx.translate(waterX, waterY);
                     
+                    // Main water body
+                    this.ctx.fillStyle = '#4A90B8';
+                    this.ctx.strokeStyle = '#2B5A7A';
+                    this.ctx.lineWidth = 1 / this.camera.zoom;
                     this.ctx.beginPath();
                     this.ctx.arc(0, 0, waterSize/2, 0, Math.PI * 2);
                     this.ctx.fill();
                     this.ctx.stroke();
+                    
+                    // Animated ripples
+                    this.ctx.strokeStyle = 'rgba(74, 144, 184, 0.4)';
+                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
+                    for (let i = 0; i < 2; i++) {
+                        const rippleRadius = (waterSize/2 - 5) * (0.7 + waveOffset + i * 0.3);
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 0, rippleRadius, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                    }
                     
                     this.ctx.restore();
                     waterCount++;
@@ -945,9 +992,130 @@ class GameEngine {
             }
         }
         
+        // Draw bushes/shrubs
+        let bushCount = 0;
+        this.ctx.fillStyle = '#3A5B2A';
+        this.ctx.strokeStyle = '#2A4B1A';
+        this.ctx.lineWidth = 1 / this.camera.zoom;
+        
+        for (let x = Math.floor(viewLeft / 120) * 120; x < viewRight; x += 120) {
+            for (let y = Math.floor(viewTop / 120) * 120; y < viewBottom; y += 120) {
+                const seed = (x * 41 + y * 37) % 100;
+                if (seed > 65) { // 35% chance for bushes
+                    const bushX = x + (seed % 30) - 15;
+                    const bushY = y + ((seed * 9) % 30) - 15;
+                    const bushSize = 8 + (seed % 8);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(bushX, bushY);
+                    
+                    // Small clustered circles for bush effect
+                    for (let i = 0; i < 3; i++) {
+                        const offsetX = (seed * (i + 1)) % 4 - 2;
+                        const offsetY = (seed * (i + 3)) % 4 - 2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(offsetX, offsetY, bushSize/3, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    }
+                    
+                    this.ctx.restore();
+                    bushCount++;
+                }
+            }
+        }
+        
+        // Draw flowers/small vegetation
+        let flowerCount = 0;
+        for (let x = Math.floor(viewLeft / 80) * 80; x < viewRight; x += 80) {
+            for (let y = Math.floor(viewTop / 80) * 80; y < viewBottom; y += 80) {
+                const seed = (x * 47 + y * 43) % 100;
+                if (seed > 75) { // 25% chance for flowers
+                    const flowerX = x + (seed % 20) - 10;
+                    const flowerY = y + ((seed * 11) % 20) - 10;
+                    const flowerSize = 3 + (seed % 3);
+                    
+                    // Random flower colors
+                    const colorType = (seed * 13) % 4;
+                    let flowerColor;
+                    switch (colorType) {
+                        case 0: flowerColor = '#FF6B6B'; break; // Red
+                        case 1: flowerColor = '#4ECDC4'; break; // Teal
+                        case 2: flowerColor = '#45B7D1'; break; // Blue
+                        case 3: flowerColor = '#F7DC6F'; break; // Yellow
+                    }
+                    
+                    this.ctx.save();
+                    this.ctx.translate(flowerX, flowerY);
+                    
+                    // Small flower petals
+                    this.ctx.fillStyle = flowerColor;
+                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i * Math.PI * 2) / 5;
+                        const petalX = Math.cos(angle) * flowerSize/2;
+                        const petalY = Math.sin(angle) * flowerSize/2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(petalX, petalY, flowerSize/3, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    }
+                    
+                    // Center
+                    this.ctx.fillStyle = '#FFD700';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, flowerSize/4, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    this.ctx.restore();
+                    flowerCount++;
+                }
+            }
+        }
+        
+        // Draw dirt patches/sand areas
+        let dirtCount = 0;
+        for (let x = Math.floor(viewLeft / 250) * 250; x < viewRight; x += 250) {
+            for (let y = Math.floor(viewTop / 250) * 250; y < viewBottom; y += 250) {
+                const seed = (x * 59 + y * 61) % 100;
+                if (seed > 80) { // 20% chance for dirt patches
+                    const dirtX = x + (seed % 40) - 20;
+                    const dirtY = y + ((seed * 17) % 40) - 20;
+                    const dirtSize = 25 + (seed % 15);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(dirtX, dirtY);
+                    
+                    // Irregular dirt patch
+                    this.ctx.fillStyle = '#8B4513';
+                    this.ctx.strokeStyle = '#654321';
+                    this.ctx.lineWidth = 1 / this.camera.zoom;
+                    
+                    this.ctx.beginPath();
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i * Math.PI * 2) / 8;
+                        const variation = 0.7 + ((seed * (i + 1)) % 30) / 100;
+                        const radius = (dirtSize/2) * variation;
+                        const px = Math.cos(angle) * radius;
+                        const py = Math.sin(angle) * radius;
+                        if (i === 0) this.ctx.moveTo(px, py);
+                        else this.ctx.lineTo(px, py);
+                    }
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                    dirtCount++;
+                }
+            }
+        }
+        
         // Debug logging for environment objects
         if (this.debugEnvironment) {
-            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies`);
+            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies, ${bushCount} bushes, ${flowerCount} flowers, ${dirtCount} dirt patches`);
         }
         
         // Draw test objects at fixed world coordinates for debugging

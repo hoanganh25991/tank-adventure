@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Environment Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .controls h3 {
+            margin: 0 0 10px 0;
+            color: #4a9eff;
+        }
+        
+        .control-item {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            background: rgba(74, 158, 255, 0.2);
+            border-radius: 5px;
+            border: 1px solid #4a9eff;
+        }
+        
+        .status {
+            background: rgba(0, 100, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            background: #2a4a2a;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .legend-symbol {
+            font-size: 20px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-info">
+            <h1>Enhanced Scrolling Environment Test</h1>
+            <p>This test demonstrates the enhanced environment system with multiple element types that scroll naturally as the tank moves.</p>
+            <div class="status">
+                <strong>Status:</strong> <span id="status">Initializing...</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>Test Controls</h3>
+            <div class="control-item">WASD - Move Tank</div>
+            <div class="control-item">E - Toggle Environment Debug</div>
+            <div class="control-item">Z - Zoom Out</div>
+            <div class="control-item">X - Zoom In</div>
+            <div class="control-item">C - Toggle Collision Boxes</div>
+            <div class="control-item">Space - Shoot</div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol">🗿</span>
+                <strong>Rocks:</strong> 4 shapes (square, circle, hexagon, triangle)
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌳</span>
+                <strong>Trees:</strong> 3 types (standard, pine, bushy)
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🟦</span>
+                <strong>Water:</strong> Animated ripples
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌿</span>
+                <strong>Bushes:</strong> Small clustered shrubs
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌸</span>
+                <strong>Flowers:</strong> 4 colors (red, teal, blue, yellow)
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🟫</span>
+                <strong>Dirt:</strong> Irregular brown patches
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test setup to demonstrate the enhanced environment
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusElement = document.getElementById('status');
+        
+        // Test camera system
+        const camera = {
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            smoothing: 0.1,
+            zoom: 0.7,
+            targetZoom: 0.7,
+            zoomSmoothing: 0.05
+        };
+        
+        // Test tank
+        const tank = {
+            x: 0,
+            y: 0,
+            speed: 200
+        };
+        
+        // Input handling
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false
+        };
+        
+        let debugEnvironment = false;
+        let lastTime = 0;
+        
+        // Key event handlers
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'w': keys.w = true; break;
+                case 'a': keys.a = true; break;
+                case 's': keys.s = true; break;
+                case 'd': keys.d = true; break;
+                case 'e': 
+                    debugEnvironment = !debugEnvironment;
+                    console.log(`Environment debug: ${debugEnvironment ? 'ON' : 'OFF'}`);
+                    break;
+                case 'z':
+                    camera.targetZoom = Math.max(0.3, camera.targetZoom - 0.1);
+                    console.log(`Zoom level: ${camera.targetZoom.toFixed(1)}`);
+                    break;
+                case 'x':
+                    camera.targetZoom = Math.min(1.5, camera.targetZoom + 0.1);
+                    console.log(`Zoom level: ${camera.targetZoom.toFixed(1)}`);
+                    break;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'w': keys.w = false; break;
+                case 'a': keys.a = false; break;
+                case 's': keys.s = false; break;
+                case 'd': keys.d = false; break;
+            }
+        });
+        
+        // Update function
+        function update(deltaTime) {
+            // Update tank position
+            if (keys.w) tank.y -= tank.speed * deltaTime;
+            if (keys.s) tank.y += tank.speed * deltaTime;
+            if (keys.a) tank.x -= tank.speed * deltaTime;
+            if (keys.d) tank.x += tank.speed * deltaTime;
+            
+            // Update camera to follow tank
+            camera.targetX = tank.x - (canvas.width / 2) / camera.zoom;
+            camera.targetY = tank.y - (canvas.height / 2) / camera.zoom;
+            
+            camera.x += (camera.targetX - camera.x) * camera.smoothing;
+            camera.y += (camera.targetY - camera.y) * camera.smoothing;
+            camera.zoom += (camera.targetZoom - camera.zoom) * camera.zoomSmoothing;
+            
+            // Update status
+            statusElement.textContent = `Tank: (${tank.x.toFixed(0)}, ${tank.y.toFixed(0)}) | Camera: (${camera.x.toFixed(0)}, ${camera.y.toFixed(0)}) | Zoom: ${camera.zoom.toFixed(2)}`;
+        }
+        
+        // Enhanced environment drawing function (simplified version)
+        function drawEnvironment() {
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            const buffer = 200;
+            
+            const viewLeft = camera.x - buffer;
+            const viewRight = camera.x + viewWidth + buffer;
+            const viewTop = camera.y - buffer;
+            const viewBottom = camera.y + viewHeight + buffer;
+            
+            let totalElements = 0;
+            
+            // Draw rocks
+            ctx.lineWidth = 2 / camera.zoom;
+            for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
+                for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
+                    const seed = (x * 31 + y * 17) % 100;
+                    if (seed > 50) {
+                        const rockX = x + (seed % 50) - 25;
+                        const rockY = y + ((seed * 7) % 50) - 25;
+                        const rockSize = 15 + (seed % 20);
+                        const shapeVariation = (seed * 5) % 4;
+                        
+                        ctx.fillStyle = `rgb(${139 + (seed % 40) - 20}, ${115 + (seed % 40) - 20}, ${85 + (seed % 40) - 20})`;
+                        ctx.strokeStyle = `rgb(${99 + (seed % 40) - 20}, ${75 + (seed % 40) - 20}, ${45 + (seed % 40) - 20})`;
+                        
+                        ctx.save();
+                        ctx.translate(rockX, rockY);
+                        ctx.rotate(seed * 0.1);
+                        
+                        if (shapeVariation === 0) {
+                            ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                            ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                        } else {
+                            ctx.beginPath();
+                            ctx.arc(0, 0, rockSize/2, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.stroke();
+                        }
+                        
+                        ctx.restore();
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // Draw trees
+            ctx.lineWidth = 1 / camera.zoom;
+            for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
+                for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
+                    const seed = (x * 23 + y * 19) % 100;
+                    if (seed > 40) {
+                        const treeX = x + (seed % 40) - 20;
+                        const treeY = y + ((seed * 11) % 40) - 20;
+                        const treeSize = 20 + (seed % 15);
+                        
+                        ctx.save();
+                        ctx.translate(treeX, treeY);
+                        
+                        // Tree trunk
+                        ctx.fillStyle = '#654321';
+                        ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
+                        
+                        // Tree foliage
+                        ctx.fillStyle = '#4A7C59';
+                        ctx.strokeStyle = '#2E4A36';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        
+                        ctx.restore();
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // Draw water with animation
+            const time = Date.now() * 0.001;
+            for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
+                for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
+                    const seed = (x * 13 + y * 29) % 100;
+                    if (seed > 70) {
+                        const waterX = x + (seed % 60) - 30;
+                        const waterY = y + ((seed * 13) % 60) - 30;
+                        const waterSize = 30 + (seed % 25);
+                        const waveOffset = Math.sin(time + seed * 0.1) * 0.1;
+                        
+                        ctx.save();
+                        ctx.translate(waterX, waterY);
+                        
+                        // Main water body
+                        ctx.fillStyle = '#4A90B8';
+                        ctx.strokeStyle = '#2B5A7A';
+                        ctx.lineWidth = 1 / camera.zoom;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, waterSize/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        
+                        // Animated ripples
+                        ctx.strokeStyle = 'rgba(74, 144, 184, 0.4)';
+                        ctx.lineWidth = 0.5 / camera.zoom;
+                        for (let i = 0; i < 2; i++) {
+                            const rippleRadius = (waterSize/2 - 5) * (0.7 + waveOffset + i * 0.3);
+                            ctx.beginPath();
+                            ctx.arc(0, 0, rippleRadius, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                        
+                        ctx.restore();
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // Draw flowers
+            for (let x = Math.floor(viewLeft / 80) * 80; x < viewRight; x += 80) {
+                for (let y = Math.floor(viewTop / 80) * 80; y < viewBottom; y += 80) {
+                    const seed = (x * 47 + y * 43) % 100;
+                    if (seed > 75) {
+                        const flowerX = x + (seed % 20) - 10;
+                        const flowerY = y + ((seed * 11) % 20) - 10;
+                        const flowerSize = 3 + (seed % 3);
+                        
+                        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F'];
+                        const flowerColor = colors[(seed * 13) % 4];
+                        
+                        ctx.save();
+                        ctx.translate(flowerX, flowerY);
+                        
+                        ctx.fillStyle = flowerColor;
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                        ctx.lineWidth = 0.5 / camera.zoom;
+                        
+                        // Flower petals
+                        for (let i = 0; i < 5; i++) {
+                            const angle = (i * Math.PI * 2) / 5;
+                            const petalX = Math.cos(angle) * flowerSize/2;
+                            const petalY = Math.sin(angle) * flowerSize/2;
+                            ctx.beginPath();
+                            ctx.arc(petalX, petalY, flowerSize/3, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.stroke();
+                        }
+                        
+                        // Center
+                        ctx.fillStyle = '#FFD700';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, flowerSize/4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.restore();
+                        totalElements++;
+                    }
+                }
+            }
+            
+            if (debugEnvironment) {
+                console.log(`Rendered ${totalElements} environment elements`);
+            }
+        }
+        
+        // Draw tank
+        function drawTank() {
+            ctx.fillStyle = '#4a9eff';
+            ctx.strokeStyle = '#2a7eff';
+            ctx.lineWidth = 2 / camera.zoom;
+            
+            ctx.save();
+            ctx.translate(tank.x, tank.y);
+            
+            // Tank body
+            ctx.fillRect(-15, -10, 30, 20);
+            ctx.strokeRect(-15, -10, 30, 20);
+            
+            // Tank barrel
+            ctx.fillRect(15, -2, 20, 4);
+            ctx.strokeRect(15, -2, 20, 4);
+            
+            ctx.restore();
+        }
+        
+        // Render function
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Apply camera transform
+            ctx.save();
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-camera.x, -camera.y);
+            
+            // Draw grid background
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1 / camera.zoom;
+            const gridSize = 50;
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            const startX = Math.floor(camera.x / gridSize) * gridSize;
+            const startY = Math.floor(camera.y / gridSize) * gridSize;
+            
+            for (let x = startX; x < startX + viewWidth + gridSize; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, camera.y);
+                ctx.lineTo(x, camera.y + viewHeight);
+                ctx.stroke();
+            }
+            for (let y = startY; y < startY + viewHeight + gridSize; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(camera.x, y);
+                ctx.lineTo(camera.x + viewWidth, y);
+                ctx.stroke();
+            }
+            
+            // Draw environment
+            drawEnvironment();
+            
+            // Draw tank
+            drawTank();
+            
+            ctx.restore();
+        }
+        
+        // Game loop
+        function gameLoop(currentTime) {
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            
+            update(deltaTime);
+            render();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Start the test
+        statusElement.textContent = 'Enhanced Environment Test Ready! Use WASD to move, E for debug, Z/X to zoom.';
+        console.log('Enhanced Environment Test loaded. Controls: WASD=move, E=debug, Z/X=zoom');
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>

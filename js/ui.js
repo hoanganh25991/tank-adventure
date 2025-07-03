@@ -509,10 +509,10 @@ class GameUI {
         
         // Update tank stats
         this.elements.tankHealth.textContent = player.mainTank.maxHealth;
-        this.elements.tankDamage.textContent = player.mainTank.damage;
+        this.elements.tankDamage.textContent = player.mainTank.damage.toFixed(0);
         this.elements.tankSpeed.textContent = player.mainTank.speed.toFixed(1);
         this.elements.miniHealth.textContent = player.miniTanks[0]?.maxHealth || 0;
-        this.elements.miniDamage.textContent = player.miniTanks[0]?.damage || 0;
+        this.elements.miniDamage.textContent = (player.miniTanks[0]?.damage || 0).toFixed(0);
         
         // Update player stats
         this.elements.playerLevel.textContent = player.level;
@@ -538,7 +538,7 @@ class GameUI {
         
         const damageDiv = document.createElement('div');
         damageDiv.className = isHeal ? 'damage-text heal-text' : 'damage-text';
-        damageDiv.textContent = isHeal ? `+${damage}` : `-${damage}`;
+        damageDiv.textContent = isHeal ? `+${damage.toFixed(0)}` : `-${damage.toFixed(0)}`;
         damageDiv.style.left = `${rect.left + (x / canvas.width) * rect.width}px`;
         damageDiv.style.top = `${rect.top + (y / canvas.height) * rect.height}px`;
         

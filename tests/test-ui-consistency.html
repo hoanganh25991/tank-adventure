@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Consistency Test - Tank Adventure</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        .test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--bg-section);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .screen-demo {
+            background: var(--bg-mid);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .screen-demo h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .font-comparison {
+            background: var(--bg-item);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .font-sample {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .orientation-test {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .orientation-demo {
+            flex: 1;
+            background: var(--bg-mid);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            .split-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .orientation-test {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-section">
+            <h2 style="color: var(--primary-blue); text-align: center;">UI Consistency Test Results</h2>
+            <p style="text-align: center; color: var(--text-secondary);">
+                Comparing Base & Upgrade screen improvements with Settings screen consistency
+            </p>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Font Size Improvements</h3>
+            <div class="font-comparison">
+                <div class="font-sample">
+                    <strong>Main Title:</strong> 36px (Previously 24px) - <span style="font-size: 36px; color: var(--primary-blue);">Tank Base</span>
+                </div>
+                <div class="font-sample">
+                    <strong>Category Headers:</strong> 20px (Previously 18px) - <span style="font-size: 20px; color: var(--primary-blue);">🚗 Main Tank</span>
+                </div>
+                <div class="font-sample">
+                    <strong>Upgrade Names:</strong> 16px (Previously 14px) - <span style="font-size: 16px; color: var(--text-secondary);">❤️ Health</span>
+                </div>
+                <div class="font-sample">
+                    <strong>Current Values:</strong> 18px (Previously 16px) - <span style="font-size: 18px; color: var(--primary-blue);">100</span>
+                </div>
+                <div class="font-sample">
+                    <strong>Button Text:</strong> 16px (Previously 14px) - <span style="font-size: 16px; color: var(--text-primary);">+20</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Screen Comparison</h3>
+            <div class="split-view">
+                <div class="screen-demo">
+                    <h3>Settings Screen Style</h3>
+                    <div class="info-section">
+                        <h3>🎮 Welcome to Tank Adventure!</h3>
+                        <p>Command your tank formation and survive endless waves of enemies.</p>
+                    </div>
+                    <button class="menu-btn">Back to Menu</button>
+                </div>
+                
+                <div class="screen-demo">
+                    <h3>Base Screen Style (Updated)</h3>
+                    <div class="upgrade-category">
+                        <h3>🚗 Main Tank</h3>
+                        <div class="upgrade-item">
+                            <div class="upgrade-info">
+                                <span class="upgrade-name">❤️ Health</span>
+                                <span class="upgrade-current">100</span>
+                            </div>
+                            <button class="upgrade-btn">
+                                <span class="upgrade-cost">100💰</span>
+                                <span class="upgrade-bonus">+20</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="menu-btn">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Landscape Mode Optimizations</h3>
+            <div class="orientation-test">
+                <div class="orientation-demo">
+                    <h4 style="color: var(--primary-blue);">Regular Landscape</h4>
+                    <ul style="color: var(--text-secondary); font-size: 14px;">
+                        <li>Title: 28px (readable but compact)</li>
+                        <li>Content: 100% width usage</li>
+                        <li>2-column grid layout</li>
+                        <li>Balanced font sizes</li>
+                    </ul>
+                </div>
+                
+                <div class="orientation-demo">
+                    <h4 style="color: var(--primary-blue);">Limited Height (≤600px)</h4>
+                    <ul style="color: var(--text-secondary); font-size: 14px;">
+                        <li>Title: 24px (extra compact)</li>
+                        <li>Minimal padding</li>
+                        <li>Proportionally reduced</li>
+                        <li>Still readable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Touch Accessibility</h3>
+            <div class="font-comparison">
+                <div class="font-sample">
+                    <strong>Button Height:</strong> Minimum 44px for proper touch targets
+                </div>
+                <div class="font-sample">
+                    <strong>Button Width:</strong> 250px for back buttons, 85px+ for upgrade buttons
+                </div>
+                <div class="font-sample">
+                    <strong>Touch Enhancement:</strong> Enhanced iOS Safari support
+                </div>
+                <div class="font-sample">
+                    <strong>Scrolling:</strong> Smooth webkit scrolling for mobile
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Responsive Breakpoints</h3>
+            <div class="font-comparison">
+                <div class="font-sample">
+                    <strong>Mobile Portrait (≤768px):</strong> 28px title, 200px back button
+                </div>
+                <div class="font-sample">
+                    <strong>Extra Small (≤390px):</strong> 16px category headers, maintained readability
+                </div>
+                <div class="font-sample">
+                    <strong>Landscape Mobile (≤768px):</strong> 98% content width, 10px grid gap
+                </div>
+                <div class="font-sample">
+                    <strong>Wide Landscape (≥900px):</strong> Flexible grid, max 1000px content
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Test script to demonstrate responsiveness
+        function updateOrientation() {
+            const orientation = window.innerHeight > window.innerWidth ? 'Portrait' : 'Landscape';
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            console.log(`Current: ${orientation} - ${width}x${height}`);
+            
+            // Add visual indicators
+            document.body.style.borderTop = orientation === 'Landscape' ? '4px solid #4a9eff' : '4px solid #ff9944';
+        }
+        
+        window.addEventListener('resize', updateOrientation);
+        window.addEventListener('orientationchange', updateOrientation);
+        updateOrientation();
+        
+        // Test touch events
+        document.querySelectorAll('.upgrade-btn, .menu-btn').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            btn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
