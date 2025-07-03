@@ -66,6 +66,7 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     pointer-events: none;
+    font-size: 14px; /* Base font size for consistent HUD text */
 }
 
 #healthBar {
@@ -91,6 +92,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
+    font-size: 14px; /* Consistent with HUD base font size */
     text-shadow: 1px 1px 2px black;
 }
 
@@ -114,12 +116,13 @@ body {
 #waveInfo span {
     display: inline-block; /* Change to horizontal layout */
     margin: 0 6px; /* Reduced horizontal spacing */
-    font-size: 12px; /* Smaller font for compact layout */
+    font-size: 14px; /* Consistent with HUD base font size */
 }
 
 #scoreInfo span {
     display: block;
     margin: 2px 0;
+    font-size: 14px; /* Consistent with HUD base font size */
 }
 
 /* Mobile Controls */
@@ -531,10 +534,19 @@ body {
         flex-direction: column;
         height: auto;
         gap: 10px;
+        font-size: 12px; /* Slightly smaller for mobile */
     }
     
     #healthBar {
         width: 150px;
+    }
+    
+    #healthText {
+        font-size: 12px; /* Consistent mobile font size */
+    }
+    
+    #waveInfo span, #scoreInfo span {
+        font-size: 12px; /* Consistent mobile font size */
     }
     
     #mobileControls {
@@ -630,6 +642,18 @@ body {
 
 /* Extra small screens (iPhone SE, iPhone 12 mini, etc.) */
 @media (max-width: 390px) {
+    #hud {
+        font-size: 11px; /* Even smaller for very small screens */
+    }
+    
+    #healthText {
+        font-size: 11px; /* Consistent extra small font size */
+    }
+    
+    #waveInfo span, #scoreInfo span {
+        font-size: 11px; /* Consistent extra small font size */
+    }
+    
     #skillOptions {
         gap: 5px;
         padding: 0 3px;
