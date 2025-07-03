@@ -448,7 +448,7 @@ body {
 
 .skill-option h3 {
     color: var(--primary-blue);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     font-size: 18px;
     text-transform: uppercase;
 }
@@ -457,6 +457,12 @@ body {
     color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.4;
+    /* Ensure text doesn't overflow on small screens */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Show max 3 lines */
+    -webkit-box-orient: vertical;
 }
 
 .skill-option.disabled {
@@ -1378,16 +1384,17 @@ body {
     }
     
     .skill-option {
-        padding: 10px 8px;
+        padding: 12px 10px;
         border-radius: 8px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         max-width: 100%; /* Full width on iPhone */
-        min-height: 80px; /* Ensure minimum height for touch targets */
-        /* Enhanced touch target size for very small screens */
-        min-height: 100px;
+        min-height: 100px; /* Ensure minimum height for touch targets */
         display: flex;
         flex-direction: column;
         justify-content: center;
+        /* Enhanced visual appearance */
+        border: 2px solid var(--primary-blue);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }
     
     .skill-option h3 {

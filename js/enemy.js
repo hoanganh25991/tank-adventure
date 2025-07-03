@@ -900,22 +900,61 @@ class Enemy {
         // Wave scaling indicator (show enhanced enemies)
         const currentWave = window.gameEngine && window.gameEngine.waveManager ? 
                            window.gameEngine.waveManager.currentWave : 1;
-        if (currentWave > 3) {
-            // Draw enhancement indicators for scaled enemies
-            ctx.fillStyle = `rgba(255, 215, 0, ${0.3 + currentWave * 0.05})`;
-            ctx.strokeStyle = '#ffd700';
-            ctx.lineWidth = 2;
+        const playerLevel = window.gameEngine && window.gameEngine.player ? 
+                           window.gameEngine.player.level : 1;
+                           
+        // Visual tier indicators
+        if (this.visualTier > 0) {
+            // Base glow for all enhanced enemies
+            const glowOpacity = 0.3 + (this.visualTier * 0.15);
+            const glowColor = this.visualTier === 1 ? '#ffd700' : 
+                             this.visualTier === 2 ? '#ff8c00' : '#ff4500';
+            
+            // Draw enhancement indicators based on visual tier
+            ctx.fillStyle = `rgba(255, 215, 0, ${glowOpacity})`;
+            ctx.strokeStyle = glowColor;
+            ctx.lineWidth = this.visualTier;
+            
+            // Draw aura ring
             ctx.beginPath();
             ctx.arc(0, 0, this.size + 5, 0, Math.PI * 2);
             ctx.stroke();
             
-            // Additional visual flair for very high waves
-            if (currentWave >= 10) {
-                ctx.strokeStyle = '#ff4500';
+            // Additional visual elements for higher tiers
+            if (this.visualTier >= 2) {
+                // Second ring for tier 2+
+                ctx.strokeStyle = this.visualTier === 2 ? '#ffa500' : '#ff4500';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.arc(0, 0, this.size + 8, 0, Math.PI * 2);
                 ctx.stroke();
+                
+                // Decorative elements for tier 3
+                if (this.visualTier === 3) {
+                    // Pulsing spikes for highest tier
+                    const spikeCount = 8;
+                    const pulseScale = 1 + 0.2 * Math.sin(this.animationTimer / 200);
+                    
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 2;
+                    
+                    for (let i = 0; i < spikeCount; i++) {
+                        const angle = (i / spikeCount) * Math.PI * 2;
+                        const innerRadius = this.size + 10;
+                        const outerRadius = innerRadius + 8 * pulseScale;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(
+                            Math.cos(angle) * innerRadius,
+                            Math.sin(angle) * innerRadius
+                        );
+                        ctx.lineTo(
+                            Math.cos(angle) * outerRadius,
+                            Math.sin(angle) * outerRadius
+                        );
+                        ctx.stroke();
+                    }
+                }
             }
         }
         
@@ -1140,6 +1179,77 @@ class Enemy {
             }
             
             ctx.restore();
+        }
+    }
+    
+    // Get enhanced color based on visual tier
+    getEnhancedColor() {
+        // Base color from the enemy type
+        const baseColor = this.color;
+        
+        // No enhancement for tier 0
+        if (!this.visualTier || this.visualTier === 0) {
+            return baseColor;
+        }
+        
+        // Parse the base color to RGB
+        let r, g, b;
+        if (baseColor.startsWith('#')) {
+            const hex = baseColor.substring(1);
+            r = parseInt(hex.substring(0, 2), 16);
+            g = parseInt(hex.substring(2, 4), 16);
+            b = parseInt(hex.substring(4, 6), 16);
+        } else {
+            // Default fallback if color parsing fails
+            return baseColor;
+        }
+        
+        // Enhance colors based on tier
+        switch (this.visualTier) {
+            case 1: // Tier 1: Slightly more saturated
+                r = Math.min(r * 1.1, 255);
+                g = Math.min(g * 1.1, 255);
+                b = Math.min(b * 1.1, 255);
+                break;
+            case 2: // Tier 2: More vibrant with gold tint
+                r = Math.min(r * 1.2, 255);
+                g = Math.min(g * 1.1, 255);
+                b = Math.min(b * 0.9, 255);
+                break;
+            case 3: // Tier 3: Intense with slight glow effect
+                r = Math.min(r * 1.3, 255);
+                g = Math.min(g * 1.2, 255);
+                b = Math.min(b * 1.1, 255);
+                break;
+        }
+        
+        // Convert back to hex
+        return `#${Math.floor(r).toString(16).padStart(2, '0')}${Math.floor(g).toString(16).padStart(2, '0')}${Math.floor(b).toString(16).padStart(2, '0')}`;
+    }
+    
+    // Apply visual effects based on tier
+    applyVisualTierEffects(ctx) {
+        if (!this.visualTier || this.visualTier === 0) {
+            return; // No effects for base tier
+        }
+        
+        // Apply increasing visual effects based on tier
+        switch (this.visualTier) {
+            case 1: // Tier 1: Slight glow
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = this.color;
+                break;
+            case 2: // Tier 2: More pronounced glow and slight size increase
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.scale(1.05, 1.05); // 5% larger
+                break;
+            case 3: // Tier 3: Strong glow, size increase, and pulsing effect
+                const pulseAmount = 0.05 * Math.sin(this.animationTimer / 200);
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = this.color;
+                ctx.scale(1.1 + pulseAmount, 1.1 + pulseAmount); // 10% larger with pulse
+                break;
         }
     }
 }
