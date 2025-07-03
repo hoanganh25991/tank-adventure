@@ -351,21 +351,31 @@ class GameUI {
         modal.innerHTML = `
             <div class="modal-content">
                 <h2>Select Battle Type</h2>
+                <p class="modal-instruction">Click on a battle type to begin</p>
                 <div class="battle-type-options">
                     <button class="battle-type-btn" data-type="quick">
                         <span class="battle-icon">⚡</span>
-                        <span class="battle-name">Quick Battle</span>
-                        <span class="battle-desc">3 Waves</span>
+                        <div class="battle-info">
+                            <span class="battle-name">Quick Battle</span>
+                            <span class="battle-desc">3 Waves</span>
+                        </div>
+                        <span class="battle-click-hint">▶</span>
                     </button>
                     <button class="battle-type-btn" data-type="standard">
                         <span class="battle-icon">🔥</span>
-                        <span class="battle-name">Standard Battle</span>
-                        <span class="battle-desc">5 Waves</span>
+                        <div class="battle-info">
+                            <span class="battle-name">Standard Battle</span>
+                            <span class="battle-desc">5 Waves</span>
+                        </div>
+                        <span class="battle-click-hint">▶</span>
                     </button>
                     <button class="battle-type-btn" data-type="extended">
                         <span class="battle-icon">💪</span>
-                        <span class="battle-name">Extended Battle</span>
-                        <span class="battle-desc">10 Waves</span>
+                        <div class="battle-info">
+                            <span class="battle-name">Extended Battle</span>
+                            <span class="battle-desc">10 Waves</span>
+                        </div>
+                        <span class="battle-click-hint">▶</span>
                     </button>
                 </div>
                 <button class="modal-close-btn">Cancel</button>
@@ -583,11 +593,34 @@ class GameUI {
     }
 
     showBattleResults(results) {
+        // Update stats
         this.elements.waveCompleted.textContent = results.wave;
         this.elements.enemiesDefeated.textContent = results.enemiesDefeated;
         this.elements.scoreEarned.textContent = Utils.formatNumber(results.scoreEarned);
         this.elements.expGained.textContent = results.expGained;
         
+        // Update title based on victory/defeat
+        const battleResultTitle = document.getElementById('battleResultTitle');
+        if (battleResultTitle) {
+            if (results.victory) {
+                battleResultTitle.textContent = '🎖️ Battle Victory!';
+                battleResultTitle.style.color = '#44ff44'; // Success green
+            } else {
+                battleResultTitle.textContent = '☠️ Battle Defeat';
+                battleResultTitle.style.color = '#ff4444'; // Danger red
+            }
+        }
+        
+        // Show/hide continue button based on victory
+        if (this.elements.continueBtn) {
+            if (results.victory) {
+                this.elements.continueBtn.style.display = 'inline-block';
+            } else {
+                this.elements.continueBtn.style.display = 'none';
+            }
+        }
+        
+        // Show the results screen
         this.showScreen('battleResults');
     }
 

@@ -793,7 +793,8 @@ class GameEngine {
             wave: this.currentWave,
             enemiesDefeated: this.battleStats.enemiesDefeated,
             scoreEarned: this.battleStats.scoreEarned,
-            expGained: this.battleStats.expGained
+            expGained: this.battleStats.expGained,
+            battleType: this.battleType
         });
     }
 
