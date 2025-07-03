@@ -582,28 +582,26 @@ class GameUI {
         
         const containerRect = container.getBoundingClientRect();
         
-        // Get device pixel ratio for crisp rendering
-        const dpr = window.devicePixelRatio || 1;
-        
-        // Set canvas size to full container size
+        // Use full screen dimensions
         const width = containerRect.width;
         const height = containerRect.height;
         
-        // Set the internal canvas resolution
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+        // Set the internal canvas resolution to match screen size
+        canvas.width = width;
+        canvas.height = height;
         
-        // Set the CSS size (what the user sees)
+        // Set the CSS size to fill the screen
         canvas.style.width = `${width}px`;
         canvas.style.height = `${height}px`;
         canvas.style.left = '0px';
         canvas.style.top = '0px';
         
-        // Scale the context to match the device pixel ratio
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
+        // Store dimensions for game logic
+        this.canvasScale = 1;
+        this.canvasOffsetX = 0;
+        this.canvasOffsetY = 0;
         
-        console.log(`Canvas resized to: ${width}x${height} (${canvas.width}x${canvas.height} internal)`);
+        console.log(`Canvas resized to full screen: ${width}x${height}`);
     }
 
     setupMobileButton(button, callback) {
@@ -682,6 +680,16 @@ class GameUI {
 window.addEventListener('resize', Utils.debounce(() => {
     if (window.gameUI) {
         window.gameUI.adjustCanvasSize();
+    }
+}, 250));
+
+// Handle orientation change for mobile devices
+window.addEventListener('orientationchange', Utils.debounce(() => {
+    if (window.gameUI) {
+        // Small delay to ensure screen size is updated
+        setTimeout(() => {
+            window.gameUI.adjustCanvasSize();
+        }, 100);
     }
 }, 250));
 

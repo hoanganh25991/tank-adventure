@@ -112,8 +112,10 @@ class GameEngine {
 
     createNewPlayer() {
         // Create player at center of screen
-        this.player = new Player(this.canvas.width / 2, this.canvas.height / 2);
-        console.log('Created new player');
+        const centerX = this.canvas.width / 2;
+        const centerY = this.canvas.height / 2;
+        this.player = new Player(centerX, centerY);
+        console.log(`Created new player at (${centerX}, ${centerY}) - Canvas size: ${this.canvas.width}x${this.canvas.height}`);
     }
 
     startGameLoop() {
