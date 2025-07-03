@@ -51,7 +51,7 @@ miniTank.targetAngle = mainTank.targetAngle; // NEW: Rotation sync
 ```
 
 ### 4. Testing
-- Created test file: `test-rotation-sync.html`
+- Created test file: `tests/test-rotation-sync.html`
 - Includes visual verification tools
 - Tests all 8 directions (N, NE, E, SE, S, SW, W, NW)
 - Shows angle indicators and formation lines
@@ -88,7 +88,7 @@ miniTank.targetAngle = mainTank.targetAngle; // NEW: Rotation sync
 - `docs/implementation-summary.md` - This summary
 
 ### New Test Files
-- `test-rotation-sync.html` - Interactive test interface
+- `tests/test-rotation-sync.html` - Interactive test interface
 
 ## Testing Results
 - All 8 directions working correctly

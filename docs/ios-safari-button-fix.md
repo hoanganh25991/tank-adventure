@@ -41,19 +41,19 @@ iPhone Safari has specific requirements for touch event handling:
 1. `js/ui.js` - Added `setupMobileButton()` method and updated all button event handlers + skill selection
 2. `css/game.css` - Enhanced button and skill option styles for touch support
 3. `index.html` - Added iPhone Safari meta tags
-4. `test-button.html` - Created test file for button verification
-5. `test-skill-selection.html` - Created test file for skill selection verification
+4. `tests/test-button.html` - Created test file for button verification
+5. `tests/test-skill-selection.html` - Created test file for skill selection verification
 
 ## Testing
 ### Button Testing
-Use the `test-button.html` file to verify button touch functionality:
+Use the `tests/test-button.html` file to verify button touch functionality:
 1. Open on iPhone Safari
 2. Tap the test button
 3. Check the log for proper event sequence
 4. Verify visual feedback works
 
 ### Skill Selection Testing
-Use the `test-skill-selection.html` file to verify skill selection touch functionality:
+Use the `tests/test-skill-selection.html` file to verify skill selection touch functionality:
 1. Open on iPhone Safari
 2. Tap any skill option
 3. Check the log for proper event sequence

@@ -3,7 +3,7 @@
 ## 🎮 How to Test the Skill Effects System
 
 ### Quick Start
-1. Open `test-skill-effects.html` in your browser
+1. Open `tests/test-skill-effects.html` in your browser
 2. Click any skill button to see the effects in action
 3. Use keyboard shortcuts (1-8) for quick testing
 4. Press SPACE to test all effects sequentially
