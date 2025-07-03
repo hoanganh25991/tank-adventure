@@ -348,6 +348,18 @@ class GameUI {
         // Create a modal dialog for battle type selection
         const modal = document.createElement('div');
         modal.className = 'modal';
+        
+        // Check if we're on a small screen in landscape mode
+        const isSmallLandscape = window.innerHeight <= 450 && window.innerWidth > window.innerHeight;
+        
+        // Check specifically for iPhone 14 Pro Max dimensions (or similar)
+        const isIPhone14ProMaxLandscape = window.innerWidth >= 900 && window.innerHeight <= 430;
+        
+        // Add a class for iPhone 14 Pro Max
+        if (isIPhone14ProMaxLandscape) {
+            modal.classList.add('iphone14-landscape');
+        }
+        
         modal.innerHTML = `
             <div class="modal-content">
                 <h2>Select Battle Type</h2>
