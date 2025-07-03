@@ -31,70 +31,80 @@ class Enemy {
     }
 
     setStatsForType(type) {
+        // Get current wave from WaveManager for scaling
+        const wave = window.gameEngine && window.gameEngine.waveManager ? 
+                    window.gameEngine.waveManager.currentWave : 1;
+        
+        // Progressive scaling factors
+        const healthScaling = 1 + (wave - 1) * 0.15; // 15% health increase per wave
+        const damageScaling = 1 + (wave - 1) * 0.12; // 12% damage increase per wave
+        const speedScaling = 1 + (wave - 1) * 0.08; // 8% speed increase per wave
+        const valueScaling = 1 + (wave - 1) * 0.1; // 10% value increase per wave
+        
         switch (type) {
             case 'basic':
-                this.maxHealth = 30;
-                this.health = 30;
-                this.damage = 8;
-                this.speed = 1.5;
+                this.maxHealth = Math.floor(30 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(8 * damageScaling);
+                this.speed = Math.min(1.5 * speedScaling, 2.5); // Cap speed
                 this.size = 20;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = 1000;
-                this.range = 120; // Reduced from 200 to 120
+                this.maxShootCooldown = Math.max(1000 - wave * 20, 500); // Faster shooting as waves progress
+                this.range = 120;
                 this.color = '#ff6666';
-                this.value = 10; // Score/coins value
+                this.value = Math.floor(10 * valueScaling);
                 break;
                 
             case 'heavy':
-                this.maxHealth = 80;
-                this.health = 80;
-                this.damage = 15;
-                this.speed = 0.8;
+                this.maxHealth = Math.floor(80 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(15 * damageScaling);
+                this.speed = Math.min(0.8 * speedScaling, 1.8); // Cap speed
                 this.size = 30;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = 1500;
-                this.range = 140; // Reduced from 250 to 140
+                this.maxShootCooldown = Math.max(1500 - wave * 30, 700);
+                this.range = 140;
                 this.color = '#cc4444';
-                this.value = 25;
+                this.value = Math.floor(25 * valueScaling);
                 break;
                 
             case 'fast':
-                this.maxHealth = 20;
-                this.health = 20;
-                this.damage = 6;
-                this.speed = 3;
+                this.maxHealth = Math.floor(20 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(6 * damageScaling);
+                this.speed = Math.min(3 * speedScaling, 4.5); // Cap speed
                 this.size = 15;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = 600;
-                this.range = 100; // Reduced from 150 to 100
+                this.maxShootCooldown = Math.max(600 - wave * 15, 300);
+                this.range = 100;
                 this.color = '#ff9944';
-                this.value = 15;
+                this.value = Math.floor(15 * valueScaling);
                 break;
                 
             case 'sniper':
-                this.maxHealth = 25;
-                this.health = 25;
-                this.damage = 20;
-                this.speed = 1;
+                this.maxHealth = Math.floor(25 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(20 * damageScaling);
+                this.speed = Math.min(1 * speedScaling, 2); // Cap speed
                 this.size = 18;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = 2000;
-                this.range = 180; // Reduced from 350 to 180
+                this.maxShootCooldown = Math.max(2000 - wave * 40, 1000);
+                this.range = 180;
                 this.color = '#9944ff';
-                this.value = 20;
+                this.value = Math.floor(20 * valueScaling);
                 break;
                 
             case 'boss':
-                this.maxHealth = 200;
-                this.health = 200;
-                this.damage = 25;
-                this.speed = 1.2;
+                this.maxHealth = Math.floor(200 * healthScaling);
+                this.health = this.maxHealth;
+                this.damage = Math.floor(25 * damageScaling);
+                this.speed = Math.min(1.2 * speedScaling, 2.2); // Cap speed
                 this.size = 40;
                 this.shootCooldown = 0;
-                this.maxShootCooldown = 800;
-                this.range = 160; // Reduced from 300 to 160
+                this.maxShootCooldown = Math.max(800 - wave * 20, 400);
+                this.range = 160;
                 this.color = '#ff4444';
-                this.value = 100;
+                this.value = Math.floor(100 * valueScaling);
                 break;
         }
     }
@@ -521,11 +531,37 @@ class WaveManager {
         this.wavePaused = false;
         this.spawnTimer = 0;
         
-        // Calculate wave difficulty - More enemies per wave
-        this.totalEnemiesInWave = Math.min(10 + waveNumber * 3, 40);
-        this.spawnInterval = Math.max(800, 2200 - waveNumber * 80);
+        // Enhanced enemy count scaling - exponential growth for challenge
+        const baseEnemies = 8;
+        const exponentialFactor = Math.pow(1.4, waveNumber - 1); // Exponential growth
+        const linearFactor = waveNumber * 4; // Linear growth
         
-        console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies`);
+        // Combine both factors with a max cap
+        this.totalEnemiesInWave = Math.min(
+            Math.floor(baseEnemies + exponentialFactor + linearFactor),
+            80 // Higher max cap
+        );
+        
+        // Aggressive spawn rate scaling - enemies spawn much faster
+        const baseSpawnInterval = 1800; // Start at 1.8 seconds
+        const reductionPerWave = 100; // Reduce by 100ms per wave
+        const minimumInterval = 200; // Never go below 200ms
+        
+        this.spawnInterval = Math.max(
+            baseSpawnInterval - (waveNumber * reductionPerWave),
+            minimumInterval
+        );
+        
+        // Add burst spawning for higher waves
+        this.burstSpawning = waveNumber >= 5;
+        this.burstTimer = 0;
+        this.burstInterval = 8000; // Every 8 seconds
+        this.burstCount = Math.min(Math.floor(waveNumber / 3), 8); // Up to 8 enemies per burst
+        
+        console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies, spawn interval: ${this.spawnInterval}ms`);
+        if (this.burstSpawning) {
+            console.log(`Burst spawning enabled: ${this.burstCount} enemies every ${this.burstInterval/1000}s`);
+        }
     }
 
     update(deltaTime, player) {
@@ -547,12 +583,21 @@ class WaveManager {
             }
         }
         
-        // Spawn new enemies
+        // Regular enemy spawning
         if (this.enemiesSpawned < this.totalEnemiesInWave) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
                 this.spawnEnemy(player);
                 this.spawnTimer = 0;
+            }
+        }
+        
+        // Burst spawning for higher waves (additional enemies beyond the normal count)
+        if (this.burstSpawning && this.currentWave >= 5) {
+            this.burstTimer += deltaTime;
+            if (this.burstTimer >= this.burstInterval) {
+                this.spawnBurst(player);
+                this.burstTimer = 0;
             }
         }
         

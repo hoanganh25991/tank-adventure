@@ -406,7 +406,7 @@ class UpgradeManager {
                 
             case 'mainDamage':
             case 'miniDamage':
-                return `+${totalEffect} Damage`;
+                return `+${totalEffect.toFixed(0)} Damage`;
                 
             case 'mainSpeed':
             case 'miniSpeed':
