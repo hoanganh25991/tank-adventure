@@ -1001,6 +1001,61 @@ body {
         font-size: 24px;
         margin-bottom: 20px;
     }
+    
+    /* Player Stats - Extra small screens */
+    #playerStats {
+        padding: 10px 12px;
+        margin-bottom: 12px;
+    }
+    
+    .stat-label {
+        font-size: 9px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
+    }
+    
+    /* Upgrades Grid - Extra small screens */
+    .upgrades-grid {
+        gap: 12px;
+        margin-top: 8px;
+    }
+    
+    .upgrade-category {
+        padding: 12px;
+    }
+    
+    .upgrade-category h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .upgrade-item {
+        padding: 10px 12px;
+        margin: 6px 0;
+    }
+    
+    .upgrade-name {
+        font-size: 12px;
+    }
+    
+    .upgrade-current {
+        font-size: 14px;
+    }
+    
+    .upgrade-btn {
+        padding: 6px 10px;
+        min-width: 65px;
+    }
+    
+    .upgrade-cost {
+        font-size: 9px;
+    }
+    
+    .upgrade-bonus {
+        font-size: 12px;
+    }
 }
 
 /* Landscape mode optimizations */
@@ -1016,44 +1071,66 @@ body {
     }
     
     #baseContent {
-        max-width: 90%; /* Use more horizontal space */
-        display: flex;
-        flex-wrap: wrap;
+        max-width: 95%; /* Use more horizontal space */
+    }
+    
+    /* Player Stats - Responsive adjustments */
+    #playerStats {
+        padding: 12px 16px;
+        margin-bottom: 15px;
+    }
+    
+    .stat-item {
+        padding: 0 8px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+    
+    .stat-value {
+        font-size: 16px;
+    }
+    
+    /* Upgrades Grid - Responsive adjustments */
+    .upgrades-grid {
+        grid-template-columns: 1fr; /* Single column for landscape mobile */
         gap: 15px;
     }
     
-    .upgrade-section {
-        flex: 1 1 calc(50% - 10px); /* Two columns in landscape */
-        min-width: 300px; /* Minimum width for readability */
-        margin-bottom: 15px; /* Reduce bottom margin */
-        padding: 15px; /* Reduce padding */
+    .upgrade-category {
+        padding: 16px;
     }
     
-    .upgrade-section h3 {
-        font-size: 18px; /* Smaller section titles */
+    .upgrade-category h3 {
+        font-size: 16px;
         margin-bottom: 12px;
     }
     
     .upgrade-item {
-        padding: 10px; /* Reduce padding */
-        margin: 6px 0; /* Reduce margin */
-        font-size: 14px; /* Smaller font */
+        padding: 12px 14px;
+        margin: 8px 0;
     }
     
-    #playerStats {
-        flex: 1 1 100%; /* Full width for player stats */
-        padding: 15px; /* Consistent padding */
-        order: -1; /* Move to top */
+    .upgrade-name {
+        font-size: 13px;
     }
     
-    #playerStats h3 {
-        font-size: 18px; /* Smaller title */
-        margin-bottom: 12px;
+    .upgrade-current {
+        font-size: 15px;
     }
     
-    #playerStats p {
-        font-size: 14px; /* Smaller text */
-        margin: 6px 0; /* Reduce margin */
+    .upgrade-btn {
+        padding: 8px 12px;
+        min-width: 70px;
+    }
+    
+    .upgrade-cost {
+        font-size: 10px;
+    }
+    
+    .upgrade-bonus {
+        font-size: 13px;
     }
 }
 
