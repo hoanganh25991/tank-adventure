@@ -798,6 +798,9 @@ class GameEngine {
         this.currentWave = 1;
         this.waveCompleted = false;
         
+        // Clear active skills for new battle session
+        this.skillManager.clearActiveSkills();
+        
         // Reset battle stats
         this.battleStats = {
             enemiesDefeated: 0,

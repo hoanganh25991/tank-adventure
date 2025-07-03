@@ -534,6 +534,22 @@ class SkillManager {
                 this.passiveSkills.push(newSkill);
             }
         }
+        
+        // Clean up any legacy active skills from localStorage
+        this.cleanupLegacyActiveSkills();
+    }
+    
+    cleanupLegacyActiveSkills() {
+        // Remove any active skills that might have been saved in localStorage
+        // This ensures a clean transition to the new system
+        const data = Utils.loadGame('tankAdventure_skills');
+        if (data && data.activeSkills) {
+            const cleanData = {
+                passiveSkills: data.passiveSkills || []
+            };
+            Utils.saveGame('tankAdventure_skills', cleanData);
+            console.log('Cleaned up legacy active skills from localStorage');
+        }
     }
 }
 
