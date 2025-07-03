@@ -221,6 +221,7 @@ class GameEngine {
         
         // Update effects regardless of scene
         this.updateEffects(deltaTime);
+        this.updateDamageNumbers(deltaTime);
         
         // Handle input
         this.handleInput();
@@ -605,6 +606,11 @@ class GameEngine {
                     // Create floating damage number
                     this.createDamageNumber(bullet.x, bullet.y, bullet.damage, destroyed, enemy.shield > 0);
                     
+                    // Play critical hit sound if it was a critical hit
+                    if (bullet.isCritical && this.soundManager) {
+                        this.soundManager.play('critical_hit');
+                    }
+                    
                     // Create enhanced hit effect for main tank bullets
                     if (bullet.isMainTankBullet) {
                         this.createEnhancedHitEffect(bullet.x, bullet.y, bullet.damage);
@@ -635,6 +641,9 @@ class GameEngine {
                         this.battleStats.enemiesDefeated++;
                         this.battleStats.scoreEarned += enemy.value;
                         this.battleStats.expGained += Math.floor(enemy.value / 2);
+                        
+                        // Play enemy death sound
+                        this.playEnemyDeathSound(enemy.type);
                     }
                     
                     // Check if bullet should continue (penetration)
@@ -893,6 +902,9 @@ class GameEngine {
         
         // Draw enemies
         this.waveManager.draw(this.ctx);
+        
+        // Draw damage numbers (in world space)
+        this.drawDamageNumbers(this.ctx);
         
         // Restore context (UI elements are drawn in screen space)
         this.ctx.restore();
@@ -1598,6 +1610,91 @@ class GameEngine {
                 maxLife: 300,
                 alpha: 1
             });
+        }
+    }
+
+    playEnemyDeathSound(enemyType) {
+        if (this.soundManager) {
+            const soundId = `enemy_${enemyType}_death`;
+            this.soundManager.play(soundId);
+        }
+    }
+
+    createDamageNumber(x, y, damage, isKill = false, hitShield = false) {
+        // Create floating damage number
+        const damageNumber = {
+            x: x,
+            y: y,
+            damage: Math.floor(damage),
+            life: 1500,
+            maxLife: 1500,
+            vy: -50, // Float upward
+            vx: (Math.random() - 0.5) * 20, // Slight horizontal drift
+            isKill: isKill,
+            hitShield: hitShield,
+            scale: 1.2,
+            alpha: 1.0
+        };
+        
+        this.damageNumbers.push(damageNumber);
+    }
+
+    updateDamageNumbers(deltaTime) {
+        for (let i = this.damageNumbers.length - 1; i >= 0; i--) {
+            const dmg = this.damageNumbers[i];
+            
+            // Update position
+            dmg.x += dmg.vx * deltaTime / 1000;
+            dmg.y += dmg.vy * deltaTime / 1000;
+            
+            // Update properties
+            dmg.life -= deltaTime;
+            dmg.alpha = dmg.life / dmg.maxLife;
+            dmg.scale = 1.2 + (1 - dmg.alpha) * 0.5;
+            
+            // Slow down vertical movement
+            dmg.vy *= 0.98;
+            
+            // Remove expired numbers
+            if (dmg.life <= 0) {
+                this.damageNumbers.splice(i, 1);
+            }
+        }
+    }
+
+    drawDamageNumbers(ctx) {
+        for (const dmg of this.damageNumbers) {
+            ctx.save();
+            ctx.globalAlpha = dmg.alpha;
+            ctx.font = `${Math.floor(16 * dmg.scale)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Color based on damage type
+            if (dmg.isKill) {
+                ctx.fillStyle = '#FF0000'; // Red for kills
+                ctx.shadowColor = '#FF0000';
+                ctx.shadowBlur = 8;
+            } else if (dmg.hitShield) {
+                ctx.fillStyle = '#00BFFF'; // Blue for shield hits
+                ctx.shadowColor = '#00BFFF';
+                ctx.shadowBlur = 6;
+            } else {
+                ctx.fillStyle = '#FFFF00'; // Yellow for normal damage
+                ctx.shadowColor = '#FFFF00';
+                ctx.shadowBlur = 4;
+            }
+            
+            // Draw damage number
+            ctx.fillText(dmg.damage.toString(), dmg.x, dmg.y);
+            
+            // Add "KILL!" text for kills
+            if (dmg.isKill) {
+                ctx.font = `${Math.floor(12 * dmg.scale)}px Arial`;
+                ctx.fillText('KILL!', dmg.x, dmg.y + 20);
+            }
+            
+            ctx.restore();
         }
     }
 

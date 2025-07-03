@@ -510,6 +510,10 @@ class Enemy {
             // Shield break effect
             if (this.shield <= 0) {
                 this.statusEffects.set('shield_broken', { duration: 1000 });
+                // Play shield break sound
+                if (window.gameEngine && window.gameEngine.soundManager) {
+                    window.gameEngine.soundManager.play('shield_break');
+                }
             }
         }
         
@@ -583,6 +587,11 @@ class Enemy {
         }
         
         this.specialCooldown = this.maxSpecialCooldown;
+        
+        // Play special ability sound
+        if (window.gameEngine && window.gameEngine.soundManager) {
+            window.gameEngine.soundManager.play('enemy_special_ability');
+        }
     }
 
     berserkerSpecialAbility(player) {
@@ -601,6 +610,11 @@ class Enemy {
         }
         
         this.specialCooldown = this.maxSpecialCooldown;
+        
+        // Play special ability sound
+        if (window.gameEngine && window.gameEngine.soundManager) {
+            window.gameEngine.soundManager.play('enemy_special_ability');
+        }
     }
 
     supportSpecialAbility(player) {
@@ -631,6 +645,11 @@ class Enemy {
         }
         
         this.specialCooldown = this.maxSpecialCooldown;
+        
+        // Play special ability sound
+        if (window.gameEngine && window.gameEngine.soundManager) {
+            window.gameEngine.soundManager.play('enemy_special_ability');
+        }
     }
 
     bossSpecialAbility(player) {
@@ -668,6 +687,11 @@ class Enemy {
         }
         
         this.specialCooldown = this.maxSpecialCooldown;
+        
+        // Play special ability sound
+        if (window.gameEngine && window.gameEngine.soundManager) {
+            window.gameEngine.soundManager.play('enemy_special_ability');
+        }
     }
 
     getNearbyEnemies(range) {

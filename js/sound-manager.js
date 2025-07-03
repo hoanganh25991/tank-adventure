@@ -48,6 +48,21 @@ class SoundManager {
             'time_slow_end': 400,       // G4 - return to normal
             'auto_repair_cast': 466,    // A#4 - mechanical
             'auto_repair_end': 392,     // G4 - completion
+            
+            // Enemy destruction sounds
+            'enemy_basic_death': 200,     // G3 - standard death
+            'enemy_heavy_death': 150,     // D#3 - heavy thud
+            'enemy_fast_death': 400,      // G4 - quick death
+            'enemy_sniper_death': 250,    // B3 - precision death
+            'enemy_elite_death': 300,     // D4 - special death
+            'enemy_berserker_death': 180, // F#3 - brutal death
+            'enemy_support_death': 350,   // F4 - support death
+            'enemy_boss_death': 100,      // G2 - massive death
+            
+            // Enemy abilities
+            'enemy_special_ability': 500, // B4 - enemy using ability
+            'shield_break': 800,          // G5 - shield breaking
+            'critical_hit': 600,          // D5 - critical hit sound
             // Tank shooting sounds
             'main_tank_shoot': 180,     // A3 - deep powerful shot
             'mini_tank_shoot': 300,     // D4 - lighter shot
