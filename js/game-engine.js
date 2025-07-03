@@ -381,13 +381,13 @@ class GameEngine {
         let finalX = joystick.x;
         let finalY = joystick.y;
         let finalMagnitude = joystick.magnitude;
-        let speedMultiplier = 0.5; // Default joystick speed (reduce 10x times)
+        let speedMultiplier = 0.05; // Default joystick speed (reduce 10x times)
         
         if (keyboard.magnitude > 0) {
             finalX = keyboard.x;
             finalY = keyboard.y;
             finalMagnitude = keyboard.magnitude;
-            speedMultiplier = 0.5; // Keyboard speed (reduce 25x times)
+            speedMultiplier = 0.05; // Keyboard speed (reduce 25x times)
         }
         
         // Set movement direction with appropriate speed multiplier
