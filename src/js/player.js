@@ -49,10 +49,10 @@ class Tank {
             this.muzzleFlash -= deltaTime * 5;
         }
         
-        // Smooth angle rotation
+        // Smooth angle rotation (faster rotation for responsive movement)
         const angleDiff = this.targetAngle - this.angle;
         const normalizedAngleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
-        this.angle += normalizedAngleDiff * 0.1;
+        this.angle += normalizedAngleDiff * 0.3; // Increased from 0.1 to 0.3 for faster rotation
         
         // Update bullets
         for (let i = this.bullets.length - 1; i >= 0; i--) {
@@ -250,12 +250,6 @@ class Player {
         this.moveDirectionY = 0;
         this.moveIntensity = 0;
         
-        // Smooth movement variables
-        this.currentVelocityX = 0;
-        this.currentVelocityY = 0;
-        this.acceleration = 0.3; // How quickly to reach target speed
-        this.deceleration = 0.4; // How quickly to stop
-        
         // Auto-shoot for mini tanks
         this.autoShootTimer = 0;
         this.autoShootInterval = 800; // milliseconds
@@ -293,53 +287,55 @@ class Player {
     updateMovement(deltaTime) {
         const mainTank = this.mainTank;
         
-        // Calculate target velocity based on joystick input
-        let targetVelocityX = 0;
-        let targetVelocityY = 0;
-        
+        // Check if we're moving based on joystick input
         if (this.moveIntensity > 0.1) {
             this.isMoving = true;
-            targetVelocityX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
-            targetVelocityY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
+            
+            // Calculate movement velocity (no acceleration, immediate movement)
+            const deltaTimeSeconds = deltaTime / 1000; // Convert to seconds
+            const velocityX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
+            const velocityY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
+            
+            // Apply movement immediately
+            mainTank.x += velocityX * deltaTimeSeconds * 60; // Multiply by 60 for consistent speed across framerates
+            mainTank.y += velocityY * deltaTimeSeconds * 60;
+            
+            // Rotate main tank to face movement direction
+            if (Math.abs(this.moveDirectionX) > 0.1 || Math.abs(this.moveDirectionY) > 0.1) {
+                const movementAngle = Math.atan2(this.moveDirectionY, this.moveDirectionX);
+                mainTank.targetAngle = movementAngle;
+            }
+            
+            // Update target position for reference
+            this.targetX = mainTank.x;
+            this.targetY = mainTank.y;
+            
+            // Move mini tanks in formation
+            this.updateMiniTankFormation();
         } else {
             this.isMoving = false;
         }
+    }
+    
+    updateMiniTankFormation() {
+        const mainTank = this.mainTank;
+        const positions = [
+            { x: -60, y: -60 }, // Top-left
+            { x: 60, y: -60 },  // Top-right  
+            { x: -60, y: 60 },  // Bottom-left
+            { x: 60, y: 60 },   // Bottom-right
+            { x: 0, y: -80 }    // Top-center
+        ];
         
-        // Smooth acceleration/deceleration
-        const deltaTimeSeconds = deltaTime / 1000; // Convert to seconds for consistent movement
-        const smoothingFactor = this.isMoving ? this.acceleration : this.deceleration;
-        
-        this.currentVelocityX = Utils.lerp(this.currentVelocityX, targetVelocityX, smoothingFactor);
-        this.currentVelocityY = Utils.lerp(this.currentVelocityY, targetVelocityY, smoothingFactor);
-        
-        // Apply velocity to position
-        mainTank.x += this.currentVelocityX * deltaTimeSeconds;
-        mainTank.y += this.currentVelocityY * deltaTimeSeconds;
-        
-        // Update target position for reference
-        this.targetX = mainTank.x;
-        this.targetY = mainTank.y;
-        
-        // Move mini tanks in formation (only if there's significant movement)
-        if (Math.abs(this.currentVelocityX) > 0.1 || Math.abs(this.currentVelocityY) > 0.1) {
-            const positions = [
-                { x: -60, y: -60 }, // Top-left
-                { x: 60, y: -60 },  // Top-right
-                { x: -60, y: 60 },  // Bottom-left
-                { x: 60, y: 60 },   // Bottom-right
-                { x: 0, y: -80 }    // Top-center
-            ];
+        for (let i = 0; i < this.miniTanks.length; i++) {
+            const miniTank = this.miniTanks[i];
+            const targetPos = positions[i];
+            const targetX = mainTank.x + targetPos.x;
+            const targetY = mainTank.y + targetPos.y;
             
-            for (let i = 0; i < this.miniTanks.length; i++) {
-                const miniTank = this.miniTanks[i];
-                const targetPos = positions[i];
-                const targetX = mainTank.x + targetPos.x;
-                const targetY = mainTank.y + targetPos.y;
-                
-                // Smooth follow movement
-                miniTank.x = Utils.lerp(miniTank.x, targetX, 0.15);
-                miniTank.y = Utils.lerp(miniTank.y, targetY, 0.15);
-            }
+            // Smooth follow movement for mini tanks
+            miniTank.x = Utils.lerp(miniTank.x, targetX, 0.15);
+            miniTank.y = Utils.lerp(miniTank.y, targetY, 0.15);
         }
     }
 
