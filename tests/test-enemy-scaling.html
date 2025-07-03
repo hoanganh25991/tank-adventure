@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enemy Scaling Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .wave-test {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #4a9eff;
+        }
+        button {
+            background: linear-gradient(45deg, #4a9eff, #2a7eff);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #6bb6ff, #4a9eff);
+        }
+        .enemy-type {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .basic { background: #ff6666; }
+        .heavy { background: #cc4444; }
+        .fast { background: #ff9944; }
+        .sniper { background: #9944ff; }
+        .boss { background: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enemy Scaling System Test</h1>
+        
+        <div class="test-section">
+            <h2>Wave Configuration Testing</h2>
+            <p>Test different wave configurations to see enemy scaling in action.</p>
+            
+            <div>
+                <label>Test Wave: </label>
+                <input type="number" id="waveInput" value="1" min="1" max="20">
+                <button onclick="testWave()">Test Wave</button>
+                <button onclick="testAllWaves()">Test All Waves (1-15)</button>
+            </div>
+            
+            <div id="waveResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Enemy Type Distribution</h2>
+            <p>Test enemy type probability distribution for different waves.</p>
+            
+            <div>
+                <label>Test Wave: </label>
+                <input type="number" id="distributionWave" value="1" min="1" max="20">
+                <button onclick="testDistribution()">Test Distribution (100 enemies)</button>
+            </div>
+            
+            <div id="distributionResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Scaling Calculations</h2>
+            <div id="scalingResults"></div>
+        </div>
+    </div>
+
+    <!-- Load game files -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/enemy.js"></script>
+    <script>
+        // Mock game engine for testing
+        window.gameEngine = {
+            waveManager: {
+                currentWave: 1
+            }
+        };
+
+        function testWave() {
+            const wave = parseInt(document.getElementById('waveInput').value);
+            const waveManager = new WaveManager();
+            waveManager.startWave(wave);
+            
+            const results = document.getElementById('waveResults');
+            results.innerHTML = `
+                <div class="wave-test">
+                    <h3>Wave ${wave} Configuration</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <strong>Total Enemies:</strong><br>
+                            ${waveManager.totalEnemiesInWave}
+                        </div>
+                        <div class="stat-item">
+                            <strong>Spawn Interval:</strong><br>
+                            ${waveManager.spawnInterval}ms
+                        </div>
+                        <div class="stat-item">
+                            <strong>Burst Spawning:</strong><br>
+                            ${waveManager.burstSpawning ? 'Yes' : 'No'}
+                        </div>
+                        <div class="stat-item">
+                            <strong>Burst Count:</strong><br>
+                            ${waveManager.burstCount}
+                        </div>
+                    </div>
+                    ${generateEnemyStatsForWave(wave)}
+                </div>
+            `;
+        }
+
+        function testAllWaves() {
+            const results = document.getElementById('waveResults');
+            let html = '<h3>All Waves Summary</h3>';
+            
+            for (let wave = 1; wave <= 15; wave++) {
+                const waveManager = new WaveManager();
+                waveManager.startWave(wave);
+                
+                html += `
+                    <div class="wave-test">
+                        <strong>Wave ${wave}:</strong> 
+                        ${waveManager.totalEnemiesInWave} enemies, 
+                        ${waveManager.spawnInterval}ms interval
+                        ${waveManager.burstSpawning ? `, burst: ${waveManager.burstCount}` : ''}
+                    </div>
+                `;
+            }
+            
+            results.innerHTML = html;
+        }
+
+        function generateEnemyStatsForWave(wave) {
+            window.gameEngine.waveManager.currentWave = wave;
+            
+            const types = ['basic', 'heavy', 'fast', 'sniper', 'boss'];
+            let html = '<h4>Enemy Stats for Wave ' + wave + '</h4><div class="stats-grid">';
+            
+            types.forEach(type => {
+                const enemy = new Enemy(0, 0, type);
+                html += `
+                    <div class="stat-item">
+                        <strong>${type.charAt(0).toUpperCase() + type.slice(1)}</strong><br>
+                        HP: ${enemy.maxHealth}<br>
+                        Damage: ${enemy.damage}<br>
+                        Speed: ${enemy.speed.toFixed(2)}<br>
+                        Value: ${enemy.value}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function testDistribution() {
+            const wave = parseInt(document.getElementById('distributionWave').value);
+            const waveManager = new WaveManager();
+            waveManager.startWave(wave);
+            
+            const counts = { basic: 0, heavy: 0, fast: 0, sniper: 0, boss: 0 };
+            const burstCounts = { basic: 0, heavy: 0, fast: 0, sniper: 0, boss: 0 };
+            
+            // Test regular spawning
+            for (let i = 0; i < 100; i++) {
+                const type = waveManager.chooseEnemyType();
+                counts[type]++;
+            }
+            
+            // Test burst spawning
+            for (let i = 0; i < 100; i++) {
+                const type = waveManager.chooseBurstEnemyType();
+                burstCounts[type]++;
+            }
+            
+            const results = document.getElementById('distributionResults');
+            results.innerHTML = `
+                <div class="wave-test">
+                    <h3>Wave ${wave} Distribution (100 enemies each)</h3>
+                    <h4>Regular Spawning:</h4>
+                    <div>
+                        ${Object.entries(counts).map(([type, count]) => 
+                            `<span class="enemy-type ${type}">${type}: ${count}%</span>`
+                        ).join('')}
+                    </div>
+                    <h4>Burst Spawning:</h4>
+                    <div>
+                        ${Object.entries(burstCounts).map(([type, count]) => 
+                            `<span class="enemy-type ${type}">${type}: ${count}%</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateScalingDisplay() {
+            const results = document.getElementById('scalingResults');
+            let html = '<h3>Scaling Formulas</h3>';
+            
+            const waves = [1, 3, 5, 8, 10, 15];
+            
+            waves.forEach(wave => {
+                const healthScaling = 1 + (wave - 1) * 0.15;
+                const damageScaling = 1 + (wave - 1) * 0.12;
+                const speedScaling = 1 + (wave - 1) * 0.08;
+                const valueScaling = 1 + (wave - 1) * 0.1;
+                
+                html += `
+                    <div class="wave-test">
+                        <strong>Wave ${wave} Scaling Multipliers:</strong><br>
+                        Health: ${healthScaling.toFixed(2)}x, 
+                        Damage: ${damageScaling.toFixed(2)}x, 
+                        Speed: ${speedScaling.toFixed(2)}x, 
+                        Value: ${valueScaling.toFixed(2)}x
+                    </div>
+                `;
+            });
+            
+            results.innerHTML = html;
+        }
+
+        // Initialize displays
+        testWave();
+        updateScalingDisplay();
+    </script>
+</body>
+</html>

@@ -404,12 +404,34 @@ class Enemy {
             ctx.fill();
         }
         
-        // Type indicator
+        // Type indicator and wave scaling indicator
         if (this.type !== 'basic') {
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
             ctx.textAlign = 'center';
             ctx.fillText(this.type.charAt(0).toUpperCase(), 0, -this.size - 10);
+        }
+        
+        // Wave scaling indicator (show enhanced enemies)
+        const currentWave = window.gameEngine && window.gameEngine.waveManager ? 
+                           window.gameEngine.waveManager.currentWave : 1;
+        if (currentWave > 3) {
+            // Draw enhancement indicators for scaled enemies
+            ctx.fillStyle = `rgba(255, 215, 0, ${0.3 + currentWave * 0.05})`;
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size + 5, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Additional visual flair for very high waves
+            if (currentWave >= 10) {
+                ctx.strokeStyle = '#ff4500';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size + 8, 0, Math.PI * 2);
+                ctx.stroke();
+            }
         }
         
         ctx.restore();
@@ -521,6 +543,16 @@ class WaveManager {
         this.spawnTimer = 0;
         this.spawnInterval = 2000; // milliseconds between spawns
         this.wavePaused = false;
+        
+        // New burst spawning properties
+        this.burstSpawning = false;
+        this.burstTimer = 0;
+        this.burstInterval = 8000;
+        this.burstCount = 0;
+        
+        // Dynamic difficulty scaling
+        this.difficultyMultiplier = 1.0;
+        this.maxConcurrentEnemies = 25; // Limit to prevent performance issues
     }
 
     startWave(waveNumber) {
@@ -584,7 +616,7 @@ class WaveManager {
         }
         
         // Regular enemy spawning
-        if (this.enemiesSpawned < this.totalEnemiesInWave) {
+        if (this.enemiesSpawned < this.totalEnemiesInWave && this.enemies.length < this.maxConcurrentEnemies) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
                 this.spawnEnemy(player);
