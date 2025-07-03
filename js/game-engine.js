@@ -2024,6 +2024,19 @@ class GameEngine {
             document.body.classList.remove('fullscreen');
         }
         
+        // Force canvas context re-setup for crisp rendering
+        setTimeout(() => {
+            this.setupContextForCrispRendering();
+            
+            // Update camera if in battle mode to re-center on player
+            if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
+                this.updateCamera();
+            }
+            
+            // Trigger a render to ensure everything is displayed correctly
+            this.render();
+        }, 100); // Small delay to ensure canvas resize has completed
+        
         // Log fullscreen state
         console.log(`Game is now in ${isFullscreen ? 'fullscreen' : 'windowed'} mode`);
     }
