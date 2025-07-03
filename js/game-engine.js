@@ -22,6 +22,9 @@ class GameEngine {
         this.skillEffects = new SkillEffects(this);
         this.skillManager.effectsManager = this.skillEffects;
         
+        // Sound system
+        this.soundManager = new SoundManager();
+        
         // Game settings
         this.targetFPS = 60;
         this.frameTime = 1000 / this.targetFPS;
@@ -202,14 +205,76 @@ class GameEngine {
         // Update particles
         for (let i = this.particles.length - 1; i >= 0; i--) {
             const particle = this.particles[i];
-            particle.x += particle.vx * deltaTime / 1000;
-            particle.y += particle.vy * deltaTime / 1000;
+            
+            // Update particle time
+            if (particle.time !== undefined) {
+                particle.time += deltaTime;
+            }
+            
+            // Handle special behaviors
+            if (particle.specialBehavior) {
+                this.updateSpecialParticleBehavior(particle, deltaTime);
+            } else {
+                // Standard particle movement
+                particle.x += particle.vx * deltaTime / 1000;
+                particle.y += particle.vy * deltaTime / 1000;
+            }
+            
             particle.life -= deltaTime;
             particle.alpha = Math.max(0, particle.life / particle.maxLife);
             
             if (particle.life <= 0) {
                 this.particles.splice(i, 1);
             }
+        }
+    }
+
+    updateSpecialParticleBehavior(particle, deltaTime) {
+        const player = this.player;
+        if (!player) return;
+
+        switch (particle.specialBehavior) {
+            case 'trail':
+                // Speed boost trail effect
+                particle.x += particle.vx * deltaTime / 1000;
+                particle.y += particle.vy * deltaTime / 1000;
+                
+                // Add some magnetism towards player
+                const dx = player.mainTank.x - particle.x;
+                const dy = player.mainTank.y - particle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 0) {
+                    const magnetForce = 0.5;
+                    particle.vx += (dx / distance) * magnetForce;
+                    particle.vy += (dy / distance) * magnetForce;
+                }
+                break;
+
+            case 'pulse':
+                // Damage boost pulsing effect
+                particle.x += particle.vx * deltaTime / 1000;
+                particle.y += particle.vy * deltaTime / 1000;
+                
+                // Pulsing size effect
+                const pulseSpeed = 0.003;
+                particle.size = particle.size * (1 + Math.sin(particle.time * pulseSpeed) * 0.3);
+                break;
+
+            case 'orbit':
+                // Shield orbital effect
+                const orbitSpeed = 0.002;
+                const orbitRadius = 30;
+                const angle = particle.time * orbitSpeed + (particle.originalX % 100) / 100 * Math.PI * 2;
+                
+                particle.x = player.mainTank.x + Math.cos(angle) * orbitRadius;
+                particle.y = player.mainTank.y + Math.sin(angle) * orbitRadius;
+                break;
+
+            default:
+                // Standard movement
+                particle.x += particle.vx * deltaTime / 1000;
+                particle.y += particle.vy * deltaTime / 1000;
         }
     }
 

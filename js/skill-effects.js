@@ -7,6 +7,7 @@ class SkillEffects {
         this.ctx = gameEngine.ctx;
         this.activeEffects = [];
         this.screenEffects = [];
+        this.shakeEffects = [];
         
         // Effect configurations for each skill type
         this.effectConfigs = {
@@ -14,6 +15,7 @@ class SkillEffects {
                 cast: {
                     particles: { color: '#00ff44', count: 20, size: [3, 8], speed: [50, 120] },
                     screenFlash: { color: '#00ff44', intensity: 0.3, duration: 300 },
+                    screenShake: { intensity: 2, duration: 200 },
                     sound: 'heal_cast'
                 },
                 during: {
@@ -30,6 +32,7 @@ class SkillEffects {
                 cast: {
                     particles: { color: '#ff4444', count: 25, size: [4, 10], speed: [60, 140] },
                     screenFlash: { color: '#ff4444', intensity: 0.4, duration: 400 },
+                    screenShake: { intensity: 4, duration: 300 },
                     sound: 'damage_boost_cast'
                 },
                 during: {
@@ -46,6 +49,7 @@ class SkillEffects {
                 cast: {
                     particles: { color: '#44aaff', count: 30, size: [2, 6], speed: [80, 180] },
                     screenFlash: { color: '#44aaff', intensity: 0.35, duration: 250 },
+                    screenShake: { intensity: 3, duration: 200 },
                     sound: 'speed_boost_cast'
                 },
                 during: {
@@ -62,6 +66,7 @@ class SkillEffects {
                 cast: {
                     particles: { color: '#ffaa44', count: 35, size: [3, 9], speed: [40, 100] },
                     screenFlash: { color: '#ffaa44', intensity: 0.45, duration: 500 },
+                    screenShake: { intensity: 3, duration: 400 },
                     sound: 'shield_cast'
                 },
                 during: {
@@ -78,6 +83,7 @@ class SkillEffects {
                 cast: {
                     particles: { color: '#ff6600', count: 40, size: [3, 8], speed: [70, 150] },
                     screenFlash: { color: '#ff6600', intensity: 0.5, duration: 350 },
+                    screenShake: { intensity: 6, duration: 400 },
                     sound: 'explosive_shot_cast'
                 },
                 during: {
@@ -166,6 +172,14 @@ class SkillEffects {
                 castConfig.screenFlash.color,
                 castConfig.screenFlash.intensity,
                 castConfig.screenFlash.duration
+            );
+        }
+
+        // Create screen shake
+        if (castConfig.screenShake) {
+            this.createScreenShake(
+                castConfig.screenShake.intensity,
+                castConfig.screenShake.duration
             );
         }
 
@@ -260,6 +274,21 @@ class SkillEffects {
                 this.screenEffects.splice(i, 1);
             }
         }
+
+        // Update screen shake effects
+        for (let i = this.shakeEffects.length - 1; i >= 0; i--) {
+            const shake = this.shakeEffects[i];
+            shake.timer += deltaTime;
+            
+            if (shake.timer >= shake.duration) {
+                this.shakeEffects.splice(i, 1);
+                // Remove shake class from canvas
+                const canvas = this.gameEngine.canvas;
+                if (canvas) {
+                    canvas.classList.remove('screen-shake');
+                }
+            }
+        }
     }
 
     // Render visual effects
@@ -297,6 +326,19 @@ class SkillEffects {
                 vy *= 1.5;
             }
 
+            // Add special behaviors for specific skills
+            let specialBehavior = null;
+            if (color === '#44aaff' && phase === 'during') {
+                // Speed boost - create trailing effect
+                specialBehavior = 'trail';
+            } else if (color === '#ff4444' && phase === 'during') {
+                // Damage boost - create pulsing effect
+                specialBehavior = 'pulse';
+            } else if (color === '#ffaa44' && phase === 'during') {
+                // Shield - create protective orbit
+                specialBehavior = 'orbit';
+            }
+
             const particle = {
                 x: x + this.randomBetween(-10, 10),
                 y: y + this.randomBetween(-10, 10),
@@ -307,7 +349,11 @@ class SkillEffects {
                 life: this.randomBetween(800, 1500),
                 maxLife: this.randomBetween(800, 1500),
                 alpha: 1,
-                phase
+                phase,
+                specialBehavior,
+                time: 0,
+                originalX: x,
+                originalY: y
             };
 
             this.gameEngine.particles.push(particle);
@@ -344,6 +390,37 @@ class SkillEffects {
                 flashElement.parentNode.removeChild(flashElement);
             }
         }, duration);
+    }
+
+    // Create screen shake effect
+    createScreenShake(intensity, duration) {
+        const shake = {
+            intensity,
+            duration,
+            timer: 0
+        };
+
+        this.shakeEffects.push(shake);
+        
+        // Apply shake class to canvas
+        const canvas = this.gameEngine.canvas;
+        if (canvas) {
+            canvas.classList.add('screen-shake');
+            // Create custom shake animation based on intensity
+            const shakeKeyframes = this.generateShakeKeyframes(intensity);
+            canvas.style.animation = `screenShake ${duration}ms ease-in-out`;
+        }
+    }
+
+    // Generate shake keyframes based on intensity
+    generateShakeKeyframes(intensity) {
+        const keyframes = [];
+        for (let i = 0; i <= 100; i += 10) {
+            const x = (Math.random() - 0.5) * intensity;
+            const y = (Math.random() - 0.5) * intensity;
+            keyframes.push(`${i}% { transform: translate(${x}px, ${y}px); }`);
+        }
+        return keyframes.join(' ');
     }
 
     // Render screen effects

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Bar Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 1px solid #555;
+            background: #333;
+        }
+        .info {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Health Bar Test</h1>
+    <canvas id="testCanvas" width="800" height="600"></canvas>
+    <div class="info">
+        <p>This test shows health bars for all tanks from initialization.</p>
+        <p>Main tank (blue) should have a larger, blue health bar.</p>
+        <p>Mini tanks (green) should have smaller, green health bars.</p>
+        <button onclick="damageTanks()">Damage Tanks</button>
+        <button onclick="healTanks()">Heal Tanks</button>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+    <script>
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Create a player with tanks
+        const player = new Player(400, 300);
+        
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw main tank
+            player.mainTank.draw(ctx);
+            
+            // Draw mini tanks
+            for (const miniTank of player.miniTanks) {
+                miniTank.draw(ctx);
+            }
+            
+            // Draw info
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Main Tank Health: ${player.mainTank.health}/${player.mainTank.maxHealth}`, 10, 30);
+            ctx.fillText(`Mini Tank Health: ${player.miniTanks[0].health}/${player.miniTanks[0].maxHealth}`, 10, 50);
+        }
+        
+        function damageTanks() {
+            player.mainTank.takeDamage(20);
+            player.miniTanks.forEach(tank => tank.takeDamage(10));
+            draw();
+        }
+        
+        function healTanks() {
+            player.mainTank.heal(20);
+            player.miniTanks.forEach(tank => tank.heal(10));
+            draw();
+        }
+        
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>

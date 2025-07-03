@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Effects Test - Tank Adventure</title>
+    <link rel="stylesheet" href="css/game.css">
+    <style>
+        #effectsPanel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            color: white;
+            font-family: Arial, sans-serif;
+            max-width: 300px;
+        }
+        
+        .effect-button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .effect-button:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+        
+        .effect-button.heal { border-left: 4px solid #00ff44; }
+        .effect-button.damage_boost { border-left: 4px solid #ff4444; }
+        .effect-button.speed_boost { border-left: 4px solid #44aaff; }
+        .effect-button.shield { border-left: 4px solid #ffaa44; }
+        .effect-button.explosive_shot { border-left: 4px solid #ff6600; }
+        .effect-button.multi_shot { border-left: 4px solid #aa44ff; }
+        .effect-button.time_slow { border-left: 4px solid #44ffff; }
+        .effect-button.auto_repair { border-left: 4px solid #ffff44; }
+        
+        #instructions {
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        #effectsLog {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="effectsPanel">
+            <h3>🎮 Skill Effects Test</h3>
+            <div id="instructions">
+                Click buttons to test skill effects. Each skill shows unique cast, during, and exit effects.
+            </div>
+            
+            <button class="effect-button heal" onclick="testSkillEffect('heal')">
+                💚 Emergency Repair
+            </button>
+            <button class="effect-button damage_boost" onclick="testSkillEffect('damage_boost')">
+                ⚔️ Combat Overdrive
+            </button>
+            <button class="effect-button speed_boost" onclick="testSkillEffect('speed_boost')">
+                💨 Nitro Boost
+            </button>
+            <button class="effect-button shield" onclick="testSkillEffect('shield')">
+                🛡️ Energy Shield
+            </button>
+            <button class="effect-button explosive_shot" onclick="testSkillEffect('explosive_shot')">
+                💥 Explosive Rounds
+            </button>
+            <button class="effect-button multi_shot" onclick="testSkillEffect('multi_shot')">
+                🔫 Multi-Cannon
+            </button>
+            <button class="effect-button time_slow" onclick="testSkillEffect('time_slow')">
+                ⏰ Temporal Field
+            </button>
+            <button class="effect-button auto_repair" onclick="testSkillEffect('auto_repair')">
+                🔧 Auto-Repair System
+            </button>
+            
+            <button class="effect-button" onclick="testAllEffects()" style="margin-top: 15px; background: #666;">
+                🎆 Test All Effects
+            </button>
+            
+            <button class="effect-button" onclick="clearEffects()" style="background: #444;">
+                🧹 Clear Effects
+            </button>
+        </div>
+        
+        <div id="effectsLog"></div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/skills.js"></script>
+    <script src="js/skill-effects.js"></script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/game-engine.js"></script>
+    
+    <script>
+        // Test Game Engine Setup
+        let testGameEngine;
+        let testPlayer;
+        let testSkillEffects;
+        let effectsLog = [];
+        
+        function initializeTest() {
+            testGameEngine = new GameEngine();
+            testGameEngine.currentScene = 'battle';
+            
+            // Create a test player
+            testPlayer = new Player();
+            testPlayer.initialize();
+            testPlayer.mainTank.x = 400;
+            testPlayer.mainTank.y = 300;
+            testGameEngine.player = testPlayer;
+            
+            // Initialize skill effects
+            testSkillEffects = testGameEngine.skillEffects;
+            
+            // Start test loop
+            testGameEngine.gameLoop();
+            
+            logEffect('🎮 Skill Effects Test initialized');
+            logEffect('💡 Click buttons to test different skill effects');
+        }
+        
+        function testSkillEffect(skillType) {
+            const x = testPlayer.mainTank.x;
+            const y = testPlayer.mainTank.y;
+            
+            logEffect(`🎯 Testing ${skillType} effect`);
+            
+            // Test cast effect
+            testSkillEffects.triggerCastEffect(skillType, x, y);
+            
+            // Test during effect (for skills with duration)
+            const mockSkill = {
+                id: skillType,
+                effect: { type: skillType },
+                isActive: true,
+                duration: 5000,
+                remainingDuration: 5000
+            };
+            
+            testSkillEffects.startDuringEffect(skillType, mockSkill);
+            
+            // Test exit effect after delay
+            setTimeout(() => {
+                testSkillEffects.triggerExitEffect(skillType, x, y);
+                logEffect(`✅ ${skillType} effect completed`);
+            }, 3000);
+        }
+        
+        function testAllEffects() {
+            const skills = ['heal', 'damage_boost', 'speed_boost', 'shield', 'explosive_shot', 'multi_shot', 'time_slow', 'auto_repair'];
+            
+            logEffect('🎆 Testing all skill effects...');
+            
+            skills.forEach((skill, index) => {
+                setTimeout(() => {
+                    testSkillEffect(skill);
+                }, index * 1000);
+            });
+        }
+        
+        function clearEffects() {
+            testSkillEffects.cleanup();
+            testGameEngine.particles = [];
+            testGameEngine.explosions = [];
+            logEffect('🧹 All effects cleared');
+        }
+        
+        function logEffect(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            effectsLog.push(`[${timestamp}] ${message}`);
+            
+            // Keep only last 20 messages
+            if (effectsLog.length > 20) {
+                effectsLog.shift();
+            }
+            
+            // Update log display
+            const logElement = document.getElementById('effectsLog');
+            logElement.innerHTML = effectsLog.join('<br>');
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', initializeTest);
+        
+        // Add some test keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1': testSkillEffect('heal'); break;
+                case '2': testSkillEffect('damage_boost'); break;
+                case '3': testSkillEffect('speed_boost'); break;
+                case '4': testSkillEffect('shield'); break;
+                case '5': testSkillEffect('explosive_shot'); break;
+                case '6': testSkillEffect('multi_shot'); break;
+                case '7': testSkillEffect('time_slow'); break;
+                case '8': testSkillEffect('auto_repair'); break;
+                case ' ': testAllEffects(); e.preventDefault(); break;
+                case 'c': clearEffects(); break;
+            }
+        });
+    </script>
+</body>
+</html>

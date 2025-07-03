@@ -129,10 +129,8 @@ class Tank {
             this.drawOriginal(ctx);
         }
         
-        // Health bar (for mini tanks)
-        if (this.type === 'mini' && this.health < this.maxHealth) {
-            this.drawHealthBar(ctx);
-        }
+        // Health bar (for all tanks)
+        this.drawHealthBar(ctx);
         
         // Draw bullets
         this.drawBullets(ctx);
@@ -182,18 +180,34 @@ class Tank {
     }
 
     drawHealthBar(ctx) {
-        const barWidth = this.size * 2;
-        const barHeight = 4;
-        const barY = this.y - this.size - 10;
+        // Different health bar styles for main and mini tanks
+        const barWidth = this.type === 'main' ? this.size * 2.5 : this.size * 2;
+        const barHeight = this.type === 'main' ? 6 : 4;
+        const barY = this.y - this.size - (this.type === 'main' ? 15 : 10);
         
         // Background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillRect(this.x - barWidth / 2, barY, barWidth, barHeight);
+        
+        // Health background (red)
         ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth, barHeight);
         
-        // Health
+        // Health foreground (green)
         const healthPercent = this.health / this.maxHealth;
-        ctx.fillStyle = 'rgba(0, 255, 0, 0.9)';
+        if (this.type === 'main') {
+            // Main tank health bar - blue-green gradient
+            ctx.fillStyle = 'rgba(0, 180, 255, 0.9)';
+        } else {
+            // Mini tank health bar - standard green
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.9)';
+        }
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth * healthPercent, barHeight);
+        
+        // Health bar border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(this.x - barWidth / 2, barY, barWidth, barHeight);
     }
 
     drawBullets(ctx) {
