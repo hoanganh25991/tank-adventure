@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Adventure - Fullscreen Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        #gameCanvas {
+            border: 2px solid #fff;
+            background: #111;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .info {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Tank Adventure - Fullscreen Canvas Test</h1>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="controls">
+            <button id="toggleFullscreen">Toggle Fullscreen</button>
+            <button id="updateCanvas">Update Canvas</button>
+            <button id="resetCanvas">Reset Canvas</button>
+        </div>
+        <div class="info">
+            <p><strong>Canvas Size:</strong> <span id="canvasSize">800x600</span></p>
+            <p><strong>CSS Size:</strong> <span id="cssSize">800x600</span></p>
+            <p><strong>Fullscreen:</strong> <span id="fullscreenStatus">No</span></p>
+            <p><strong>Device Pixel Ratio:</strong> <span id="dpr">1</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Simple test to verify canvas updating during fullscreen
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        
+        // Update display info
+        function updateInfo() {
+            document.getElementById('canvasSize').textContent = `${canvas.width}x${canvas.height}`;
+            document.getElementById('cssSize').textContent = `${canvas.style.width || canvas.width}x${canvas.style.height || canvas.height}`;
+            document.getElementById('fullscreenStatus').textContent = document.fullscreenElement ? 'Yes' : 'No';
+            document.getElementById('dpr').textContent = window.devicePixelRatio || 1;
+        }
+        
+        // Simple drawing function to test canvas
+        function drawTestPattern() {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw center circle
+            ctx.fillStyle = '#007bff';
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw size info
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Canvas: ${canvas.width}x${canvas.height}`, 10, 30);
+            ctx.fillText(`CSS: ${canvas.offsetWidth}x${canvas.offsetHeight}`, 10, 60);
+            ctx.fillText(`DPR: ${window.devicePixelRatio || 1}`, 10, 90);
+        }
+        
+        // Update canvas size similar to the game
+        function updateCanvasSize() {
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            const width = Math.min(rect.width - 40, 800); // Leave some margin
+            const height = Math.min(rect.height - 200, 600); // Leave room for controls
+            
+            const dpr = window.devicePixelRatio || 1;
+            
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            
+            ctx.scale(dpr, dpr);
+            ctx.imageSmoothingEnabled = false;
+            
+            drawTestPattern();
+            updateInfo();
+        }
+        
+        // Toggle fullscreen
+        document.getElementById('toggleFullscreen').addEventListener('click', async () => {
+            try {
+                if (document.fullscreenElement) {
+                    await document.exitFullscreen();
+                } else {
+                    await document.documentElement.requestFullscreen();
+                }
+            } catch (e) {
+                console.error('Fullscreen error:', e);
+            }
+        });
+        
+        // Update canvas manually
+        document.getElementById('updateCanvas').addEventListener('click', () => {
+            updateCanvasSize();
+        });
+        
+        // Reset canvas
+        document.getElementById('resetCanvas').addEventListener('click', () => {
+            canvas.width = 800;
+            canvas.height = 600;
+            canvas.style.width = '800px';
+            canvas.style.height = '600px';
+            drawTestPattern();
+            updateInfo();
+        });
+        
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', () => {
+            console.log('Fullscreen changed:', document.fullscreenElement ? 'ON' : 'OFF');
+            setTimeout(() => {
+                updateCanvasSize();
+            }, 100);
+        });
+        
+        // Initialize
+        drawTestPattern();
+        updateInfo();
+        
+        // Update info periodically
+        setInterval(updateInfo, 1000);
+    </script>
+</body>
+</html>

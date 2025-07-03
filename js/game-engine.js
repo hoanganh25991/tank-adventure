@@ -1994,7 +1994,7 @@ class GameEngine {
         ];
         
         fullscreenEvents.forEach(event => {
-            document.addEventListener(event, () => {
+            document.addEventListener(event, Utils.debounce(() => {
                 const isFullscreen = Utils.isFullscreen();
                 console.log(`Fullscreen mode: ${isFullscreen ? 'ON' : 'OFF'}`);
                 
@@ -2005,7 +2005,21 @@ class GameEngine {
                 
                 // Update UI for fullscreen
                 this.handleFullscreenChange(isFullscreen);
-            });
+                
+                // Update player position if in battle mode to prevent off-screen issues
+                if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
+                    const canvasDims = this.getCanvasCSSDimensions();
+                    // Only adjust if player is way off screen
+                    if (this.player.mainTank.x < -canvasDims.width || 
+                        this.player.mainTank.x > canvasDims.width * 2 ||
+                        this.player.mainTank.y < -canvasDims.height || 
+                        this.player.mainTank.y > canvasDims.height * 2) {
+                        this.player.mainTank.x = canvasDims.width / 2;
+                        this.player.mainTank.y = canvasDims.height / 2;
+                        console.log('Player position adjusted for fullscreen');
+                    }
+                }
+            }, 100));
         });
         
         // Handle escape key to exit fullscreen
@@ -2026,19 +2040,33 @@ class GameEngine {
         
         // Force canvas context re-setup for crisp rendering
         setTimeout(() => {
-            this.setupContextForCrispRendering();
-            
-            // Update camera if in battle mode to re-center on player
-            if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
-                this.updateCamera();
-            }
-            
-            // Trigger a render to ensure everything is displayed correctly
-            this.render();
+            this.updateCanvasForFullscreen();
         }, 100); // Small delay to ensure canvas resize has completed
         
         // Log fullscreen state
         console.log(`Game is now in ${isFullscreen ? 'fullscreen' : 'windowed'} mode`);
+    }
+
+    updateCanvasForFullscreen() {
+        // Re-setup canvas context for crisp rendering
+        this.setupContextForCrispRendering();
+        
+        // Update camera if in battle mode to re-center on player
+        if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
+            this.updateCamera();
+            
+            // Force immediate camera update to new screen dimensions
+            const canvasDims = this.getCanvasCSSDimensions();
+            this.camera.targetX = this.player.mainTank.x - (canvasDims.width / 2) / this.camera.zoom;
+            this.camera.targetY = this.player.mainTank.y - (canvasDims.height / 2) / this.camera.zoom;
+            this.camera.x = this.camera.targetX;
+            this.camera.y = this.camera.targetY;
+        }
+        
+        // Trigger a render to ensure everything is displayed correctly
+        this.render();
+        
+        console.log('Canvas updated for fullscreen transition');
     }
 
     resetGame() {
