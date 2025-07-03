@@ -51,8 +51,8 @@ class GameEngine {
         this.particles = [];
         
         // Debug flags
-        this.debugMode = true; // Temporarily enable to help see environment objects
-        this.debugEnvironment = true; // Enable environment debug logging
+        this.debugMode = false; // Set to true to see test objects at fixed coordinates
+        this.debugEnvironment = false; // Set to true to enable environment debug logging
         this.showCollisionBoxes = false;
         
         // Camera system for endless movement
@@ -65,6 +65,16 @@ class GameEngine {
             zoom: 0.7, // Zoom out to see more of the battlefield
             targetZoom: 0.7,
             zoomSmoothing: 0.05
+        };
+        
+        // Dynamic environment spawning system
+        this.dynamicEnvironment = {
+            lastPlayerX: 0,
+            lastPlayerY: 0,
+            movementThreshold: 150, // Spawn new environment every 150 units of movement
+            accumulatedDistance: 0,
+            spawnedRegions: new Set(), // Track which grid regions have been spawned
+            maxSpawnedRegions: 1000 // Limit to prevent memory issues
         };
         
         // Keyboard input state for WASD movement and spacebar shooting
@@ -224,6 +234,9 @@ class GameEngine {
         // Update camera to follow player
         this.updateCamera();
         
+        // Update dynamic environment based on player movement
+        this.updateDynamicEnvironment();
+        
         // Update wave manager
         this.waveManager.update(deltaTime, this.player);
         
@@ -366,6 +379,134 @@ class GameEngine {
         
         // Smooth zoom
         this.camera.zoom += (this.camera.targetZoom - this.camera.zoom) * this.camera.zoomSmoothing;
+    }
+
+    updateDynamicEnvironment() {
+        if (!this.player || !this.player.mainTank) return;
+        
+        const currentX = this.player.mainTank.x;
+        const currentY = this.player.mainTank.y;
+        
+        // Calculate distance moved since last check
+        const dx = currentX - this.dynamicEnvironment.lastPlayerX;
+        const dy = currentY - this.dynamicEnvironment.lastPlayerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        this.dynamicEnvironment.accumulatedDistance += distance;
+        
+        // Check if we should trigger new environment spawning
+        if (this.dynamicEnvironment.accumulatedDistance >= this.dynamicEnvironment.movementThreshold) {
+            this.spawnEnvironmentAroundPlayer(currentX, currentY);
+            this.dynamicEnvironment.accumulatedDistance = 0;
+            
+            // Clean up old regions if we have too many
+            if (this.dynamicEnvironment.spawnedRegions.size > this.dynamicEnvironment.maxSpawnedRegions) {
+                this.cleanupDistantEnvironmentRegions(currentX, currentY);
+            }
+        }
+        
+        // Update last position
+        this.dynamicEnvironment.lastPlayerX = currentX;
+        this.dynamicEnvironment.lastPlayerY = currentY;
+    }
+
+    spawnEnvironmentAroundPlayer(playerX, playerY) {
+        // Define spawn radius around player
+        const spawnRadius = 400;
+        const gridSize = 200;
+        
+        // Generate environment in a grid around the player
+        for (let x = playerX - spawnRadius; x <= playerX + spawnRadius; x += gridSize) {
+            for (let y = playerY - spawnRadius; y <= playerY + spawnRadius; y += gridSize) {
+                const regionKey = `${Math.floor(x / gridSize)}_${Math.floor(y / gridSize)}`;
+                
+                // Only spawn if this region hasn't been generated yet
+                if (!this.dynamicEnvironment.spawnedRegions.has(regionKey)) {
+                    this.dynamicEnvironment.spawnedRegions.add(regionKey);
+                    
+                    // Chance to spawn special environmental clusters
+                    const seed = (Math.floor(x / gridSize) * 31 + Math.floor(y / gridSize) * 37) % 100;
+                    
+                    if (seed < 15) { // 15% chance for special environment cluster
+                        this.spawnEnvironmentCluster(x, y, seed);
+                    }
+                }
+            }
+        }
+    }
+
+    spawnEnvironmentCluster(centerX, centerY, seed) {
+        const clusterRadius = 80;
+        const clusterType = seed % 4;
+        
+        switch (clusterType) {
+            case 0: // Mushroom grove
+                this.spawnMushroomGrove(centerX, centerY, seed);
+                break;
+            case 1: // Crystal formation
+                this.spawnCrystalFormation(centerX, centerY, seed);
+                break;
+            case 2: // Ancient ruins
+                this.spawnRuinCluster(centerX, centerY, seed);
+                break;
+            case 3: // Dense flower field
+                this.spawnFlowerField(centerX, centerY, seed);
+                break;
+        }
+    }
+
+    spawnMushroomGrove(centerX, centerY, seed) {
+        // This is just for tracking - the actual rendering is still handled 
+        // by the grid-based rendering system. This method could store 
+        // special environment data if needed for future features.
+        if (this.debugEnvironment) {
+            console.log(`Spawned mushroom grove at (${centerX}, ${centerY})`);
+        }
+    }
+
+    spawnCrystalFormation(centerX, centerY, seed) {
+        if (this.debugEnvironment) {
+            console.log(`Spawned crystal formation at (${centerX}, ${centerY})`);
+        }
+    }
+
+    spawnRuinCluster(centerX, centerY, seed) {
+        if (this.debugEnvironment) {
+            console.log(`Spawned ruin cluster at (${centerX}, ${centerY})`);
+        }
+    }
+
+    spawnFlowerField(centerX, centerY, seed) {
+        if (this.debugEnvironment) {
+            console.log(`Spawned flower field at (${centerX}, ${centerY})`);
+        }
+    }
+
+    cleanupDistantEnvironmentRegions(playerX, playerY) {
+        const cleanupRadius = 1000; // Remove regions beyond this distance
+        const regionsToRemove = [];
+        
+        this.dynamicEnvironment.spawnedRegions.forEach(regionKey => {
+            const [gridX, gridY] = regionKey.split('_').map(Number);
+            const worldX = gridX * 200; // gridSize = 200
+            const worldY = gridY * 200;
+            
+            const distance = Math.sqrt(
+                (worldX - playerX) ** 2 + (worldY - playerY) ** 2
+            );
+            
+            if (distance > cleanupRadius) {
+                regionsToRemove.push(regionKey);
+            }
+        });
+        
+        regionsToRemove.forEach(regionKey => {
+            this.dynamicEnvironment.spawnedRegions.delete(regionKey);
+        });
+        
+        if (this.debugEnvironment && regionsToRemove.length > 0) {
+            console.log(`Cleaned up ${regionsToRemove.length} distant environment regions`);
+        }
     }
 
     handleInput() {
@@ -1035,14 +1176,15 @@ class GameEngine {
                     const flowerY = y + ((seed * 11) % 20) - 10;
                     const flowerSize = 3 + (seed % 3);
                     
-                    // Random flower colors
-                    const colorType = (seed * 13) % 4;
+                    // Updated flower colors (avoiding red to not conflict with bullets)
+                    const colorType = (seed * 13) % 5;
                     let flowerColor;
                     switch (colorType) {
-                        case 0: flowerColor = '#FF6B6B'; break; // Red
+                        case 0: flowerColor = '#7FB069'; break; // Sage green
                         case 1: flowerColor = '#4ECDC4'; break; // Teal
-                        case 2: flowerColor = '#45B7D1'; break; // Blue
-                        case 3: flowerColor = '#F7DC6F'; break; // Yellow
+                        case 2: flowerColor = '#6C7B7F'; break; // Gray-blue
+                        case 3: flowerColor = '#9CAF88'; break; // Muted green
+                        case 4: flowerColor = '#8B9A46'; break; // Olive green
                     }
                     
                     this.ctx.save();
@@ -1064,7 +1206,7 @@ class GameEngine {
                     }
                     
                     // Center
-                    this.ctx.fillStyle = '#FFD700';
+                    this.ctx.fillStyle = '#E8D5A3'; // Muted yellow center
                     this.ctx.beginPath();
                     this.ctx.arc(0, 0, flowerSize/4, 0, Math.PI * 2);
                     this.ctx.fill();
@@ -1113,9 +1255,150 @@ class GameEngine {
             }
         }
         
+        // Draw mushrooms
+        let mushroomCount = 0;
+        for (let x = Math.floor(viewLeft / 100) * 100; x < viewRight; x += 100) {
+            for (let y = Math.floor(viewTop / 100) * 100; y < viewBottom; y += 100) {
+                const seed = (x * 67 + y * 71) % 100;
+                if (seed > 85) { // 15% chance for mushrooms
+                    const mushroomX = x + (seed % 25) - 12;
+                    const mushroomY = y + ((seed * 7) % 25) - 12;
+                    const mushroomSize = 6 + (seed % 4);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(mushroomX, mushroomY);
+                    
+                    // Mushroom stem
+                    this.ctx.fillStyle = '#D4CDB7';
+                    this.ctx.strokeStyle = '#A8A084';
+                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
+                    this.ctx.fillRect(-1, mushroomSize/3, 2, mushroomSize/2);
+                    this.ctx.strokeRect(-1, mushroomSize/3, 2, mushroomSize/2);
+                    
+                    // Mushroom cap
+                    const capColors = ['#8B7355', '#A0845C', '#6B5B73', '#7A6F47'];
+                    this.ctx.fillStyle = capColors[seed % capColors.length];
+                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, mushroomSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    // Spots on cap
+                    if ((seed * 3) % 2 === 0) {
+                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                        for (let i = 0; i < 3; i++) {
+                            const spotX = (seed * (i + 2)) % 4 - 2;
+                            const spotY = (seed * (i + 4)) % 4 - 2;
+                            this.ctx.beginPath();
+                            this.ctx.arc(spotX, spotY, 1, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
+                    }
+                    
+                    this.ctx.restore();
+                    mushroomCount++;
+                }
+            }
+        }
+        
+        // Draw crystals
+        let crystalCount = 0;
+        for (let x = Math.floor(viewLeft / 180) * 180; x < viewRight; x += 180) {
+            for (let y = Math.floor(viewTop / 180) * 180; y < viewBottom; y += 180) {
+                const seed = (x * 73 + y * 79) % 100;
+                if (seed > 90) { // 10% chance for crystals
+                    const crystalX = x + (seed % 30) - 15;
+                    const crystalY = y + ((seed * 9) % 30) - 15;
+                    const crystalSize = 8 + (seed % 6);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(crystalX, crystalY);
+                    
+                    // Crystal colors
+                    const crystalColors = ['#B8C5D6', '#A8B8C8', '#9BADB8', '#87A3B8'];
+                    this.ctx.fillStyle = crystalColors[seed % crystalColors.length];
+                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    this.ctx.lineWidth = 1 / this.camera.zoom;
+                    
+                    // Draw crystal as angular shape
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, -crystalSize/2);
+                    this.ctx.lineTo(crystalSize/3, -crystalSize/4);
+                    this.ctx.lineTo(crystalSize/2, crystalSize/4);
+                    this.ctx.lineTo(0, crystalSize/2);
+                    this.ctx.lineTo(-crystalSize/2, crystalSize/4);
+                    this.ctx.lineTo(-crystalSize/3, -crystalSize/4);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    // Crystal shine effect
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(-crystalSize/4, -crystalSize/3);
+                    this.ctx.lineTo(0, -crystalSize/2);
+                    this.ctx.lineTo(crystalSize/4, -crystalSize/3);
+                    this.ctx.fill();
+                    
+                    this.ctx.restore();
+                    crystalCount++;
+                }
+            }
+        }
+        
+        // Draw ancient ruins/stone blocks
+        let ruinCount = 0;
+        for (let x = Math.floor(viewLeft / 400) * 400; x < viewRight; x += 400) {
+            for (let y = Math.floor(viewTop / 400) * 400; y < viewBottom; y += 400) {
+                const seed = (x * 83 + y * 89) % 100;
+                if (seed > 92) { // 8% chance for ruins
+                    const ruinX = x + (seed % 60) - 30;
+                    const ruinY = y + ((seed * 11) % 60) - 30;
+                    const ruinSize = 15 + (seed % 10);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(ruinX, ruinY);
+                    
+                    // Ruin colors
+                    this.ctx.fillStyle = '#8B8680';
+                    this.ctx.strokeStyle = '#6B665F';
+                    this.ctx.lineWidth = 1 / this.camera.zoom;
+                    
+                    // Draw irregular stone block
+                    this.ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI * 2) / 6;
+                        const variation = 0.8 + ((seed * (i + 1)) % 20) / 100;
+                        const radius = (ruinSize/2) * variation;
+                        const px = Math.cos(angle) * radius;
+                        const py = Math.sin(angle) * radius;
+                        if (i === 0) this.ctx.moveTo(px, py);
+                        else this.ctx.lineTo(px, py);
+                    }
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    // Add weathering lines
+                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(-ruinSize/3, -ruinSize/4);
+                    this.ctx.lineTo(ruinSize/3, ruinSize/4);
+                    this.ctx.moveTo(-ruinSize/4, ruinSize/3);
+                    this.ctx.lineTo(ruinSize/4, -ruinSize/3);
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                    ruinCount++;
+                }
+            }
+        }
+        
         // Debug logging for environment objects
         if (this.debugEnvironment) {
-            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies, ${bushCount} bushes, ${flowerCount} flowers, ${dirtCount} dirt patches`);
+            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies, ${bushCount} bushes, ${flowerCount} flowers, ${dirtCount} dirt patches, ${mushroomCount} mushrooms, ${crystalCount} crystals, ${ruinCount} ruins`);
         }
         
         // Draw test objects at fixed world coordinates for debugging
