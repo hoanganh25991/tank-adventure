@@ -48,7 +48,10 @@ class GameEngine {
             y: 0,
             targetX: 0,
             targetY: 0,
-            smoothing: 0.1
+            smoothing: 0.1,
+            zoom: 0.7, // Zoom out to see more of the battlefield
+            targetZoom: 0.7,
+            zoomSmoothing: 0.05
         };
         
         this.initialize();
@@ -284,13 +287,16 @@ class GameEngine {
     updateCamera() {
         if (!this.player || !this.player.mainTank) return;
         
-        // Set camera target to center on player
-        this.camera.targetX = this.player.mainTank.x - this.canvas.width / 2;
-        this.camera.targetY = this.player.mainTank.y - this.canvas.height / 2;
+        // Set camera target to center on player (adjusted for zoom)
+        this.camera.targetX = this.player.mainTank.x - (this.canvas.width / 2) / this.camera.zoom;
+        this.camera.targetY = this.player.mainTank.y - (this.canvas.height / 2) / this.camera.zoom;
         
         // Smooth camera movement
         this.camera.x += (this.camera.targetX - this.camera.x) * this.camera.smoothing;
         this.camera.y += (this.camera.targetY - this.camera.y) * this.camera.smoothing;
+        
+        // Smooth zoom
+        this.camera.zoom += (this.camera.targetZoom - this.camera.zoom) * this.camera.zoomSmoothing;
     }
 
     handleInput() {
@@ -549,6 +555,7 @@ class GameEngine {
             
             // Render effects in world space
             this.ctx.save();
+            this.ctx.scale(this.camera.zoom, this.camera.zoom);
             this.ctx.translate(-this.camera.x, -this.camera.y);
             this.renderEffects();
             this.ctx.restore();
@@ -558,10 +565,16 @@ class GameEngine {
     renderBattle() {
         // Save context and apply camera transform
         this.ctx.save();
+        
+        // Apply zoom and camera translation
+        this.ctx.scale(this.camera.zoom, this.camera.zoom);
         this.ctx.translate(-this.camera.x, -this.camera.y);
         
         // Draw background
         this.drawBackground();
+        
+        // Draw environment elements
+        this.drawEnvironment();
         
         // Draw player
         if (this.player) {
@@ -605,6 +618,99 @@ class GameEngine {
             this.ctx.moveTo(startX, y);
             this.ctx.lineTo(endX, y);
             this.ctx.stroke();
+        }
+    }
+
+    drawEnvironment() {
+        // Draw environmental elements to make the battlefield more interesting
+        const viewLeft = this.camera.x - 100;
+        const viewRight = this.camera.x + (this.canvas.width / this.camera.zoom) + 100;
+        const viewTop = this.camera.y - 100;
+        const viewBottom = this.camera.y + (this.canvas.height / this.camera.zoom) + 100;
+        
+        // Draw rocks/obstacles
+        this.ctx.fillStyle = '#555555';
+        this.ctx.strokeStyle = '#333333';
+        this.ctx.lineWidth = 2;
+        
+        for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
+            for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
+                // Use deterministic random based on position
+                const seed = (x * 31 + y * 17) % 100;
+                if (seed > 85) { // 15% chance for obstacles
+                    const rockX = x + (seed % 50) - 25;
+                    const rockY = y + ((seed * 7) % 50) - 25;
+                    const rockSize = 15 + (seed % 20);
+                    
+                    // Draw rock
+                    this.ctx.save();
+                    this.ctx.translate(rockX, rockY);
+                    this.ctx.rotate(seed * 0.1);
+                    
+                    this.ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                    this.ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                    
+                    this.ctx.restore();
+                }
+            }
+        }
+        
+        // Draw trees/vegetation
+        this.ctx.fillStyle = '#2d4a2d';
+        this.ctx.strokeStyle = '#1a2e1a';
+        
+        for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
+            for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
+                const seed = (x * 23 + y * 19) % 100;
+                if (seed > 80) { // 20% chance for trees
+                    const treeX = x + (seed % 40) - 20;
+                    const treeY = y + ((seed * 11) % 40) - 20;
+                    const treeSize = 20 + (seed % 15);
+                    
+                    // Draw tree
+                    this.ctx.save();
+                    this.ctx.translate(treeX, treeY);
+                    
+                    // Tree trunk
+                    this.ctx.fillStyle = '#654321';
+                    this.ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
+                    
+                    // Tree foliage
+                    this.ctx.fillStyle = '#2d4a2d';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                }
+            }
+        }
+        
+        // Draw water/ponds
+        this.ctx.fillStyle = '#1a4d4d';
+        this.ctx.strokeStyle = '#0d3333';
+        
+        for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
+            for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
+                const seed = (x * 13 + y * 29) % 100;
+                if (seed > 92) { // 8% chance for water
+                    const waterX = x + (seed % 60) - 30;
+                    const waterY = y + ((seed * 13) % 60) - 30;
+                    const waterSize = 30 + (seed % 25);
+                    
+                    // Draw water
+                    this.ctx.save();
+                    this.ctx.translate(waterX, waterY);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, waterSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                }
+            }
         }
     }
 
@@ -932,10 +1038,20 @@ class GameEngine {
                     this.hasLoggedTankRender = false;
                     console.log('Tank rendering log reset');
                     break;
+                case 'z':
+                    // Zoom out
+                    this.camera.targetZoom = Math.max(0.3, this.camera.targetZoom - 0.1);
+                    console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
+                    break;
+                case 'x':
+                    // Zoom in
+                    this.camera.targetZoom = Math.min(1.5, this.camera.targetZoom + 0.1);
+                    console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
+                    break;
             }
         });
         
-        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, R = Reset Tank Log');
+        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
     }
 
     setupFullscreenHandlers() {

@@ -40,7 +40,7 @@ class Enemy {
                 this.size = 20;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = 1000;
-                this.range = 200;
+                this.range = 120; // Reduced from 200 to 120
                 this.color = '#ff6666';
                 this.value = 10; // Score/coins value
                 break;
@@ -53,7 +53,7 @@ class Enemy {
                 this.size = 30;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = 1500;
-                this.range = 250;
+                this.range = 140; // Reduced from 250 to 140
                 this.color = '#cc4444';
                 this.value = 25;
                 break;
@@ -66,7 +66,7 @@ class Enemy {
                 this.size = 15;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = 600;
-                this.range = 150;
+                this.range = 100; // Reduced from 150 to 100
                 this.color = '#ff9944';
                 this.value = 15;
                 break;
@@ -79,7 +79,7 @@ class Enemy {
                 this.size = 18;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = 2000;
-                this.range = 350;
+                this.range = 180; // Reduced from 350 to 180
                 this.color = '#9944ff';
                 this.value = 20;
                 break;
@@ -92,7 +92,7 @@ class Enemy {
                 this.size = 40;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = 800;
-                this.range = 300;
+                this.range = 160; // Reduced from 300 to 160
                 this.color = '#ff4444';
                 this.value = 100;
                 break;
@@ -311,7 +311,7 @@ class Enemy {
                 angle: finalAngle,
                 speed: bulletSpeed,
                 damage: this.damage,
-                life: 3000,
+                life: 1500, // Reduced from 3000 to 1500ms for shorter range
                 owner: 'enemy'
             };
             

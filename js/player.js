@@ -86,7 +86,7 @@ class Tank {
                 angle: angle,
                 speed: bulletSpeed,
                 damage: this.damage,
-                life: 2000, // 2 seconds
+                life: 1000, // Reduced from 2000 to 1000ms (shorter range)
                 owner: this.type
             };
             
