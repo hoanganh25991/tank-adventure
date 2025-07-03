@@ -48,6 +48,7 @@ class GameEngine {
         
         // Effects
         this.explosions = [];
+        this.damageNumbers = []; // Floating damage numbers
         this.particles = [];
         
         // Debug flags
@@ -600,6 +601,9 @@ class GameEngine {
                     // Hit enemy
                     const destroyed = enemy.takeDamage(bullet.damage);
                     bulletHitCount++;
+                    
+                    // Create floating damage number
+                    this.createDamageNumber(bullet.x, bullet.y, bullet.damage, destroyed, enemy.shield > 0);
                     
                     // Create enhanced hit effect for main tank bullets
                     if (bullet.isMainTankBullet) {
