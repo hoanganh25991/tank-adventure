@@ -1058,126 +1058,192 @@ body {
     }
 }
 
-/* Landscape mode optimizations */
+/* Landscape mode optimizations - Focus on horizontal space usage */
 @media (orientation: landscape) {
     /* Base Screen landscape adjustments */
     #baseScreen {
-        padding: 15px 20px; /* Reduce top/bottom padding for landscape */
+        padding: 8px 15px; /* Minimize vertical padding to use screen height efficiently */
+        overflow-y: auto; /* Allow scrolling if needed */
     }
     
     #baseScreen h2 {
-        font-size: 28px; /* Smaller title for landscape */
-        margin-bottom: 20px; /* Reduce title margin */
+        font-size: 24px; /* Compact title for landscape */
+        margin-bottom: 12px; /* Reduce title margin */
+        text-align: center;
     }
     
     #baseContent {
-        max-width: 95%; /* Use more horizontal space */
+        max-width: 100%; /* Use full horizontal space */
+        margin: 0;
     }
     
-    /* Player Stats - Responsive adjustments */
+    /* Player Stats - Compact horizontal layout for landscape */
     #playerStats {
-        padding: 12px 16px;
-        margin-bottom: 15px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        border-radius: 12px;
     }
     
     .stat-item {
-        padding: 0 8px;
+        padding: 0 6px;
     }
     
     .stat-label {
-        font-size: 10px;
+        font-size: 9px;
+        margin-bottom: 2px;
     }
     
     .stat-value {
-        font-size: 16px;
+        font-size: 14px;
     }
     
-    /* Upgrades Grid - Responsive adjustments */
+    /* Upgrades Grid - Take advantage of landscape width */
     .upgrades-grid {
-        grid-template-columns: 1fr; /* Single column for landscape mobile */
-        gap: 15px;
+        grid-template-columns: 1fr 1fr; /* Two columns side by side in landscape */
+        gap: 12px;
+        margin-top: 8px;
+        align-items: start; /* Align items to top for better layout */
     }
     
     .upgrade-category {
-        padding: 16px;
+        padding: 12px;
+        border-radius: 12px;
     }
     
     .upgrade-category h3 {
-        font-size: 16px;
-        margin-bottom: 12px;
+        font-size: 14px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
     }
     
     .upgrade-item {
-        padding: 12px 14px;
-        margin: 8px 0;
+        padding: 8px 10px;
+        margin: 6px 0;
+        border-radius: 8px;
     }
     
     .upgrade-name {
-        font-size: 13px;
+        font-size: 12px;
     }
     
     .upgrade-current {
-        font-size: 15px;
+        font-size: 13px;
     }
     
     .upgrade-btn {
-        padding: 8px 12px;
-        min-width: 70px;
+        padding: 6px 10px;
+        min-width: 60px;
+        border-radius: 8px;
     }
     
     .upgrade-cost {
-        font-size: 10px;
+        font-size: 9px;
     }
     
     .upgrade-bonus {
-        font-size: 13px;
+        font-size: 11px;
+    }
+    
+    /* Back button adjustments */
+    #backToMenuBtn {
+        margin-top: 12px;
+        padding: 10px 20px;
+        font-size: 14px;
     }
 }
 
-/* Landscape mode with limited height */
+/* Landscape mode with limited height - Extra compact for short screens */
 @media (orientation: landscape) and (max-height: 600px) {
     #baseScreen {
-        padding: 10px 15px; /* Further reduce padding */
+        padding: 5px 12px; /* Minimal padding for short screens */
+        overflow-y: auto;
     }
     
     #baseScreen h2 {
-        font-size: 24px; /* Even smaller title */
-        margin-bottom: 15px; /* Reduce margin more */
+        font-size: 20px; /* Extra compact title */
+        margin-bottom: 8px;
     }
     
-    .upgrade-section {
-        padding: 12px; /* Reduce padding */
-        margin-bottom: 10px; /* Reduce margin */
+    /* Player Stats - Extra compact */
+    #playerStats {
+        padding: 6px 10px;
+        margin-bottom: 8px;
     }
     
-    .upgrade-section h3 {
-        font-size: 16px; /* Smaller section titles */
-        margin-bottom: 10px;
+    .stat-label {
+        font-size: 8px;
+        margin-bottom: 1px;
+    }
+    
+    .stat-value {
+        font-size: 12px;
+    }
+    
+    /* Upgrade Categories - Extra compact */
+    .upgrades-grid {
+        gap: 8px;
+        margin-top: 6px;
+    }
+    
+    .upgrade-category {
+        padding: 8px;
+    }
+    
+    .upgrade-category h3 {
+        font-size: 12px;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
     }
     
     .upgrade-item {
-        padding: 8px; /* Reduce padding */
-        margin: 4px 0; /* Reduce margin */
-        font-size: 13px; /* Smaller font */
+        padding: 6px 8px;
+        margin: 4px 0;
+    }
+    
+    .upgrade-name {
+        font-size: 10px;
+    }
+    
+    .upgrade-current {
+        font-size: 11px;
     }
     
     .upgrade-btn {
-        padding: 6px 12px; /* Smaller button padding */
-        font-size: 12px; /* Smaller button text */
+        padding: 4px 8px;
+        min-width: 50px;
+    }
+    
+    .upgrade-cost {
+        font-size: 8px;
+    }
+    
+    .upgrade-bonus {
+        font-size: 10px;
+    }
+    
+    /* Back button - Extra compact */
+    #backToMenuBtn {
+        margin-top: 8px;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
+
+/* Wide landscape screens - Take advantage of extra horizontal space */
+@media (orientation: landscape) and (min-width: 900px) {
+    .upgrades-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* More flexible grid for wide screens */
+        max-width: 1000px;
+        margin: 8px auto 0;
+    }
+    
+    .upgrade-category {
+        max-width: 400px; /* Prevent categories from getting too wide */
     }
     
     #playerStats {
-        padding: 12px; /* Consistent smaller padding */
-    }
-    
-    #playerStats h3 {
-        font-size: 16px; /* Smaller title */
-        margin-bottom: 10px;
-    }
-    
-    #playerStats p {
-        font-size: 13px; /* Smaller text */
-        margin: 4px 0; /* Reduce margin */
+        max-width: 600px;
+        margin: 0 auto 12px;
     }
 }
 
