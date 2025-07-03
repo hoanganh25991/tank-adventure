@@ -628,21 +628,51 @@ class WaveManager {
         this.enemiesSpawned++;
     }
 
+    spawnBurst(player) {
+        if (!player || !player.mainTank) return;
+        
+        console.log(`Spawning burst of ${this.burstCount} enemies`);
+        
+        for (let i = 0; i < this.burstCount; i++) {
+            const playerX = player.mainTank.x;
+            const playerY = player.mainTank.y;
+            
+            // Vary spawn distance for burst spawning
+            const spawnDistance = 300 + Math.random() * 200; // 300-500 units
+            
+            // Choose random angle around player
+            const angle = Math.random() * Math.PI * 2;
+            const x = playerX + Math.cos(angle) * spawnDistance;
+            const y = playerY + Math.sin(angle) * spawnDistance;
+            
+            // Choose enemy type - bias toward more aggressive types for bursts
+            const enemyType = this.chooseBurstEnemyType();
+            const enemy = new Enemy(x, y, enemyType);
+            
+            this.enemies.push(enemy);
+        }
+    }
+
     chooseEnemyType() {
         const wave = this.currentWave;
         
-        // Boss every 5 waves
-        if (wave % 5 === 0 && Math.random() < 0.3) {
+        // Boss every 5 waves with higher chance in later waves
+        if (wave % 5 === 0 && Math.random() < Math.min(0.3 + wave * 0.02, 0.7)) {
             return 'boss';
         }
         
-        // Type probabilities based on wave
+        // Additional boss chance for very high waves
+        if (wave >= 10 && Math.random() < 0.1) {
+            return 'boss';
+        }
+        
+        // Enhanced type probabilities based on wave
         const types = ['basic', 'heavy', 'fast', 'sniper'];
         const probabilities = [
-            Math.max(0.6 - wave * 0.05, 0.2), // basic (decreases)
-            Math.min(0.1 + wave * 0.03, 0.4),  // heavy (increases)
-            Math.min(0.2 + wave * 0.02, 0.3),  // fast (increases)
-            Math.min(0.1 + wave * 0.02, 0.3)   // sniper (increases)
+            Math.max(0.5 - wave * 0.04, 0.1), // basic (decreases faster)
+            Math.min(0.15 + wave * 0.04, 0.45),  // heavy (increases more)
+            Math.min(0.25 + wave * 0.03, 0.35),  // fast (increases)
+            Math.min(0.1 + wave * 0.025, 0.35)   // sniper (increases)
         ];
         
         const random = Math.random();
@@ -656,6 +686,31 @@ class WaveManager {
         }
         
         return 'basic';
+    }
+
+    chooseBurstEnemyType() {
+        const wave = this.currentWave;
+        
+        // Burst spawning favors aggressive enemy types
+        const types = ['fast', 'heavy', 'sniper', 'boss'];
+        const probabilities = [
+            Math.min(0.4 + wave * 0.02, 0.6),  // fast (high chance)
+            Math.min(0.3 + wave * 0.03, 0.5),  // heavy (medium-high chance)
+            Math.min(0.2 + wave * 0.02, 0.4),  // sniper (medium chance)
+            Math.min(0.1 + wave * 0.01, 0.3)   // boss (low but increasing chance)
+        ];
+        
+        const random = Math.random();
+        let cumulative = 0;
+        
+        for (let i = 0; i < types.length; i++) {
+            cumulative += probabilities[i];
+            if (random < cumulative) {
+                return types[i];
+            }
+        }
+        
+        return 'fast'; // Default to fast for burst spawning
     }
 
     getAllBullets() {
