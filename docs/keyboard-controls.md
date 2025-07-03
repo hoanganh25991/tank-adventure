@@ -29,6 +29,7 @@ Added WASD keyboard controls for tank movement and spacebar for shooting, workin
 3. **Normalized Movement**: WASD input is properly normalized for diagonal movement
 4. **Auto-aim Shooting**: Spacebar shooting uses the same auto-aim system as mobile controls
 5. **Battle-only**: Controls only work during battle scenes, not in menus
+6. **Speed Balancing**: Different speed multipliers for optimal control experience
 
 ### Technical Implementation
 
@@ -46,7 +47,12 @@ this.keys = {
 #### Input Processing
 - `getKeyboardInput()` - Calculates movement direction from WASD keys
 - `handleKeyboardShoot()` - Handles spacebar shooting with auto-aim
-- `handleInput()` - Combines joystick and keyboard input
+- `handleInput()` - Combines joystick and keyboard input with speed balancing
+
+#### Speed Multipliers
+- **Keyboard Controls**: 0.2x speed (5x slower) for precise movement
+- **Joystick Controls**: 0.5x speed (2x slower) for balanced mobile experience
+- Speed multipliers are applied in the movement calculation to maintain responsive but controlled movement
 
 #### Event Handling
 - `keydown` events set key states to true

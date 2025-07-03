@@ -322,6 +322,24 @@ class GameEngine {
                 particle.y = player.mainTank.y + Math.sin(angle) * orbitRadius;
                 break;
 
+            case 'spark':
+                // Spark behavior with gravity and random effects
+                particle.x += particle.vx * deltaTime / 1000;
+                particle.y += particle.vy * deltaTime / 1000;
+                
+                // Apply gravity
+                particle.vy += particle.gravity * deltaTime / 1000;
+                
+                // Add random wind effect
+                particle.vx += (Math.random() - 0.5) * 10;
+                
+                // Fade out faster
+                particle.alpha = Math.max(0, particle.life / particle.maxLife * 0.8);
+                
+                // Random size variation
+                particle.size = Math.max(0.5, particle.size + (Math.random() - 0.5) * 0.2);
+                break;
+
             default:
                 // Standard movement
                 particle.x += particle.vx * deltaTime / 1000;
@@ -358,15 +376,17 @@ class GameEngine {
         let finalX = joystick.x;
         let finalY = joystick.y;
         let finalMagnitude = joystick.magnitude;
+        let speedMultiplier = 0.5; // Default joystick speed (reduce 2x times)
         
         if (keyboard.magnitude > 0) {
             finalX = keyboard.x;
             finalY = keyboard.y;
             finalMagnitude = keyboard.magnitude;
+            speedMultiplier = 0.2; // Keyboard speed (reduce 5x times)
         }
         
-        // Set movement direction
-        this.player.setMovementDirection(finalX, finalY, finalMagnitude);
+        // Set movement direction with appropriate speed multiplier
+        this.player.setMovementDirection(finalX, finalY, finalMagnitude, speedMultiplier);
         
         // Handle spacebar shooting
         if (this.keys.space) {
@@ -787,11 +807,7 @@ class GameEngine {
             console.log(`Camera: x=${this.camera.x.toFixed(0)}, y=${this.camera.y.toFixed(0)}, zoom=${this.camera.zoom.toFixed(2)}`);
         }
         
-        // Draw rocks/obstacles
-        this.ctx.fillStyle = '#8B7355'; // Warmer brown color for better visibility on Ghibli background
-        this.ctx.strokeStyle = '#5D4037'; // Rich brown border
-        this.ctx.lineWidth = 2 / this.camera.zoom; // Adjust line width for zoom
-        
+        // Draw rocks/obstacles with random variations
         let rockCount = 0;
         for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
             for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
@@ -802,13 +818,57 @@ class GameEngine {
                     const rockY = y + ((seed * 7) % 50) - 25;
                     const rockSize = 15 + (seed % 20);
                     
-                    // Draw rock
+                    // Random rock variations based on seed
+                    const colorVariation = (seed * 3) % 40;
+                    const shapeVariation = (seed * 5) % 4;
+                    
+                    // Random brown color variations
+                    const baseRed = 139 + colorVariation - 20;
+                    const baseGreen = 115 + colorVariation - 20;
+                    const baseBue = 85 + colorVariation - 20;
+                    
+                    this.ctx.fillStyle = `rgb(${baseRed}, ${baseGreen}, ${baseBue})`;
+                    this.ctx.strokeStyle = `rgb(${baseRed - 40}, ${baseGreen - 40}, ${baseBue - 40})`;
+                    this.ctx.lineWidth = 2 / this.camera.zoom;
+                    
+                    // Draw rock with random shape
                     this.ctx.save();
                     this.ctx.translate(rockX, rockY);
                     this.ctx.rotate(seed * 0.1);
                     
-                    this.ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
-                    this.ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                    if (shapeVariation === 0) {
+                        // Square rock
+                        this.ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                        this.ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                    } else if (shapeVariation === 1) {
+                        // Circular rock
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 0, rockSize/2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    } else if (shapeVariation === 2) {
+                        // Hexagonal rock
+                        this.ctx.beginPath();
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI * 2) / 6;
+                            const px = Math.cos(angle) * rockSize/2;
+                            const py = Math.sin(angle) * rockSize/2;
+                            if (i === 0) this.ctx.moveTo(px, py);
+                            else this.ctx.lineTo(px, py);
+                        }
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    } else {
+                        // Triangular rock
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(0, -rockSize/2);
+                        this.ctx.lineTo(-rockSize/2, rockSize/2);
+                        this.ctx.lineTo(rockSize/2, rockSize/2);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    }
                     
                     this.ctx.restore();
                     rockCount++;
@@ -1231,6 +1291,29 @@ class GameEngine {
         
         // Convert back to hex
         return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+    }
+
+    addRandomSparks(x, y, count) {
+        // Add random spark particles for muzzle flash effects
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 50 + Math.random() * 100;
+            const life = 200 + Math.random() * 300;
+            
+            this.particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: life,
+                maxLife: life,
+                size: 2 + Math.random() * 3,
+                color: `hsl(${30 + Math.random() * 30}, 100%, ${50 + Math.random() * 50}%)`,
+                alpha: 1,
+                gravity: 20 + Math.random() * 30,
+                specialBehavior: 'spark'
+            });
+        }
     }
 
     /**

@@ -95,15 +95,37 @@ body {
 }
 
 #waveInfo, #scoreInfo {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
-    border-radius: 10px;
-    padding: 10px;
+    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
+    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
+    border-radius: 8px;
+    padding: 8px; /* Reduced padding */
     text-align: center;
     font-weight: bold;
+    font-size: 13px; /* Smaller font size */
+    color: #5d4037; /* Rich brown text */
+    backdrop-filter: blur(2px); /* Subtle blur for readability */
+    height: 44px; /* Fixed height to match health bar */
+    opacity: 0.85; /* Consistent opacity */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-#waveInfo span, #scoreInfo span {
+#waveInfo {
+    /* Make wave info more compact and horizontal */
+    min-width: 180px; /* Reduced width */
+    flex-direction: row; /* Override to horizontal for wave info */
+    align-items: center;
+    justify-content: center;
+}
+
+#waveInfo span {
+    display: inline-block; /* Change to horizontal layout */
+    margin: 0 6px; /* Reduced horizontal spacing */
+    font-size: 12px; /* Smaller font for compact layout */
+}
+
+#scoreInfo span {
     display: block;
     margin: 2px 0;
 }
@@ -242,19 +264,17 @@ body {
 .menu-btn {
     padding: 15px 30px;
     margin: 10px;
-    border: 2px solid rgba(139, 69, 19, 0.7); /* Semi-transparent brown border */
+    border: none;
     border-radius: 8px;
-    background: linear-gradient(45deg, rgba(210, 180, 140, 0.8), rgba(200, 168, 130, 0.7)); /* Glass effect with transparency */
-    color: #5d4037; /* Rich brown text */
+    background: linear-gradient(45deg, #4a9eff, #2a7eff);
+    color: white;
     font-size: 18px;
     font-weight: bold;
-    text-transform: uppercase; /* Make buttons uppercase */
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     width: 250px;
     text-align: center;
-    backdrop-filter: blur(4px); /* Glass effect */
     
     /* Enhanced touch support for iPhone Safari */
     touch-action: manipulation;
@@ -268,10 +288,7 @@ body {
 
 .menu-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(93, 64, 55, 0.4);
-    background: linear-gradient(45deg, rgba(222, 184, 135, 0.9), rgba(210, 180, 140, 0.8)); /* Lighter with transparency on hover */
-    border-color: rgba(139, 69, 19, 0.9);
-    backdrop-filter: blur(6px); /* Enhanced glass effect on hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .menu-btn:active {
@@ -286,13 +303,13 @@ body {
 
 /* Skill Selection */
 #skillSelection {
-    background: rgba(200, 168, 130, 0.9); /* Light sepia background */
+    background: rgba(0, 0, 0, 0.9);
 }
 
 #skillSelection h2 {
     margin-bottom: 30px;
     font-size: 32px;
-    color: #8b4513; /* Rich brown title */
+    color: #4a9eff;
 }
 
 #skillOptions {
@@ -305,8 +322,8 @@ body {
 }
 
 .skill-option {
-    background: linear-gradient(135deg, #f5deb3, #deb887); /* Wheat to burlywood gradient */
-    border: 2px solid #8b4513; /* Rich brown border */
+    background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
+    border: 2px solid #4a9eff;
     border-radius: 12px;
     padding: 15px;
     cursor: pointer;
@@ -314,7 +331,7 @@ body {
     flex: 1;
     min-width: 0;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     max-width: 280px;
     
     /* Enhanced touch support for iPhone Safari */
@@ -329,19 +346,18 @@ body {
 
 .skill-option:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(154, 205, 50, 0.3); /* Green glow */
-    border-color: #cd853f;
-    background: linear-gradient(135deg, #fff8dc, #f5deb3); /* Lighter on hover */
+    box-shadow: 0 8px 20px rgba(74, 158, 255, 0.3);
+    border-color: #6bb6ff;
 }
 
 .skill-option h3 {
-    color: #8b4513; /* Rich brown title */
+    color: #4a9eff;
     margin-bottom: 12px;
     font-size: 18px;
 }
 
 .skill-option p {
-    color: #5d4037; /* Rich brown text */
+    color: #cccccc;
     font-size: 14px;
     line-height: 1.4;
 }
@@ -354,32 +370,31 @@ body {
 
 /* Battle Results */
 #battleResults {
-    background: linear-gradient(135deg, #c8a882, #a8956b); /* Light sepia gradients */
+    background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
 }
 
 #battleResults h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #8b4513; /* Rich brown victory color */
+    color: #44ff44;
 }
 
 #resultsContent {
-    background: rgba(245, 222, 179, 0.8); /* Light wheat background */
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 30px;
     text-align: center;
-    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 #battleStats p {
     font-size: 18px;
     margin: 10px 0;
-    color: #5d4037; /* Rich brown text */
+    color: #cccccc;
 }
 
 #battleStats span {
-    color: #9acd32; /* Ghibli green highlight */
+    color: #44ff44;
     font-weight: bold;
 }
 
@@ -390,23 +405,15 @@ body {
 
 /* Base Screen */
 #baseScreen {
-    background: linear-gradient(135deg, #c8a882, #a8956b); /* Light sepia gradients */
+    background: linear-gradient(135deg, #3a2a1a, #4a3a2a);
     overflow-y: auto;
     padding: 20px;
-    height: 100vh; /* Ensure full viewport height */
-    height: 100dvh; /* Use dynamic viewport height if supported */
-    box-sizing: border-box; /* Include padding in height calculation */
-    /* Handle iOS Safari safe areas */
-    padding-top: max(20px, env(safe-area-inset-top));
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
 }
 
 #baseScreen h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #8b4513; /* Rich brown title */
+    color: #ff9944;
     text-align: center;
 }
 
@@ -416,15 +423,14 @@ body {
 }
 
 .upgrade-section {
-    background: rgba(245, 222, 179, 0.6); /* Light wheat background */
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 .upgrade-section h3 {
-    color: #8b4513; /* Rich brown title */
+    color: #ff9944;
     margin-bottom: 15px;
     font-size: 20px;
 }
@@ -435,17 +441,16 @@ body {
     align-items: center;
     padding: 12px;
     margin: 8px 0;
-    background: rgba(222, 184, 135, 0.3); /* Light burlywood */
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    color: #5d4037; /* Rich brown text */
 }
 
 .upgrade-btn {
     padding: 8px 16px;
-    border: 2px solid #8b4513; /* Rich brown border */
+    border: none;
     border-radius: 6px;
-    background: linear-gradient(45deg, #9acd32, #adff2f); /* Ghibli green gradient */
-    color: #5d4037; /* Rich brown text */
+    background: linear-gradient(45deg, #ff9944, #ffaa66);
+    color: white;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -462,8 +467,7 @@ body {
 
 .upgrade-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(154, 205, 50, 0.3);
-    background: linear-gradient(45deg, #adff2f, #7fff00); /* Brighter on hover */
+    box-shadow: 0 4px 8px rgba(255, 153, 68, 0.3);
 }
 
 .upgrade-btn:disabled {
@@ -473,22 +477,20 @@ body {
 }
 
 #playerStats {
-    background: rgba(245, 222, 179, 0.6); /* Light wheat background */
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 #playerStats h3 {
-    color: #8b4513; /* Rich brown title */
+    color: #4a9eff;
     margin-bottom: 15px;
 }
 
 #playerStats p {
     margin: 8px 0;
     font-size: 16px;
-    color: #5d4037; /* Rich brown text */
 }
 
 /* Loading Screen */

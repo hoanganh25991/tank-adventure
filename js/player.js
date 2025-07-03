@@ -394,9 +394,10 @@ class Player {
             const velocityX = this.moveDirectionX * this.moveIntensity * mainTank.speed;
             const velocityY = this.moveDirectionY * this.moveIntensity * mainTank.speed;
             
-            // Apply movement immediately
-            mainTank.x += velocityX * deltaTimeSeconds * 60; // Multiply by 60 for consistent speed across framerates
-            mainTank.y += velocityY * deltaTimeSeconds * 60;
+            // Apply movement immediately with speed multiplier
+            const speedMultiplier = this.speedMultiplier || 1.0;
+            mainTank.x += velocityX * deltaTimeSeconds * 60 * speedMultiplier; // Apply speed multiplier
+            mainTank.y += velocityY * deltaTimeSeconds * 60 * speedMultiplier;
             
             // Rotate main tank to face movement direction
             if (Math.abs(this.moveDirectionX) > 0.1 || Math.abs(this.moveDirectionY) > 0.1) {
@@ -534,10 +535,11 @@ class Player {
         this.targetY = y;
     }
     
-    setMovementDirection(directionX, directionY, intensity) {
+    setMovementDirection(directionX, directionY, intensity, speedMultiplier = 1.0) {
         this.moveDirectionX = directionX;
         this.moveDirectionY = directionY;
         this.moveIntensity = intensity;
+        this.speedMultiplier = speedMultiplier;
         this.isMoving = intensity > 0.1; // Only consider moving if intensity is above threshold
     }
 
