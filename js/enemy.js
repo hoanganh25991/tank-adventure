@@ -552,7 +552,7 @@ class WaveManager {
         
         // Dynamic difficulty scaling
         this.difficultyMultiplier = 1.0;
-        this.maxConcurrentEnemies = 25; // Limit to prevent performance issues
+        this.maxConcurrentEnemies = 60; // Increased from 25 to 60 for more enemies on screen
     }
 
     startWave(waveNumber) {
@@ -564,31 +564,31 @@ class WaveManager {
         this.spawnTimer = 0;
         
         // Enhanced enemy count scaling - exponential growth for challenge
-        const baseEnemies = 8;
-        const exponentialFactor = Math.pow(1.4, waveNumber - 1); // Exponential growth
-        const linearFactor = waveNumber * 4; // Linear growth
+        const baseEnemies = 15; // Increased from 8 to 15
+        const exponentialFactor = Math.pow(1.6, waveNumber - 1); // Increased from 1.4 to 1.6 for faster growth
+        const linearFactor = waveNumber * 8; // Increased from 4 to 8 for more linear growth
         
         // Combine both factors with a max cap
         this.totalEnemiesInWave = Math.min(
             Math.floor(baseEnemies + exponentialFactor + linearFactor),
-            80 // Higher max cap
+            150 // Increased from 80 to 150 for much higher enemy counts
         );
         
         // Aggressive spawn rate scaling - enemies spawn much faster
-        const baseSpawnInterval = 1800; // Start at 1.8 seconds
-        const reductionPerWave = 100; // Reduce by 100ms per wave
-        const minimumInterval = 200; // Never go below 200ms
+        const baseSpawnInterval = 800; // Reduced from 1800 to 800ms for faster initial spawning
+        const reductionPerWave = 50; // Reduced from 100 to 50ms for more gradual decrease
+        const minimumInterval = 100; // Reduced from 200 to 100ms for very fast spawning
         
         this.spawnInterval = Math.max(
             baseSpawnInterval - (waveNumber * reductionPerWave),
             minimumInterval
         );
         
-        // Add burst spawning for higher waves
-        this.burstSpawning = waveNumber >= 5;
+        // Add burst spawning for higher waves (now starts earlier and more frequent)
+        this.burstSpawning = waveNumber >= 2; // Start burst spawning from wave 2 instead of 5
         this.burstTimer = 0;
-        this.burstInterval = 8000; // Every 8 seconds
-        this.burstCount = Math.min(Math.floor(waveNumber / 3), 8); // Up to 8 enemies per burst
+        this.burstInterval = 4000; // Every 4 seconds instead of 8 for more frequent bursts
+        this.burstCount = Math.min(Math.floor(waveNumber / 2) + 3, 15); // More enemies per burst (up to 15)
         
         console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies, spawn interval: ${this.spawnInterval}ms`);
         if (this.burstSpawning) {
@@ -619,13 +619,17 @@ class WaveManager {
         if (this.enemiesSpawned < this.totalEnemiesInWave && this.enemies.length < this.maxConcurrentEnemies) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
-                this.spawnEnemy(player);
+                // Spawn multiple enemies at once for higher waves
+                const simultaneousSpawns = Math.min(Math.floor(this.currentWave / 3) + 1, 4);
+                for (let i = 0; i < simultaneousSpawns && this.enemiesSpawned < this.totalEnemiesInWave; i++) {
+                    this.spawnEnemy(player);
+                }
                 this.spawnTimer = 0;
             }
         }
         
         // Burst spawning for higher waves (additional enemies beyond the normal count)
-        if (this.burstSpawning && this.currentWave >= 5) {
+        if (this.burstSpawning && this.currentWave >= 2) {
             this.burstTimer += deltaTime;
             if (this.burstTimer >= this.burstInterval) {
                 this.spawnBurst(player);

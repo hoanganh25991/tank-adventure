@@ -378,10 +378,10 @@ class GameUI {
         const player = this.gameEngine.player;
         const waveManager = this.gameEngine.waveManager;
         
-        // Update health
-        const healthPercent = player.getHealthPercent();
+        // Update health (main tank only)
+        const healthPercent = player.mainTank.health / player.mainTank.maxHealth;
         this.elements.healthFill.style.width = `${healthPercent * 100}%`;
-        this.elements.healthText.textContent = `${player.getTotalHealth()}/${player.getTotalMaxHealth()}`;
+        this.elements.healthText.textContent = `${player.mainTank.health}/${player.mainTank.maxHealth}`;
         
         // Update wave info
         this.elements.waveText.textContent = `Wave ${waveManager.currentWave}`;
