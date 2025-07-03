@@ -76,6 +76,10 @@ class Enemy {
         const valueScaling = waveValueScaling * levelValueScaling;
         const shieldScaling = waveShieldScaling * levelShieldScaling;
         
+        // Visual scaling based on wave and player level
+        // This will make enemies look more intimidating as they get stronger
+        this.visualTier = Math.min(Math.floor((wave + playerLevel) / 5), 3); // 0-3 visual tiers
+        
         switch (type) {
             case 'basic': // Armored Infantry Tank
                 this.maxHealth = Math.floor(120 * healthScaling); // 4x stronger
@@ -765,8 +769,12 @@ class Enemy {
         // Status effect glows
         this.drawStatusEffects(ctx);
         
+        // Apply visual tier enhancements based on wave and player level
+        this.applyVisualTierEffects(ctx);
+        
         // Tank body (unique shapes for different types)
-        ctx.fillStyle = this.color;
+        // Color is modified based on visual tier
+        ctx.fillStyle = this.getEnhancedColor();
         
         switch (this.type) {
             case 'boss':
