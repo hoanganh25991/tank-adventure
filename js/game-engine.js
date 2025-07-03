@@ -65,6 +65,15 @@ class GameEngine {
         this.setupFullscreenHandlers();
     }
 
+    // Helper method to get CSS canvas dimensions (not internal pixel dimensions)
+    getCanvasCSSDimensions() {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            width: rect.width,
+            height: rect.height
+        };
+    }
+
     async initialize() {
         console.log('Initializing Tank Adventure...');
         
@@ -119,11 +128,12 @@ class GameEngine {
     }
 
     createNewPlayer() {
-        // Create player at center of screen
-        const centerX = this.canvas.width / 2;
-        const centerY = this.canvas.height / 2;
+        // Create player at center of screen using CSS dimensions (not internal canvas dimensions)
+        const rect = this.canvas.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
         this.player = new Player(centerX, centerY);
-        console.log(`Created new player at (${centerX}, ${centerY}) - Canvas size: ${this.canvas.width}x${this.canvas.height}`);
+        console.log(`Created new player at (${centerX}, ${centerY}) - Canvas CSS size: ${rect.width}x${rect.height}`);
     }
 
     startGameLoop() {
@@ -293,8 +303,9 @@ class GameEngine {
         if (!this.player || !this.player.mainTank) return;
         
         // Set camera target to center on player (adjusted for zoom)
-        this.camera.targetX = this.player.mainTank.x - (this.canvas.width / 2) / this.camera.zoom;
-        this.camera.targetY = this.player.mainTank.y - (this.canvas.height / 2) / this.camera.zoom;
+        const canvasDims = this.getCanvasCSSDimensions();
+        this.camera.targetX = this.player.mainTank.x - (canvasDims.width / 2) / this.camera.zoom;
+        this.camera.targetY = this.player.mainTank.y - (canvasDims.height / 2) / this.camera.zoom;
         
         // Smooth camera movement
         this.camera.x += (this.camera.targetX - this.camera.x) * this.camera.smoothing;
@@ -510,8 +521,9 @@ class GameEngine {
         };
         
         // Reset player position and health
-        this.player.mainTank.x = this.canvas.width / 2;
-        this.player.mainTank.y = this.canvas.height / 2;
+        const canvasDims = this.getCanvasCSSDimensions();
+        this.player.mainTank.x = canvasDims.width / 2;
+        this.player.mainTank.y = canvasDims.height / 2;
         
         // Heal all tanks
         this.player.mainTank.heal(this.player.mainTank.maxHealth);
@@ -553,7 +565,8 @@ class GameEngine {
 
     render() {
         // Clear canvas
-        Utils.clearCanvas(this.ctx, this.canvas.width, this.canvas.height);
+        const canvasDims = this.getCanvasCSSDimensions();
+        Utils.clearCanvas(this.ctx, canvasDims.width, canvasDims.height);
         
         if (this.currentScene === 'battle') {
             this.renderBattle();
@@ -604,8 +617,9 @@ class GameEngine {
         const gridSize = 50;
         
         // Calculate visible area in world coordinates (accounting for zoom)
-        const viewWidth = this.canvas.width / this.camera.zoom;
-        const viewHeight = this.canvas.height / this.camera.zoom;
+        const canvasDims = this.getCanvasCSSDimensions();
+        const viewWidth = canvasDims.width / this.camera.zoom;
+        const viewHeight = canvasDims.height / this.camera.zoom;
         
         // Calculate grid offset based on camera position
         const startX = Math.floor(this.camera.x / gridSize) * gridSize;

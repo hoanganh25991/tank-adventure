@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Screen Landscape Test</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .test-controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .test-controls button {
+            margin: 2px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .orientation-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="orientation-indicator">
+        <div id="orientationInfo">Orientation: <span id="currentOrientation">unknown</span></div>
+        <div id="sizeInfo">Size: <span id="currentSize">unknown</span></div>
+    </div>
+    
+    <div class="test-controls">
+        <div>Landscape Test Controls</div>
+        <button onclick="addMoreContent()">Add More Content</button>
+        <button onclick="removeContent()">Remove Content</button>
+        <button onclick="toggleOrientation()">Toggle Orientation Simulation</button>
+    </div>
+
+    <div id="baseScreen" class="screen active">
+        <h2>Base & Upgrades</h2>
+        <div id="baseContent">
+            <div id="playerStats">
+                <h3>Player Stats</h3>
+                <p>Health: <span style="color: #9acd32;">100/100</span></p>
+                <p>Damage: <span style="color: #9acd32;">25</span></p>
+                <p>Speed: <span style="color: #9acd32;">3.5</span></p>
+                <p>Credits: <span style="color: #9acd32;">450</span></p>
+            </div>
+            
+            <div class="upgrade-section">
+                <h3>Tank Upgrades</h3>
+                <div class="upgrade-item">
+                    <span>Health Boost (+25 HP)</span>
+                    <button class="upgrade-btn">Buy - 100 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Damage Upgrade (+10 Damage)</span>
+                    <button class="upgrade-btn">Buy - 150 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Speed Enhancement (+0.5 Speed)</span>
+                    <button class="upgrade-btn">Buy - 200 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Armor Plating (+5 Defense)</span>
+                    <button class="upgrade-btn">Buy - 250 Credits</button>
+                </div>
+            </div>
+            
+            <div class="upgrade-section">
+                <h3>Formation Upgrades</h3>
+                <div class="upgrade-item">
+                    <span>Additional Mini Tank</span>
+                    <button class="upgrade-btn">Buy - 300 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Formation Tightness</span>
+                    <button class="upgrade-btn">Buy - 200 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Sync Speed Boost</span>
+                    <button class="upgrade-btn">Buy - 250 Credits</button>
+                </div>
+            </div>
+            
+            <div class="upgrade-section">
+                <h3>Weapon Upgrades</h3>
+                <div class="upgrade-item">
+                    <span>Rapid Fire (+25% Fire Rate)</span>
+                    <button class="upgrade-btn">Buy - 180 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Piercing Rounds</span>
+                    <button class="upgrade-btn">Buy - 220 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Explosive Rounds</span>
+                    <button class="upgrade-btn">Buy - 350 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Double Barrel</span>
+                    <button class="upgrade-btn">Buy - 400 Credits</button>
+                </div>
+            </div>
+            
+            <div class="upgrade-section" id="extraContent" style="display: none;">
+                <h3>Special Upgrades</h3>
+                <div class="upgrade-item">
+                    <span>Shield Generator</span>
+                    <button class="upgrade-btn">Buy - 500 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Radar System</span>
+                    <button class="upgrade-btn">Buy - 300 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Auto-Repair System</span>
+                    <button class="upgrade-btn">Buy - 450 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Missile Launcher</span>
+                    <button class="upgrade-btn">Buy - 600 Credits</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Stealth Module</span>
+                    <button class="upgrade-btn">Buy - 550 Credits</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update orientation info
+        function updateOrientationInfo() {
+            const orientationSpan = document.getElementById('currentOrientation');
+            const sizeSpan = document.getElementById('currentSize');
+            
+            const orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+            orientationSpan.textContent = orientation;
+            sizeSpan.textContent = `${window.innerWidth}x${window.innerHeight}`;
+            
+            // Add visual indicator
+            document.body.className = orientation;
+        }
+        
+        // Add more content for testing scroll
+        function addMoreContent() {
+            const extraContent = document.getElementById('extraContent');
+            extraContent.style.display = 'block';
+        }
+        
+        // Remove extra content
+        function removeContent() {
+            const extraContent = document.getElementById('extraContent');
+            extraContent.style.display = 'none';
+        }
+        
+        // Simulate orientation change by forcing dimensions
+        let isSimulatingLandscape = false;
+        function toggleOrientation() {
+            const baseScreen = document.getElementById('baseScreen');
+            if (!isSimulatingLandscape) {
+                // Force landscape simulation
+                baseScreen.style.transform = 'rotate(90deg)';
+                baseScreen.style.transformOrigin = 'center';
+                baseScreen.style.width = '100vh';
+                baseScreen.style.height = '100vw';
+                baseScreen.style.position = 'fixed';
+                baseScreen.style.top = '50%';
+                baseScreen.style.left = '50%';
+                baseScreen.style.marginTop = '-50vw';
+                baseScreen.style.marginLeft = '-50vh';
+                isSimulatingLandscape = true;
+            } else {
+                // Remove simulation
+                baseScreen.style.transform = '';
+                baseScreen.style.width = '';
+                baseScreen.style.height = '';
+                baseScreen.style.position = '';
+                baseScreen.style.top = '';
+                baseScreen.style.left = '';
+                baseScreen.style.marginTop = '';
+                baseScreen.style.marginLeft = '';
+                isSimulatingLandscape = false;
+            }
+        }
+        
+        // Event listeners
+        window.addEventListener('resize', updateOrientationInfo);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateOrientationInfo, 100);
+        });
+        
+        // Initial update
+        updateOrientationInfo();
+        
+        // Add some interactive behavior
+        document.querySelectorAll('.upgrade-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.textContent = 'Purchased!';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.textContent = this.textContent.replace('Purchased!', 'Buy -');
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

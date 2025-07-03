@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Orientation Test - Tank Adventure</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 2000;
+        }
+        
+        .test-controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 2000;
+        }
+        
+        .test-controls button {
+            margin: 5px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <div>Window: <span id="windowSize"></span></div>
+        <div>Orientation: <span id="orientation"></span></div>
+        <div>Screen.orientation: <span id="screenOrientation"></span></div>
+        <div>Window.orientation: <span id="windowOrientation"></span></div>
+        <div>Is Landscape: <span id="isLandscape"></span></div>
+    </div>
+    
+    <div class="test-controls">
+        <button onclick="debugOrientation()">Debug Orientation</button>
+        <button onclick="toggleOrientation()">Toggle Test</button>
+    </div>
+    
+    <div id="gameContainer">
+        <!-- Game Screens -->
+        <div id="screens">
+            <!-- Orientation Screen -->
+            <div id="orientationScreen" class="screen active">
+                <div class="orientation-content">
+                    <div class="orientation-icon">
+                        <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Phone/device outline -->
+                            <rect x="10" y="20" width="40" height="70" rx="8" fill="none" stroke="#8b4513" stroke-width="3"/>
+                            <rect x="15" y="25" width="30" height="60" rx="2" fill="#c8a882"/>
+                            
+                            <!-- Rotation arrow -->
+                            <path d="M 60 45 Q 75 30 90 45" fill="none" stroke="#8b4513" stroke-width="3" stroke-linecap="round"/>
+                            <polygon points="85,40 90,45 85,50" fill="#8b4513"/>
+                            
+                            <!-- Phone/device outline (rotated) -->
+                            <rect x="70" y="10" width="70" height="40" rx="8" fill="none" stroke="#9acd32" stroke-width="3"/>
+                            <rect x="75" y="15" width="60" height="30" rx="2" fill="#9acd32" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <h2>Rotate Your Device</h2>
+                    <p>Please rotate your device to landscape mode for the best gaming experience.</p>
+                    <div class="orientation-tip">
+                        <p>🎮 Tank Adventure works best in landscape orientation</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Menu -->
+            <div id="mainMenu" class="screen">
+                <h1>Tank Adventure</h1>
+                <button id="startGameBtn" class="menu-btn">Start Battle</button>
+                <button id="upgradesBtn" class="menu-btn">Base & Upgrades</button>
+                <button id="settingsBtn" class="menu-btn">Settings</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="../js/orientation.js"></script>
+    <script>
+        // Update test info
+        function updateTestInfo() {
+            document.getElementById('windowSize').textContent = `${window.innerWidth}x${window.innerHeight}`;
+            document.getElementById('orientation').textContent = screen.orientation ? screen.orientation.type : 'Not supported';
+            document.getElementById('screenOrientation').textContent = screen.orientation ? screen.orientation.angle : 'Not supported';
+            document.getElementById('windowOrientation').textContent = window.orientation !== undefined ? window.orientation : 'Not supported';
+            document.getElementById('isLandscape').textContent = window.orientationManager ? window.orientationManager.isLandscape : 'Not initialized';
+        }
+        
+        // Update info every second
+        setInterval(updateTestInfo, 1000);
+        
+        // Initial update
+        setTimeout(updateTestInfo, 500);
+        
+        // Toggle orientation test
+        function toggleOrientation() {
+            if (window.orientationManager) {
+                const orientationScreen = document.getElementById('orientationScreen');
+                const mainMenu = document.getElementById('mainMenu');
+                
+                if (orientationScreen.classList.contains('active')) {
+                    orientationScreen.classList.remove('active');
+                    mainMenu.classList.add('active');
+                } else {
+                    orientationScreen.classList.add('active');
+                    mainMenu.classList.remove('active');
+                }
+            }
+        }
+        
+        // Listen for orientation changes
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateTestInfo, 200);
+        });
+        
+        window.addEventListener('resize', () => {
+            updateTestInfo();
+        });
+    </script>
+</body>
+</html>

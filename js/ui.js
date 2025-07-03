@@ -586,9 +586,12 @@ class GameUI {
         const width = containerRect.width;
         const height = containerRect.height;
         
-        // Set the internal canvas resolution to match screen size
-        canvas.width = width;
-        canvas.height = height;
+        // Get device pixel ratio for crisp rendering on high-DPI displays
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Set the internal canvas resolution to match screen size * device pixel ratio
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
         
         // Set the CSS size to fill the screen
         canvas.style.width = `${width}px`;
@@ -596,8 +599,12 @@ class GameUI {
         canvas.style.left = '0px';
         canvas.style.top = '0px';
         
+        // Scale the canvas context to match the device pixel ratio
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        
         // Store dimensions for game logic
-        this.canvasScale = 1;
+        this.canvasScale = dpr;
         this.canvasOffsetX = 0;
         this.canvasOffsetY = 0;
         
