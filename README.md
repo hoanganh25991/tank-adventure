@@ -42,26 +42,29 @@ A complete 2D tank battle game designed for mobile and tablet devices with touch
 tank-adventure/
 ├── docs/
 │   └── game-architecture.md     # Technical documentation
-├── src/
-│   ├── index.html              # Main game page
-│   ├── css/
-│   │   └── game.css           # All game styles
-│   ├── js/
-│   │   ├── game-engine.js     # Main game loop and state management
-│   │   ├── player.js          # Player and tank systems
-│   │   ├── enemy.js           # Enemy AI and wave management
-│   │   ├── skills.js          # Skill system and effects
-│   │   ├── ui.js              # User interface and mobile controls
-│   │   ├── upgrades.js        # Upgrade system
-│   │   └── utils.js           # Utility functions
-│   └── assets/                # Game assets (images, sounds)
-├── requirement.txt            # Game requirements specification
-└── README.md                  # This file
+├── tests/
+│   ├── test-*.html             # HTML test files
+│   ├── verify-*.js             # JavaScript verification files
+│   └── README.md               # Test documentation
+├── css/
+│   └── game.css                # All game styles
+├── js/
+│   ├── game-engine.js          # Main game loop and state management
+│   ├── player.js               # Player and tank systems
+│   ├── enemy.js                # Enemy AI and wave management
+│   ├── skills.js               # Skill system and effects
+│   ├── ui.js                   # User interface and mobile controls
+│   ├── upgrades.js             # Upgrade system
+│   └── utils.js                # Utility functions
+├── assets/                     # Game assets (images, sounds)
+├── index.html                  # Main game page
+├── requirement.txt             # Game requirements specification
+└── README.md                   # This file
 ```
 
 ## Getting Started
 
-1. **Open the game**: Navigate to `src/index.html` in a web browser
+1. **Open the game**: Navigate to `index.html` in a web browser
 2. **Mobile/Tablet**: For best experience, open on mobile device or use browser dev tools mobile emulation
 3. **Controls**:
    - Use virtual joystick (bottom-left) to move your tank formation
