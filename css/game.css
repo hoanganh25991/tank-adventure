@@ -541,6 +541,25 @@ body {
     padding: 20px;
 }
 
+/* Apply Base & Upgrade styling to other screens */
+.base-style-screen {
+    /* Inherit the consistent screen background */
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.base-style-screen h2 {
+    margin-bottom: 30px;
+    font-size: 36px;
+    color: var(--primary-blue);
+    text-align: center;
+}
+
+.base-style-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 #baseScreen h2 {
     margin-bottom: 30px;
     font-size: 36px;
@@ -682,6 +701,162 @@ body {
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none;
+}
+
+/* New upgrade categories - reusable styles */
+.new-upgrade-category {
+    background: linear-gradient(145deg, var(--bg-section), rgba(255, 255, 255, 0.02));
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.new-upgrade-category:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 158, 255, 0.15);
+}
+
+.new-upgrade-category h3 {
+    color: var(--primary-blue);
+    margin-bottom: 16px;
+    font-size: 18px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(74, 158, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Grid layout for new sections */
+.base-style-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+/* For single column layout */
+.base-style-grid.single-column {
+    grid-template-columns: 1fr;
+}
+
+/* For three column layout */
+.base-style-grid.three-column {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Base style items (similar to upgrade items) */
+.base-style-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    margin: 10px 0;
+    background: linear-gradient(135deg, var(--bg-item), rgba(255, 255, 255, 0.05));
+    border-radius: 12px;
+    border: 1px solid rgba(74, 158, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.base-style-item:hover {
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.1), rgba(255, 255, 255, 0.08));
+    border-color: rgba(74, 158, 255, 0.3);
+    transform: translateX(4px);
+}
+
+.base-style-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.base-style-item-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.base-style-item-current {
+    font-size: 16px;
+    color: var(--primary-blue);
+    font-weight: bold;
+}
+
+/* Base style buttons (similar to upgrade buttons) */
+.base-style-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--color-warning), #ffaa66);
+    color: var(--text-primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(255, 153, 68, 0.2);
+    min-width: 80px;
+    
+    /* Enhanced touch support for iPhone Safari */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 10;
+}
+
+.base-style-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 153, 68, 0.4);
+    background: linear-gradient(135deg, #ffaa66, var(--color-warning));
+}
+
+.base-style-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(255, 153, 68, 0.3);
+}
+
+.base-style-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #666666, #888888);
+    color: var(--text-muted);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transform: none !important;
+}
+
+/* Alternative button styles */
+.base-style-btn.primary {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    box-shadow: 0 3px 8px rgba(74, 158, 255, 0.2);
+}
+
+.base-style-btn.primary:hover {
+    box-shadow: 0 6px 12px rgba(74, 158, 255, 0.4);
+}
+
+.base-style-btn.success {
+    background: linear-gradient(135deg, var(--color-success), #66ff66);
+    box-shadow: 0 3px 8px rgba(68, 255, 68, 0.2);
+}
+
+.base-style-btn.success:hover {
+    box-shadow: 0 6px 12px rgba(68, 255, 68, 0.4);
+}
+
+.base-style-btn.danger {
+    background: linear-gradient(135deg, var(--color-danger), #ff6666);
+    box-shadow: 0 3px 8px rgba(255, 68, 68, 0.2);
+}
+
+.base-style-btn.danger:hover {
+    box-shadow: 0 6px 12px rgba(255, 68, 68, 0.4);
 }
 
 /* Player Stats - Horizontal Layout */
