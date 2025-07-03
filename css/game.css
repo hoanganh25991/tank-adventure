@@ -95,20 +95,12 @@ body {
 }
 
 #waveInfo, #scoreInfo {
-    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
-    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
-    border-radius: 8px;
-    padding: 8px; /* Reduced padding */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 10px;
     text-align: center;
     font-weight: bold;
-    font-size: 13px; /* Smaller font size */
-    color: #5d4037; /* Rich brown text */
-    backdrop-filter: blur(2px); /* Subtle blur for readability */
-    height: 44px; /* Fixed height to match health bar */
-    opacity: 0.85; /* Consistent opacity */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 #waveInfo {
