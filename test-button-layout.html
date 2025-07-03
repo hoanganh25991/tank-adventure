@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Layout Test</title>
+    <link rel="stylesheet" href="css/game.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #2a4a2a;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .test-title {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .test-controls {
+            position: relative;
+            width: 300px;
+            height: 200px;
+        }
+        
+        /* Simulate mobile controls layout */
+        #testActionButtons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">Button Layout Test</h1>
+        <div class="test-controls">
+            <div id="testActionButtons">
+                <button class="action-btn skill">SKILL 1</button>
+                <button class="action-btn skill">SKILL 2</button>
+                <button class="action-btn skill">SKILL 3</button>
+                <button class="action-btn primary">SHOOT</button>
+            </div>
+        </div>
+        <p style="color: white; margin-top: 20px; text-align: center;">
+            All buttons should be equal size<br>
+            SHOOT button should be at the bottom
+        </p>
+    </div>
+</body>
+</html>
