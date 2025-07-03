@@ -588,6 +588,7 @@ class GameUI {
         
         // Get device pixel ratio for crisp rendering on high-DPI displays
         const dpr = window.devicePixelRatio || 1;
+        console.log(`Device pixel ratio detected: ${dpr}`);
         
         // Set the internal canvas resolution to match screen size * device pixel ratio
         canvas.width = width * dpr;
@@ -603,12 +604,23 @@ class GameUI {
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         
+        // Set additional context properties for crisp rendering
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+        ctx.msImageSmoothingEnabled = false;
+        
         // Store dimensions for game logic
         this.canvasScale = dpr;
         this.canvasOffsetX = 0;
         this.canvasOffsetY = 0;
         
-        console.log(`Canvas resized to full screen: ${width}x${height}`);
+        console.log(`Canvas resized to full screen: ${width}x${height} (DPR: ${dpr})`);
+        
+        // Ensure crisp rendering is maintained after resize
+        if (window.gameEngine && window.gameEngine.setupContextForCrispRendering) {
+            window.gameEngine.setupContextForCrispRendering();
+        }
     }
 
     setupMobileButton(button, callback) {

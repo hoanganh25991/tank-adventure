@@ -5,6 +5,9 @@ class GameEngine {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // Ensure crisp rendering
+        this.setupContextForCrispRendering();
+        
         // Game state
         this.currentScene = 'menu'; // 'menu', 'battle', 'skillSelection', 'results', 'base'
         this.gameRunning = false;
@@ -72,6 +75,24 @@ class GameEngine {
             width: rect.width,
             height: rect.height
         };
+    }
+
+    // Setup context for crisp rendering
+    setupContextForCrispRendering() {
+        // Disable image smoothing for pixel-perfect rendering
+        this.ctx.imageSmoothingEnabled = false;
+        if (this.ctx.webkitImageSmoothingEnabled !== undefined) {
+            this.ctx.webkitImageSmoothingEnabled = false;
+        }
+        if (this.ctx.mozImageSmoothingEnabled !== undefined) {
+            this.ctx.mozImageSmoothingEnabled = false;
+        }
+        if (this.ctx.msImageSmoothingEnabled !== undefined) {
+            this.ctx.msImageSmoothingEnabled = false;
+        }
+        
+        // Set text rendering for crisp text
+        this.ctx.textBaseline = 'alphabetic';
     }
 
     async initialize() {
@@ -647,8 +668,9 @@ class GameEngine {
     drawEnvironment() {
         // Draw environmental elements to make the battlefield more interesting
         // Calculate visible area in world coordinates (accounting for zoom)
-        const viewWidth = this.canvas.width / this.camera.zoom;
-        const viewHeight = this.canvas.height / this.camera.zoom;
+        const canvasDims = this.getCanvasCSSDimensions();
+        const viewWidth = canvasDims.width / this.camera.zoom;
+        const viewHeight = canvasDims.height / this.camera.zoom;
         const buffer = 200; // Increased buffer for smoother experience
         
         // Debug: Log that environment function is being called
