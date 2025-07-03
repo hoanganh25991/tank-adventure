@@ -495,12 +495,17 @@ class SkillManager {
         this.skillSlots = [null, null, null];
     }
 
+    clearActiveSkills() {
+        // Clear active skills for new battle session
+        this.activeSkills = [];
+        this.skillSlots = [null, null, null];
+        console.log('Active skills cleared for new battle');
+    }
+
     saveSkills() {
         const data = {
-            activeSkills: this.activeSkills.map(skill => ({
-                id: skill.id,
-                level: skill.level
-            })),
+            // Only save passive skills, not active skills
+            // Active skills are temporary and should not be persisted
             passiveSkills: this.passiveSkills.map(skill => ({
                 id: skill.id,
                 level: skill.level
@@ -513,20 +518,11 @@ class SkillManager {
         const data = Utils.loadGame('tankAdventure_skills');
         if (!data) return;
         
-        // Load active skills
-        for (const skillData of data.activeSkills || []) {
-            const skill = this.availableSkills.find(s => s.id === skillData.id);
-            if (skill) {
-                const newSkill = new Skill(
-                    skill.id, skill.name, skill.description, skill.type,
-                    skill.effect, skill.duration, skill.cooldown
-                );
-                newSkill.level = skillData.level;
-                this.activeSkills.push(newSkill);
-            }
-        }
+        // Clear active skills first - they should not be persisted
+        this.activeSkills = [];
+        this.skillSlots = [null, null, null];
         
-        // Load passive skills
+        // Load only passive skills
         for (const skillData of data.passiveSkills || []) {
             const skill = this.availableSkills.find(s => s.id === skillData.id);
             if (skill) {
@@ -537,11 +533,6 @@ class SkillManager {
                 newSkill.level = skillData.level;
                 this.passiveSkills.push(newSkill);
             }
-        }
-        
-        // Update skill slots
-        for (let i = 0; i < Math.min(this.activeSkills.length, 3); i++) {
-            this.skillSlots[i] = this.activeSkills[i];
         }
     }
 }
