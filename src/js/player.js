@@ -13,7 +13,7 @@ class Tank {
             this.maxHealth = 100;
             this.health = 100;
             this.damage = 10;
-            this.speed = 3;
+            this.speed = 8; // Increased from 3 to 8 for faster movement
             this.size = 25;
             this.shootCooldown = 0;
             this.maxShootCooldown = 300; // milliseconds
@@ -21,7 +21,7 @@ class Tank {
             this.maxHealth = 50;
             this.health = 50;
             this.damage = 5;
-            this.speed = 2.5;
+            this.speed = 6; // Increased from 2.5 to 6 for faster movement
             this.size = 15;
             this.shootCooldown = 0;
             this.maxShootCooldown = 500;
