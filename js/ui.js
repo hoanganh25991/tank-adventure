@@ -189,7 +189,8 @@ class GameUI {
                 battleScreen: document.getElementById('battleScreen'),
                 skillSelection: document.getElementById('skillSelection'),
                 battleResults: document.getElementById('battleResults'),
-                baseScreen: document.getElementById('baseScreen')
+                baseScreen: document.getElementById('baseScreen'),
+                settingsScreen: document.getElementById('settingsScreen')
             },
             
             // Menu Buttons
@@ -199,6 +200,7 @@ class GameUI {
             continueBtn: document.getElementById('continueBtn'),
             backToBaseBtn: document.getElementById('backToBaseBtn'),
             backToMenuBtn: document.getElementById('backToMenuBtn'),
+            backToMenuFromSettingsBtn: document.getElementById('backToMenuFromSettingsBtn'),
             
             // Skill Selection
             skillOptions: document.getElementById('skillOptions'),
@@ -257,6 +259,10 @@ class GameUI {
             this.showScreen('baseScreen');
         });
         
+        this.setupMobileButton(this.elements.settingsBtn, () => {
+            this.showScreen('settingsScreen');
+        });
+        
         this.setupMobileButton(this.elements.continueBtn, () => {
             this.gameEngine.continueToNextWave();
         });
@@ -266,6 +272,10 @@ class GameUI {
         });
         
         this.setupMobileButton(this.elements.backToMenuBtn, () => {
+            this.showScreen('mainMenu');
+        });
+        
+        this.setupMobileButton(this.elements.backToMenuFromSettingsBtn, () => {
             this.showScreen('mainMenu');
         });
         

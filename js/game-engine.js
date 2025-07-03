@@ -1,4 +1,9 @@
 // Main Game Engine
+if (window && window.location && window.location.hostname != "localhost") {
+    console.debug = () => {}
+    console.log = () => {}
+    console.warn = () => {}
+}
 
 class GameEngine {
     constructor() {
@@ -376,13 +381,13 @@ class GameEngine {
         let finalX = joystick.x;
         let finalY = joystick.y;
         let finalMagnitude = joystick.magnitude;
-        let speedMultiplier = 0.1; // Default joystick speed (reduce 10x times)
+        let speedMultiplier = 0.5; // Default joystick speed (reduce 10x times)
         
         if (keyboard.magnitude > 0) {
             finalX = keyboard.x;
             finalY = keyboard.y;
             finalMagnitude = keyboard.magnitude;
-            speedMultiplier = 0.04; // Keyboard speed (reduce 25x times)
+            speedMultiplier = 0.5; // Keyboard speed (reduce 25x times)
         }
         
         // Set movement direction with appropriate speed multiplier
@@ -1065,6 +1070,52 @@ class GameEngine {
         }
     }
 
+    createMainTankExplosion(x, y, radius, damage) {
+        // Create larger, more dramatic explosion for main tank bullets
+        this.explosions.push({
+            x: x,
+            y: y,
+            radius: 8,
+            maxRadius: radius,
+            growthRate: radius * 2.5, // slightly faster growth
+            life: 700,
+            maxLife: 700,
+            alpha: 1
+        });
+        
+        // Apply damage to nearby enemies
+        for (const enemy of this.waveManager.enemies) {
+            if (!enemy.isAlive) continue;
+            
+            const distance = Utils.distance(x, y, enemy.x, enemy.y);
+            if (distance <= radius) {
+                const damageMultiplier = 1 - (distance / radius);
+                const actualDamage = Math.floor(damage * damageMultiplier);
+                enemy.takeDamage(actualDamage);
+                
+                this.createHitEffect(enemy.x, enemy.y, actualDamage);
+            }
+        }
+        
+        // Create more particles for main tank explosion
+        for (let i = 0; i < 20; i++) {
+            const angle = (i / 20) * Math.PI * 2;
+            const speed = Utils.random(70, 200);
+            
+            this.particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: Utils.random(3, 7),
+                color: Utils.randomChoice(['#ff3300', '#ff6600', '#ffaa00', '#ff9900']),
+                life: Utils.random(400, 800),
+                maxLife: 600,
+                alpha: 1
+            });
+        }
+    }
+
     createHitEffect(x, y, damage, isPlayerHit = false) {
         // Show damage text in UI
         if (this.ui) {
@@ -1087,6 +1138,52 @@ class GameEngine {
                 color: color,
                 life: Utils.random(200, 400),
                 maxLife: 300,
+                alpha: 1
+            });
+        }
+    }
+
+    createEnhancedHitEffect(x, y, damage) {
+        // Show enhanced damage text in UI
+        if (this.ui) {
+            this.ui.showDamageText(x, y, damage, false);
+        }
+        
+        // Create enhanced hit particles with more effects
+        const colors = ['#ff9900', '#ffaa00', '#ff6600', '#ffcc00'];
+        
+        // Create more particles for enhanced effect
+        for (let i = 0; i < 8; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Utils.random(40, 100);
+            
+            this.particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: Utils.random(2, 4),
+                color: Utils.randomChoice(colors),
+                life: Utils.random(300, 500),
+                maxLife: 400,
+                alpha: 1
+            });
+        }
+        
+        // Add larger explosion particles
+        for (let i = 0; i < 3; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Utils.random(20, 60);
+            
+            this.particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: Utils.random(4, 6),
+                color: '#ff4400',
+                life: Utils.random(400, 600),
+                maxLife: 500,
                 alpha: 1
             });
         }
