@@ -122,7 +122,7 @@ class Tank {
         
         // Use enhanced rendering if game engine is provided
         if (gameEngine && gameEngine.renderTank) {
-            const color = this.type === 'main' ? '#3498db' : '#2ecc71';
+            const color = this.type === 'main' ? '#9acd32' : '#8fbc8f'; // Ghibli green colors
             gameEngine.renderTank(this, color);
         } else {
             // Fallback to original rendering
@@ -149,28 +149,28 @@ class Tank {
         }
         
         // Tank body
-        const bodyColor = this.type === 'main' ? '#3498db' : '#2ecc71';
+        const bodyColor = this.type === 'main' ? '#9acd32' : '#8fbc8f'; // Ghibli green colors
         ctx.fillStyle = bodyColor;
         ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
         
         // Tank tracks
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#8b4513'; // Rich brown tracks
         ctx.fillRect(-this.size, -this.size * 0.8, this.size * 2, this.size * 0.3);
         ctx.fillRect(-this.size, this.size * 0.5, this.size * 2, this.size * 0.3);
         
         // Tank turret
-        ctx.fillStyle = this.type === 'main' ? '#5dade2' : '#58d68d';
+        ctx.fillStyle = this.type === 'main' ? '#adff2f' : '#98fb98'; // Brighter Ghibli greens
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.7, 0, Math.PI * 2);
         ctx.fill();
         
         // Tank cannon
-        ctx.fillStyle = '#555555';
+        ctx.fillStyle = '#cd853f'; // Warm bronze cannon
         ctx.fillRect(0, -this.size * 0.15, this.size * 1.2, this.size * 0.3);
         
         // Muzzle flash
         if (this.muzzleFlash > 0) {
-            ctx.fillStyle = `rgba(255, 255, 0, ${this.muzzleFlash})`;
+            ctx.fillStyle = `rgba(255, 140, 0, ${this.muzzleFlash})`; // Orange flame color
             ctx.beginPath();
             ctx.arc(this.size * 1.2, 0, this.size * 0.3, 0, Math.PI * 2);
             ctx.fill();
@@ -193,19 +193,19 @@ class Tank {
         ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth, barHeight);
         
-        // Health foreground (green)
+        // Health foreground (Ghibli theme)
         const healthPercent = this.health / this.maxHealth;
         if (this.type === 'main') {
-            // Main tank health bar - blue-green gradient
-            ctx.fillStyle = 'rgba(0, 180, 255, 0.9)';
+            // Main tank health bar - warm Ghibli green
+            ctx.fillStyle = 'rgba(154, 205, 50, 0.9)'; // Yellow-green
         } else {
-            // Mini tank health bar - standard green
-            ctx.fillStyle = 'rgba(0, 255, 0, 0.9)';
+            // Mini tank health bar - lighter Ghibli green
+            ctx.fillStyle = 'rgba(143, 188, 143, 0.9)'; // Dark sea green
         }
         ctx.fillRect(this.x - barWidth / 2, barY, barWidth * healthPercent, barHeight);
         
         // Health bar border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.strokeStyle = 'rgba(139, 69, 19, 0.8)'; // Rich brown border
         ctx.lineWidth = 1;
         ctx.strokeRect(this.x - barWidth / 2, barY, barWidth, barHeight);
     }
@@ -217,7 +217,7 @@ class Tank {
             ctx.rotate(bullet.angle);
             
             // Bullet trail
-            ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.5)'; // Orange trail
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(-8, 0);
@@ -225,7 +225,7 @@ class Tank {
             ctx.stroke();
             
             // Bullet head
-            ctx.fillStyle = '#ffff44';
+            ctx.fillStyle = '#cd7f32'; // Bronze/copper bullet
             ctx.beginPath();
             ctx.arc(0, 0, 3, 0, Math.PI * 2);
             ctx.fill();

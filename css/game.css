@@ -9,8 +9,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background: #1a1a1a;
-    color: white;
+    background: #c8a882; /* Warm sepia/tan - classic Ghibli tone */
+    color: #5d4037; /* Rich brown text */
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -36,7 +36,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background: #2a4a2a;
+    background: #a8956b; /* Warm battlefield green-brown like Ghibli landscapes */
     display: block;
     /* Size will be set by JavaScript */
     image-rendering: pixelated; /* For crisp pixel art scaling */
@@ -58,10 +58,9 @@ body {
 /* HUD */
 #hud {
     position: absolute;
-    top: 20px;
+    top: 15px;
     left: 20px;
     right: 20px;
-    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -69,18 +68,23 @@ body {
 }
 
 #healthBar {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
-    border-radius: 10px;
-    padding: 10px;
-    width: 200px;
+    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
+    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
+    border-radius: 8px;
+    padding: 8px; /* Reduced padding */
+    width: 180px; /* Slightly smaller width */
+    height: 44px; /* Fixed height to match other HUD elements */
     position: relative;
+    backdrop-filter: blur(2px); /* Subtle blur for readability */
+    opacity: 0.85; /* Consistent opacity */
+    display: flex;
+    align-items: center;
 }
 
 #healthFill {
-    background: linear-gradient(90deg, #ff4444, #ff8844);
-    height: 20px;
-    border-radius: 5px;
+    background: linear-gradient(90deg, #9acd32, #adff2f); /* Ghibli green gradient */
+    height: 16px; /* Slightly smaller height */
+    border-radius: 4px;
     width: 100%;
     transition: width 0.3s ease;
 }
@@ -91,19 +95,43 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    text-shadow: 1px 1px 2px black;
+    font-size: 12px; /* Smaller font size */
+    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.7);
+    color: #5d4037; /* Rich brown text */
 }
 
 #waveInfo, #scoreInfo {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
-    border-radius: 10px;
-    padding: 10px;
+    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
+    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
+    border-radius: 8px;
+    padding: 8px; /* Reduced padding */
     text-align: center;
     font-weight: bold;
+    font-size: 13px; /* Smaller font size */
+    color: #5d4037; /* Rich brown text */
+    backdrop-filter: blur(2px); /* Subtle blur for readability */
+    height: 44px; /* Fixed height to match health bar */
+    opacity: 0.85; /* Consistent opacity */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-#waveInfo span, #scoreInfo span {
+#waveInfo {
+    /* Make wave info more compact and horizontal */
+    min-width: 180px; /* Reduced width */
+    flex-direction: row; /* Override to horizontal for wave info */
+    align-items: center;
+    justify-content: center;
+}
+
+#waveInfo span {
+    display: inline-block; /* Change to horizontal layout */
+    margin: 0 6px; /* Reduced horizontal spacing */
+    font-size: 12px; /* Smaller font for compact layout */
+}
+
+#scoreInfo span {
     display: block;
     margin: 2px 0;
 }
@@ -114,44 +142,46 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    height: 160px; /* Reduced height for more battlefield space */
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 20px;
+    padding: 15px; /* Reduced padding */
     pointer-events: all;
 }
 
 /* Virtual Joystick */
 #joystickArea {
     position: relative;
-    width: 150px;
-    height: 150px;
+    width: 130px; /* Reduced size */
+    height: 130px; /* Reduced size */
 }
 
 #joystickBase {
     position: absolute;
-    width: 120px;
-    height: 120px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    width: 100px; /* Reduced size */
+    height: 100px; /* Reduced size */
+    border: 2px solid rgba(139, 69, 19, 0.4); /* Thinner border */
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(200, 168, 130, 0.3); /* More transparent background */
     bottom: 0;
     left: 15px;
+    backdrop-filter: blur(1px); /* Subtle blur */
 }
 
 #joystickStick {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(45deg, #4a9eff, #2a7eff);
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    width: 40px; /* Reduced size */
+    height: 40px; /* Reduced size */
+    background: linear-gradient(45deg, #cd853f, #daa520); /* Warm copper to goldenrod */
+    border: 2px solid rgba(139, 69, 19, 0.6); /* More transparent border */
     border-radius: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.1s ease;
     cursor: pointer;
+    opacity: 0.8; /* Slight transparency */
 }
 
 /* Action Buttons */
@@ -163,39 +193,49 @@ body {
 }
 
 .action-btn {
-    padding: 15px 20px;
-    border: none;
-    border-radius: 10px;
+    padding: 12px 16px; /* Reduced padding */
+    border: 2px solid rgba(139, 69, 19, 0.6); /* More transparent border */
+    border-radius: 8px; /* Smaller border radius */
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px; /* Smaller font */
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    min-width: 80px;
+    box-shadow: 0 3px 6px rgba(93, 64, 55, 0.2); /* Reduced shadow */
+    min-width: 70px; /* Smaller minimum width */
     /* Make all buttons equal width */
-    width: 100px;
-    height: 50px;
+    width: 85px; /* Smaller width */
+    height: 45px; /* Smaller height */
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0.85; /* Slight transparency */
+    backdrop-filter: blur(1px); /* Subtle blur */
+}
+
+.action-btn:hover {
+    opacity: 1; /* Full opacity on hover for better visibility */
+    transform: translateY(-1px);
 }
 
 .action-btn:active {
     transform: translateY(2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    opacity: 1; /* Full opacity when pressed */
 }
 
 .action-btn.primary {
-    background: linear-gradient(45deg, #ff4444, #ff6666);
-    color: white;
+    background: linear-gradient(45deg, #cd853f, #daa520); /* Warm copper to goldenrod */
+    color: #5d4037; /* Rich brown text */
+    border: 2px solid #8b4513; /* Rich brown border */
     /* Remove different sizing for primary button */
     font-size: 14px;
     padding: 15px 20px;
 }
 
 .action-btn.skill {
-    background: linear-gradient(45deg, #4a9eff, #6bb6ff);
-    color: white;
+    background: linear-gradient(45deg, #9acd32, #adff2f); /* Yellow-green to green-yellow */
+    color: #5d4037; /* Rich brown text */
+    border: 2px solid #6b8e23; /* Olive border */
 }
 
 .action-btn:disabled {
@@ -226,31 +266,43 @@ body {
 /* Main Menu */
 #mainMenu {
     background: url('../assets/background.jpg') center/cover no-repeat,
-                linear-gradient(135deg, rgba(26, 42, 58, 0.8), rgba(42, 58, 74, 0.8));
+                linear-gradient(135deg, rgba(200, 168, 130, 0.9), rgba(168, 149, 107, 0.8));
     background-blend-mode: overlay;
 }
 
 #mainMenu h1 {
-    font-size: 48px;
+    font-size: 56px;
     margin-bottom: 50px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    color: #4a9eff;
+    /* Enhanced visibility with stronger contrast and glow effect */
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.8),
+        2px 2px 6px rgba(0, 0, 0, 0.7),
+        4px 4px 12px rgba(93, 64, 55, 0.5);
+    color: #2c1810; /* Much darker brown for strong contrast */
+    font-weight: bold;
+    /* Add subtle background for extra prominence */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .menu-btn {
     padding: 15px 30px;
     margin: 10px;
-    border: none;
+    border: 2px solid rgba(139, 69, 19, 0.7); /* Semi-transparent brown border */
     border-radius: 8px;
-    background: linear-gradient(45deg, #4a9eff, #2a7eff);
-    color: white;
+    background: linear-gradient(45deg, rgba(210, 180, 140, 0.8), rgba(200, 168, 130, 0.7)); /* Glass effect with transparency */
+    color: #5d4037; /* Rich brown text */
     font-size: 18px;
     font-weight: bold;
+    text-transform: uppercase; /* Make buttons uppercase */
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
     width: 250px;
     text-align: center;
+    backdrop-filter: blur(4px); /* Glass effect */
     
     /* Enhanced touch support for iPhone Safari */
     touch-action: manipulation;
@@ -264,7 +316,10 @@ body {
 
 .menu-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 16px rgba(93, 64, 55, 0.4);
+    background: linear-gradient(45deg, rgba(222, 184, 135, 0.9), rgba(210, 180, 140, 0.8)); /* Lighter with transparency on hover */
+    border-color: rgba(139, 69, 19, 0.9);
+    backdrop-filter: blur(6px); /* Enhanced glass effect on hover */
 }
 
 .menu-btn:active {
@@ -279,13 +334,13 @@ body {
 
 /* Skill Selection */
 #skillSelection {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(200, 168, 130, 0.9); /* Light sepia background */
 }
 
 #skillSelection h2 {
     margin-bottom: 30px;
     font-size: 32px;
-    color: #4a9eff;
+    color: #8b4513; /* Rich brown title */
 }
 
 #skillOptions {
@@ -298,8 +353,8 @@ body {
 }
 
 .skill-option {
-    background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
-    border: 2px solid #4a9eff;
+    background: linear-gradient(135deg, #f5deb3, #deb887); /* Wheat to burlywood gradient */
+    border: 2px solid #8b4513; /* Rich brown border */
     border-radius: 12px;
     padding: 15px;
     cursor: pointer;
@@ -307,7 +362,7 @@ body {
     flex: 1;
     min-width: 0;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
     max-width: 280px;
     
     /* Enhanced touch support for iPhone Safari */
@@ -322,18 +377,19 @@ body {
 
 .skill-option:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(74, 158, 255, 0.3);
-    border-color: #6bb6ff;
+    box-shadow: 0 8px 20px rgba(154, 205, 50, 0.3); /* Green glow */
+    border-color: #cd853f;
+    background: linear-gradient(135deg, #fff8dc, #f5deb3); /* Lighter on hover */
 }
 
 .skill-option h3 {
-    color: #4a9eff;
+    color: #8b4513; /* Rich brown title */
     margin-bottom: 12px;
     font-size: 18px;
 }
 
 .skill-option p {
-    color: #cccccc;
+    color: #5d4037; /* Rich brown text */
     font-size: 14px;
     line-height: 1.4;
 }
@@ -346,31 +402,32 @@ body {
 
 /* Battle Results */
 #battleResults {
-    background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
+    background: linear-gradient(135deg, #c8a882, #a8956b); /* Light sepia gradients */
 }
 
 #battleResults h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #44ff44;
+    color: #8b4513; /* Rich brown victory color */
 }
 
 #resultsContent {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(245, 222, 179, 0.8); /* Light wheat background */
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 30px;
     text-align: center;
+    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 #battleStats p {
     font-size: 18px;
     margin: 10px 0;
-    color: #cccccc;
+    color: #5d4037; /* Rich brown text */
 }
 
 #battleStats span {
-    color: #44ff44;
+    color: #9acd32; /* Ghibli green highlight */
     font-weight: bold;
 }
 
@@ -381,7 +438,7 @@ body {
 
 /* Base Screen */
 #baseScreen {
-    background: linear-gradient(135deg, #3a2a1a, #4a3a2a);
+    background: linear-gradient(135deg, #c8a882, #a8956b); /* Light sepia gradients */
     overflow-y: auto;
     padding: 20px;
 }
@@ -389,7 +446,7 @@ body {
 #baseScreen h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #ff9944;
+    color: #8b4513; /* Rich brown title */
     text-align: center;
 }
 
@@ -399,14 +456,15 @@ body {
 }
 
 .upgrade-section {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(245, 222, 179, 0.6); /* Light wheat background */
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
+    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 .upgrade-section h3 {
-    color: #ff9944;
+    color: #8b4513; /* Rich brown title */
     margin-bottom: 15px;
     font-size: 20px;
 }
@@ -417,16 +475,17 @@ body {
     align-items: center;
     padding: 12px;
     margin: 8px 0;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(222, 184, 135, 0.3); /* Light burlywood */
     border-radius: 8px;
+    color: #5d4037; /* Rich brown text */
 }
 
 .upgrade-btn {
     padding: 8px 16px;
-    border: none;
+    border: 2px solid #8b4513; /* Rich brown border */
     border-radius: 6px;
-    background: linear-gradient(45deg, #ff9944, #ffaa66);
-    color: white;
+    background: linear-gradient(45deg, #9acd32, #adff2f); /* Ghibli green gradient */
+    color: #5d4037; /* Rich brown text */
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -443,7 +502,8 @@ body {
 
 .upgrade-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(255, 153, 68, 0.3);
+    box-shadow: 0 4px 8px rgba(154, 205, 50, 0.3);
+    background: linear-gradient(45deg, #adff2f, #7fff00); /* Brighter on hover */
 }
 
 .upgrade-btn:disabled {
@@ -453,20 +513,22 @@ body {
 }
 
 #playerStats {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(245, 222, 179, 0.6); /* Light wheat background */
     border-radius: 12px;
     padding: 20px;
     text-align: center;
+    border: 2px solid #8b4513; /* Rich brown border */
 }
 
 #playerStats h3 {
-    color: #4a9eff;
+    color: #8b4513; /* Rich brown title */
     margin-bottom: 15px;
 }
 
 #playerStats p {
     margin: 8px 0;
     font-size: 16px;
+    color: #5d4037; /* Rich brown text */
 }
 
 /* Loading Screen */

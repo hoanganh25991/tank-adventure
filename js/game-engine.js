@@ -42,6 +42,11 @@ class GameEngine {
         this.explosions = [];
         this.particles = [];
         
+        // Debug flags
+        this.debugMode = false;
+        this.debugEnvironment = false;
+        this.showCollisionBoxes = false;
+        
         // Camera system for endless movement
         this.camera = {
             x: 0,
@@ -594,15 +599,19 @@ class GameEngine {
     drawBackground() {
         // Infinite grid background
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        this.ctx.lineWidth = 1;
+        this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
         
         const gridSize = 50;
+        
+        // Calculate visible area in world coordinates (accounting for zoom)
+        const viewWidth = this.canvas.width / this.camera.zoom;
+        const viewHeight = this.canvas.height / this.camera.zoom;
         
         // Calculate grid offset based on camera position
         const startX = Math.floor(this.camera.x / gridSize) * gridSize;
         const startY = Math.floor(this.camera.y / gridSize) * gridSize;
-        const endX = startX + this.canvas.width + gridSize;
-        const endY = startY + this.canvas.height + gridSize;
+        const endX = startX + viewWidth + gridSize;
+        const endY = startY + viewHeight + gridSize;
         
         // Draw vertical lines
         for (let x = startX; x <= endX; x += gridSize) {
@@ -623,21 +632,38 @@ class GameEngine {
 
     drawEnvironment() {
         // Draw environmental elements to make the battlefield more interesting
-        const viewLeft = this.camera.x - 100;
-        const viewRight = this.camera.x + (this.canvas.width / this.camera.zoom) + 100;
-        const viewTop = this.camera.y - 100;
-        const viewBottom = this.camera.y + (this.canvas.height / this.camera.zoom) + 100;
+        // Calculate visible area in world coordinates (accounting for zoom)
+        const viewWidth = this.canvas.width / this.camera.zoom;
+        const viewHeight = this.canvas.height / this.camera.zoom;
+        const buffer = 200; // Increased buffer for smoother experience
+        
+        // Debug: Log that environment function is being called
+        if (this.debugMode) {
+            console.log('drawEnvironment() called');
+        }
+        
+        const viewLeft = this.camera.x - buffer;
+        const viewRight = this.camera.x + viewWidth + buffer;
+        const viewTop = this.camera.y - buffer;
+        const viewBottom = this.camera.y + viewHeight + buffer;
+        
+        // Debug logging
+        if (this.debugEnvironment) {
+            console.log(`Environment view: left=${viewLeft.toFixed(0)}, right=${viewRight.toFixed(0)}, top=${viewTop.toFixed(0)}, bottom=${viewBottom.toFixed(0)}`);
+            console.log(`Camera: x=${this.camera.x.toFixed(0)}, y=${this.camera.y.toFixed(0)}, zoom=${this.camera.zoom.toFixed(2)}`);
+        }
         
         // Draw rocks/obstacles
         this.ctx.fillStyle = '#555555';
         this.ctx.strokeStyle = '#333333';
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 2 / this.camera.zoom; // Adjust line width for zoom
         
+        let rockCount = 0;
         for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
             for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
                 // Use deterministic random based on position
                 const seed = (x * 31 + y * 17) % 100;
-                if (seed > 85) { // 15% chance for obstacles
+                if (seed > 70) { // 30% chance for obstacles (increased for testing)
                     const rockX = x + (seed % 50) - 25;
                     const rockY = y + ((seed * 7) % 50) - 25;
                     const rockSize = 15 + (seed % 20);
@@ -651,6 +677,7 @@ class GameEngine {
                     this.ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
                     
                     this.ctx.restore();
+                    rockCount++;
                 }
             }
         }
@@ -658,11 +685,13 @@ class GameEngine {
         // Draw trees/vegetation
         this.ctx.fillStyle = '#2d4a2d';
         this.ctx.strokeStyle = '#1a2e1a';
+        this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
         
+        let treeCount = 0;
         for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
             for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
                 const seed = (x * 23 + y * 19) % 100;
-                if (seed > 80) { // 20% chance for trees
+                if (seed > 60) { // 40% chance for trees (increased for testing)
                     const treeX = x + (seed % 40) - 20;
                     const treeY = y + ((seed * 11) % 40) - 20;
                     const treeSize = 20 + (seed % 15);
@@ -683,6 +712,7 @@ class GameEngine {
                     this.ctx.stroke();
                     
                     this.ctx.restore();
+                    treeCount++;
                 }
             }
         }
@@ -690,11 +720,13 @@ class GameEngine {
         // Draw water/ponds
         this.ctx.fillStyle = '#1a4d4d';
         this.ctx.strokeStyle = '#0d3333';
+        this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
         
+        let waterCount = 0;
         for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
             for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
                 const seed = (x * 13 + y * 29) % 100;
-                if (seed > 92) { // 8% chance for water
+                if (seed > 80) { // 20% chance for water (increased for testing)
                     const waterX = x + (seed % 60) - 30;
                     const waterY = y + ((seed * 13) % 60) - 30;
                     const waterSize = 30 + (seed % 25);
@@ -709,8 +741,54 @@ class GameEngine {
                     this.ctx.stroke();
                     
                     this.ctx.restore();
+                    waterCount++;
                 }
             }
+        }
+        
+        // Debug logging for environment objects
+        if (this.debugEnvironment) {
+            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies`);
+        }
+        
+        // Always render a few test objects near the player for debugging
+        if (this.debugMode && this.player) {
+            const px = this.player.mainTank.x;
+            const py = this.player.mainTank.y;
+            
+            // Test rock
+            this.ctx.save();
+            this.ctx.fillStyle = '#ff0000'; // Red for visibility
+            this.ctx.strokeStyle = '#aa0000';
+            this.ctx.lineWidth = 2 / this.camera.zoom;
+            this.ctx.translate(px + 100, py + 100);
+            this.ctx.fillRect(-15, -15, 30, 30);
+            this.ctx.strokeRect(-15, -15, 30, 30);
+            this.ctx.restore();
+            
+            // Test tree
+            this.ctx.save();
+            this.ctx.fillStyle = '#00ff00'; // Green for visibility
+            this.ctx.strokeStyle = '#00aa00';
+            this.ctx.lineWidth = 1 / this.camera.zoom;
+            this.ctx.translate(px - 100, py - 100);
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.restore();
+            
+            // Test water
+            this.ctx.save();
+            this.ctx.fillStyle = '#0000ff'; // Blue for visibility
+            this.ctx.strokeStyle = '#0000aa';
+            this.ctx.lineWidth = 1 / this.camera.zoom;
+            this.ctx.translate(px + 100, py - 100);
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 25, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.restore();
         }
     }
 
@@ -1048,10 +1126,15 @@ class GameEngine {
                     this.camera.targetZoom = Math.min(1.5, this.camera.targetZoom + 0.1);
                     console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
                     break;
+                case 'e':
+                    // Toggle environment debug
+                    this.debugEnvironment = !this.debugEnvironment;
+                    console.log(`Environment debug: ${this.debugEnvironment ? 'ON' : 'OFF'}`);
+                    break;
             }
         });
         
-        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
+        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, E = Environment Debug, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
     }
 
     setupFullscreenHandlers() {
