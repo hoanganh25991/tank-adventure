@@ -1265,15 +1265,15 @@ class WaveManager {
         this.spawnInterval = 2000; // milliseconds between spawns
         this.wavePaused = false;
         
-        // New burst spawning properties
+        // Burst spawning properties - adjusted for better balance
         this.burstSpawning = false;
         this.burstTimer = 0;
-        this.burstInterval = 8000;
+        this.burstInterval = 10000; // Increased from 8000 to 10000ms for less frequent bursts
         this.burstCount = 0;
         
         // Dynamic difficulty scaling
         this.difficultyMultiplier = 1.0;
-        this.maxConcurrentEnemies = 60; // Increased from 25 to 60 for more enemies on screen
+        this.maxConcurrentEnemies = 40; // Reduced from 60 to 40 for more manageable enemy counts
     }
 
     startWave(waveNumber) {
@@ -1284,34 +1284,57 @@ class WaveManager {
         this.wavePaused = false;
         this.spawnTimer = 0;
         
-        // Enhanced enemy count scaling - exponential growth for challenge
-        const baseEnemies = 15; // Increased from 8 to 15
-        const exponentialFactor = Math.pow(1.6, waveNumber - 1); // Increased from 1.4 to 1.6 for faster growth
-        const linearFactor = waveNumber * 8; // Increased from 4 to 8 for more linear growth
+        // Get player level for scaling
+        const playerLevel = window.gameEngine && window.gameEngine.player ? 
+                    window.gameEngine.player.level : 1;
         
-        // Combine both factors with a max cap
-        this.totalEnemiesInWave = Math.min(
-            Math.floor(baseEnemies + exponentialFactor + linearFactor),
-            150 // Increased from 80 to 150 for much higher enemy counts
-        );
+        // Base enemies per wave - reduced for early game
+        const baseEnemies = 5; // Reduced from 15 to 5 for easier early waves
         
-        // Aggressive spawn rate scaling - enemies spawn much faster
-        const baseSpawnInterval = 800; // Reduced from 1800 to 800ms for faster initial spawning
-        const reductionPerWave = 50; // Reduced from 100 to 50ms for more gradual decrease
-        const minimumInterval = 100; // Reduced from 200 to 100ms for very fast spawning
+        // Dynamic scaling based on player level and wave number
+        // Lower player levels get fewer enemies, higher levels get more
+        const playerLevelFactor = Math.max(0.5, Math.min(1.5, playerLevel / 10)); // 0.5 to 1.5 based on player level
+        const waveScaling = Math.pow(1.3, waveNumber - 1); // Reduced from 1.6 to 1.3 for slower growth
+        const linearFactor = waveNumber * 3; // Reduced from 8 to 3 for more gradual increase
+        
+        // Calculate enemy count with player level adjustment
+        const calculatedEnemies = Math.floor((baseEnemies + waveScaling + linearFactor) * playerLevelFactor);
+        
+        // Apply reasonable caps based on wave number
+        let maxEnemies;
+        if (waveNumber <= 3) {
+            maxEnemies = 15; // Cap at 15 enemies for first 3 waves
+        } else if (waveNumber <= 6) {
+            maxEnemies = 25; // Cap at 25 enemies for waves 4-6
+        } else if (waveNumber <= 10) {
+            maxEnemies = 40; // Cap at 40 enemies for waves 7-10
+        } else {
+            maxEnemies = 60; // Cap at 60 enemies for waves beyond 10
+        }
+        
+        // Set final enemy count with minimum of 5 enemies per wave
+        this.totalEnemiesInWave = Math.max(5, Math.min(calculatedEnemies, maxEnemies));
+        
+        // Adjust spawn rate based on enemy count and wave number
+        const baseSpawnInterval = 1000; // Increased from 800 to 1000ms for slower initial spawning
+        const reductionPerWave = 40; // Reduced from 50 to 40ms for more gradual decrease
+        const minimumInterval = 200; // Increased from 100 to 200ms for less frantic spawning
         
         this.spawnInterval = Math.max(
             baseSpawnInterval - (waveNumber * reductionPerWave),
             minimumInterval
         );
         
-        // Add burst spawning for higher waves (now starts earlier and more frequent)
-        this.burstSpawning = waveNumber >= 2; // Start burst spawning from wave 2 instead of 5
+        // Adjust burst spawning to be less aggressive
+        this.burstSpawning = waveNumber >= 3; // Start burst spawning from wave 3 instead of 2
         this.burstTimer = 0;
-        this.burstInterval = 4000; // Every 4 seconds instead of 8 for more frequent bursts
-        this.burstCount = Math.min(Math.floor(waveNumber / 2) + 3, 15); // More enemies per burst (up to 15)
+        this.burstInterval = 6000; // Every 6 seconds instead of 4 for less frequent bursts
         
-        console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies, spawn interval: ${this.spawnInterval}ms`);
+        // Reduce burst count based on player level and wave
+        const baseBurstCount = Math.floor(waveNumber / 3) + 2; // Reduced formula
+        this.burstCount = Math.min(baseBurstCount, 8); // Cap at 8 enemies per burst instead of 15
+        
+        console.log(`Starting Wave ${waveNumber} - ${this.totalEnemiesInWave} enemies, spawn interval: ${this.spawnInterval}ms (Player Level: ${playerLevel})`);
         if (this.burstSpawning) {
             console.log(`Burst spawning enabled: ${this.burstCount} enemies every ${this.burstInterval/1000}s`);
         }
@@ -1319,6 +1342,16 @@ class WaveManager {
 
     update(deltaTime, player) {
         if (!this.waveActive || this.wavePaused) return;
+        
+        // Get player level for scaling
+        const playerLevel = player ? player.level : 1;
+        
+        // Adjust max concurrent enemies based on player level
+        // This prevents overwhelming the player with too many enemies at once
+        const adjustedMaxEnemies = Math.min(
+            10 + Math.floor(playerLevel * 2), // Base formula: 10 + (level * 2)
+            this.maxConcurrentEnemies // Still respect the overall cap
+        );
         
         // Update existing enemies
         for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -1337,23 +1370,31 @@ class WaveManager {
         }
         
         // Regular enemy spawning
-        if (this.enemiesSpawned < this.totalEnemiesInWave && this.enemies.length < this.maxConcurrentEnemies) {
+        if (this.enemiesSpawned < this.totalEnemiesInWave && this.enemies.length < adjustedMaxEnemies) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
-                // Spawn multiple enemies at once for higher waves
-                const simultaneousSpawns = Math.min(Math.floor(this.currentWave / 3) + 1, 4);
+                // Adjust simultaneous spawns based on player level
+                const baseSpawns = Math.min(Math.floor(this.currentWave / 4) + 1, 3); // Reduced from /3 to /4, max 3 instead of 4
+                const simultaneousSpawns = Math.min(baseSpawns, Math.max(1, Math.floor(playerLevel / 5)));
+                
                 for (let i = 0; i < simultaneousSpawns && this.enemiesSpawned < this.totalEnemiesInWave; i++) {
-                    this.spawnEnemy(player);
+                    // Only spawn if we're still under the adjusted max enemies
+                    if (this.enemies.length < adjustedMaxEnemies) {
+                        this.spawnEnemy(player);
+                    }
                 }
                 this.spawnTimer = 0;
             }
         }
         
         // Burst spawning for higher waves (additional enemies beyond the normal count)
-        if (this.burstSpawning && this.currentWave >= 2) {
+        if (this.burstSpawning && this.currentWave >= 3) { // Changed from 2 to 3
             this.burstTimer += deltaTime;
             if (this.burstTimer >= this.burstInterval) {
-                this.spawnBurst(player);
+                // Only spawn burst if we have room for at least a few more enemies
+                if (this.enemies.length < adjustedMaxEnemies - 2) {
+                    this.spawnBurst(player);
+                }
                 this.burstTimer = 0;
             }
         }
@@ -1388,22 +1429,30 @@ class WaveManager {
     spawnBurst(player) {
         if (!player || !player.mainTank) return;
         
-        console.log(`Spawning burst of ${this.burstCount} enemies`);
+        // Get player level for scaling
+        const playerLevel = window.gameEngine && window.gameEngine.player ? 
+                    window.gameEngine.player.level : 1;
         
-        for (let i = 0; i < this.burstCount; i++) {
+        // Adjust burst count based on player level
+        // Lower level players get fewer burst enemies
+        const adjustedBurstCount = Math.max(2, Math.floor(this.burstCount * (0.5 + playerLevel / 20)));
+        
+        console.log(`Spawning burst of ${adjustedBurstCount} enemies (Player Level: ${playerLevel})`);
+        
+        for (let i = 0; i < adjustedBurstCount; i++) {
             const playerX = player.mainTank.x;
             const playerY = player.mainTank.y;
             
-            // Vary spawn distance for burst spawning
-            const spawnDistance = 300 + Math.random() * 200; // 300-500 units
+            // Increase spawn distance for better player reaction time
+            const spawnDistance = 400 + Math.random() * 200; // 400-600 units (increased from 300-500)
             
             // Choose random angle around player
             const angle = Math.random() * Math.PI * 2;
             const x = playerX + Math.cos(angle) * spawnDistance;
             const y = playerY + Math.sin(angle) * spawnDistance;
             
-            // Choose enemy type - bias toward more aggressive types for bursts
-            const enemyType = this.chooseBurstEnemyType();
+            // Choose enemy type - less aggressive for lower player levels
+            const enemyType = playerLevel < 5 ? this.chooseEnemyType() : this.chooseBurstEnemyType();
             const enemy = new Enemy(x, y, enemyType);
             
             this.enemies.push(enemy);
