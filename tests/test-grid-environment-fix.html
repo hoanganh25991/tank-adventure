@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid and Environment Fix Test</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+        }
+        #gameCanvas {
+            display: block;
+            background: #222;
+        }
+        .debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div class="debug-info">
+        <h4>Grid & Environment Test</h4>
+        <p>Status: <span id="status">Loading...</span></p>
+        <p>Zoom: <span id="zoom">0.7x</span></p>
+        <p>Environment Objects: <span id="envCount">0</span></p>
+        <p>Camera: <span id="cameraPos">0, 0</span></p>
+    </div>
+    
+    <div class="controls">
+        <h4>Controls:</h4>
+        <p>Z - Zoom Out</p>
+        <p>X - Zoom In</p>
+        <p>Arrow Keys - Move Camera</p>
+        <p>D - Toggle Debug Mode</p>
+        <p>E - Environment Debug</p>
+        <p>Space - Test Environment</p>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/sound-manager.js"></script>
+    <script src="../js/player.js"></script>
+    <script src="../js/enemy.js"></script>
+    <script src="../js/skills.js"></script>
+    <script src="../js/skill-effects.js"></script>
+    <script src="../js/upgrades.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/game-engine.js"></script>
+    
+    <script>
+        // Initialize test
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Adjust canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Simple camera system
+        const camera = {
+            x: 0,
+            y: 0,
+            zoom: 0.7,
+            speed: 5
+        };
+        
+        let debugMode = false;
+        let environmentDebug = false;
+        let animationId;
+        
+        // Test environment rendering
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1 / camera.zoom;
+            
+            const gridSize = 50;
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            
+            const startX = Math.floor(camera.x / gridSize) * gridSize;
+            const startY = Math.floor(camera.y / gridSize) * gridSize;
+            const endX = startX + viewWidth + gridSize;
+            const endY = startY + viewHeight + gridSize;
+            
+            // Draw vertical lines
+            for (let x = startX; x <= endX; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, startY);
+                ctx.lineTo(x, endY);
+                ctx.stroke();
+            }
+            
+            // Draw horizontal lines
+            for (let y = startY; y <= endY; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(startX, y);
+                ctx.lineTo(endX, y);
+                ctx.stroke();
+            }
+        }
+        
+        function drawEnvironment() {
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            const buffer = 200;
+            
+            const viewLeft = camera.x - buffer;
+            const viewRight = camera.x + viewWidth + buffer;
+            const viewTop = camera.y - buffer;
+            const viewBottom = camera.y + viewHeight + buffer;
+            
+            if (environmentDebug) {
+                console.log(`Environment view: left=${viewLeft.toFixed(0)}, right=${viewRight.toFixed(0)}, top=${viewTop.toFixed(0)}, bottom=${viewBottom.toFixed(0)}`);
+            }
+            
+            let envCount = 0;
+            
+            // Draw rocks
+            ctx.fillStyle = '#555555';
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 2 / camera.zoom;
+            
+            for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
+                for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
+                    const seed = (x * 31 + y * 17) % 100;
+                    if (seed > 70) {
+                        const rockX = x + (seed % 50) - 25;
+                        const rockY = y + ((seed * 7) % 50) - 25;
+                        const rockSize = 15 + (seed % 20);
+                        
+                        ctx.save();
+                        ctx.translate(rockX, rockY);
+                        ctx.rotate(seed * 0.1);
+                        ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                        ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
+                        ctx.restore();
+                        envCount++;
+                    }
+                }
+            }
+            
+            // Draw trees
+            ctx.fillStyle = '#2d4a2d';
+            ctx.strokeStyle = '#1a2e1a';
+            ctx.lineWidth = 1 / camera.zoom;
+            
+            for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
+                for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
+                    const seed = (x * 23 + y * 19) % 100;
+                    if (seed > 60) {
+                        const treeX = x + (seed % 40) - 20;
+                        const treeY = y + ((seed * 11) % 40) - 20;
+                        const treeSize = 20 + (seed % 15);
+                        
+                        ctx.save();
+                        ctx.translate(treeX, treeY);
+                        
+                        // Tree trunk
+                        ctx.fillStyle = '#654321';
+                        ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
+                        
+                        // Tree foliage
+                        ctx.fillStyle = '#2d4a2d';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        
+                        ctx.restore();
+                        envCount++;
+                    }
+                }
+            }
+            
+            // Draw water
+            ctx.fillStyle = '#1a4d4d';
+            ctx.strokeStyle = '#0d3333';
+            ctx.lineWidth = 1 / camera.zoom;
+            
+            for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
+                for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
+                    const seed = (x * 13 + y * 29) % 100;
+                    if (seed > 80) {
+                        const waterX = x + (seed % 60) - 30;
+                        const waterY = y + ((seed * 13) % 60) - 30;
+                        const waterSize = 30 + (seed % 25);
+                        
+                        ctx.save();
+                        ctx.translate(waterX, waterY);
+                        ctx.beginPath();
+                        ctx.arc(0, 0, waterSize/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.restore();
+                        envCount++;
+                    }
+                }
+            }
+            
+            // Debug test objects
+            if (debugMode) {
+                // Test objects around center
+                ctx.fillStyle = '#ff0000';
+                ctx.strokeStyle = '#aa0000';
+                ctx.lineWidth = 2 / camera.zoom;
+                ctx.save();
+                ctx.translate(100, 100);
+                ctx.fillRect(-15, -15, 30, 30);
+                ctx.strokeRect(-15, -15, 30, 30);
+                ctx.restore();
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.strokeStyle = '#00aa00';
+                ctx.lineWidth = 1 / camera.zoom;
+                ctx.save();
+                ctx.translate(-100, -100);
+                ctx.beginPath();
+                ctx.arc(0, 0, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+                
+                ctx.fillStyle = '#0000ff';
+                ctx.strokeStyle = '#0000aa';
+                ctx.lineWidth = 1 / camera.zoom;
+                ctx.save();
+                ctx.translate(100, -100);
+                ctx.beginPath();
+                ctx.arc(0, 0, 25, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+            
+            return envCount;
+        }
+        
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Apply camera transform
+            ctx.save();
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-camera.x, -camera.y);
+            
+            // Draw grid
+            drawGrid();
+            
+            // Draw environment
+            const envCount = drawEnvironment();
+            
+            // Draw center marker
+            ctx.fillStyle = '#ffff00';
+            ctx.strokeStyle = '#ffaa00';
+            ctx.lineWidth = 3 / camera.zoom;
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // Update UI
+            document.getElementById('status').textContent = 'Running';
+            document.getElementById('zoom').textContent = `${camera.zoom.toFixed(1)}x`;
+            document.getElementById('envCount').textContent = envCount;
+            document.getElementById('cameraPos').textContent = `${camera.x.toFixed(0)}, ${camera.y.toFixed(0)}`;
+            
+            animationId = requestAnimationFrame(render);
+        }
+        
+        // Key controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'z':
+                    camera.zoom = Math.max(0.3, camera.zoom - 0.1);
+                    break;
+                case 'x':
+                    camera.zoom = Math.min(2.0, camera.zoom + 0.1);
+                    break;
+                case 'arrowup':
+                    camera.y -= camera.speed / camera.zoom;
+                    break;
+                case 'arrowdown':
+                    camera.y += camera.speed / camera.zoom;
+                    break;
+                case 'arrowleft':
+                    camera.x -= camera.speed / camera.zoom;
+                    break;
+                case 'arrowright':
+                    camera.x += camera.speed / camera.zoom;
+                    break;
+                case 'd':
+                    debugMode = !debugMode;
+                    console.log('Debug mode:', debugMode);
+                    break;
+                case 'e':
+                    environmentDebug = !environmentDebug;
+                    console.log('Environment debug:', environmentDebug);
+                    break;
+                case ' ':
+                    console.log('Testing environment at current position');
+                    break;
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Start rendering
+        console.log('Grid and Environment Test Started');
+        console.log('Controls: Z/X = Zoom, Arrow Keys = Move, D = Debug, E = Environment Debug');
+        render();
+    </script>
+</body>
+</html>
