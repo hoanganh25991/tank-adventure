@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enemy Strength Test - Tank Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+        
+        .enemy-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .enemy-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .enemy-name {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        
+        .comparison {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .old-vs-new {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .old-stats {
+            color: #ff6666;
+        }
+        
+        .new-stats {
+            color: #66ff66;
+        }
+        
+        .multiplier {
+            color: #ffff66;
+            font-weight: bold;
+        }
+        
+        .test-button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .test-button:hover {
+            background: #0088ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Enemy Strength Test - Tank Adventure</h1>
+    
+    <div class="info-panel">
+        <h2>📊 Enemy Strength Comparison</h2>
+        <p>Testing the massive enemy strength increases to make battles more challenging!</p>
+        
+        <div class="comparison">
+            <h3>⚔️ Old vs New Enemy Health</h3>
+            <div class="old-vs-new">
+                <div class="old-stats">
+                    <strong>OLD SYSTEM:</strong><br>
+                    • Basic: 30 HP<br>
+                    • Heavy: 80 HP<br>
+                    • Fast: 20 HP<br>
+                    • Sniper: 25 HP<br>
+                    • Boss: 200 HP
+                </div>
+                <div class="multiplier">
+                    ➡️ 4-6x STRONGER ⬅️
+                </div>
+                <div class="new-stats">
+                    <strong>NEW SYSTEM:</strong><br>
+                    • Basic: 120 HP<br>
+                    • Heavy: 300 HP<br>
+                    • Fast: 80 HP<br>
+                    • Sniper: 150 HP<br>
+                    • Boss: 800 HP
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison">
+            <h3>💥 Old vs New Enemy Damage</h3>
+            <div class="old-vs-new">
+                <div class="old-stats">
+                    <strong>OLD SYSTEM:</strong><br>
+                    • Basic: 8 damage<br>
+                    • Heavy: 15 damage<br>
+                    • Fast: 6 damage<br>
+                    • Sniper: 20 damage<br>
+                    • Boss: 25 damage
+                </div>
+                <div class="multiplier">
+                    ➡️ 2.4-4x STRONGER ⬅️
+                </div>
+                <div class="new-stats">
+                    <strong>NEW SYSTEM:</strong><br>
+                    • Basic: 25 damage<br>
+                    • Heavy: 45 damage<br>
+                    • Fast: 20 damage<br>
+                    • Sniper: 80 damage<br>
+                    • Boss: 60 damage
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <h2>🆕 New Enemy Types & Features</h2>
+        
+        <div class="enemy-stats">
+            <div class="enemy-card">
+                <div class="enemy-name">🔷 Elite Guardian</div>
+                <div class="stat-row"><span>Health:</span><span>250 HP</span></div>
+                <div class="stat-row"><span>Damage:</span><span>35</span></div>
+                <div class="stat-row"><span>Shield:</span><span>150</span></div>
+                <div class="stat-row"><span>Resistance:</span><span>20%</span></div>
+                <div class="stat-row"><span>Special:</span><span>Plasma Burst</span></div>
+            </div>
+            
+            <div class="enemy-card">
+                <div class="enemy-name">🔴 Berserker Destroyer</div>
+                <div class="stat-row"><span>Health:</span><span>180 HP</span></div>
+                <div class="stat-row"><span>Damage:</span><span>30</span></div>
+                <div class="stat-row"><span>Multi-Shot:</span><span>3 bullets</span></div>
+                <div class="stat-row"><span>Critical:</span><span>30%</span></div>
+                <div class="stat-row"><span>Special:</span><span>Berserker Rage</span></div>
+            </div>
+            
+            <div class="enemy-card">
+                <div class="enemy-name">🟢 Support Commander</div>
+                <div class="stat-row"><span>Health:</span><span>200 HP</span></div>
+                <div class="stat-row"><span>Damage:</span><span>20</span></div>
+                <div class="stat-row"><span>Shield:</span><span>50</span></div>
+                <div class="stat-row"><span>Range:</span><span>150</span></div>
+                <div class="stat-row"><span>Special:</span><span>Heal Allies</span></div>
+            </div>
+            
+            <div class="enemy-card">
+                <div class="enemy-name">🔶 Enhanced Boss</div>
+                <div class="stat-row"><span>Health:</span><span>800 HP</span></div>
+                <div class="stat-row"><span>Damage:</span><span>60</span></div>
+                <div class="stat-row"><span>Shield:</span><span>300</span></div>
+                <div class="stat-row"><span>Multi-Shot:</span><span>4 bullets</span></div>
+                <div class="stat-row"><span>Special:</span><span>Boss Barrage</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <h2>🎯 Combat Mechanics</h2>
+        <ul>
+            <li><strong>Shield System:</strong> Some enemies have shields that must be broken first</li>
+            <li><strong>Damage Resistance:</strong> Enemies reduce incoming damage by 10-35%</li>
+            <li><strong>Critical Hits:</strong> Enemies can deal 2x damage with glowing golden bullets</li>
+            <li><strong>Multi-Shot:</strong> Advanced enemies fire multiple bullets per shot</li>
+            <li><strong>Homing Bullets:</strong> Sniper and boss bullets track your tanks</li>
+            <li><strong>Special Abilities:</strong> Enemies use powerful abilities with cooldowns</li>
+            <li><strong>Progressive Scaling:</strong> Every wave makes enemies 25% stronger</li>
+        </ul>
+    </div>
+    
+    <div class="info-panel">
+        <h2>📈 Example Wave Progression</h2>
+        <div class="comparison">
+            <h3>Basic Tank Progression</h3>
+            <div class="stat-row"><span>Wave 1:</span><span>120 HP, 25 damage</span></div>
+            <div class="stat-row"><span>Wave 5:</span><span>240 HP, 45 damage</span></div>
+            <div class="stat-row"><span>Wave 10:</span><span>390 HP, 70 damage</span></div>
+            <div class="stat-row"><span>Wave 15:</span><span>570 HP, 100 damage</span></div>
+        </div>
+        
+        <div class="comparison">
+            <h3>Boss Progression</h3>
+            <div class="stat-row"><span>Wave 5:</span><span>1600 HP, 108 damage, 600 shields</span></div>
+            <div class="stat-row"><span>Wave 10:</span><span>2600 HP, 156 damage, 780 shields</span></div>
+            <div class="stat-row"><span>Wave 15:</span><span>3800 HP, 210 damage, 1000 shields</span></div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <h2>🎮 Test the Game</h2>
+        <p>Click the button below to start the game and experience the enhanced enemy system!</p>
+        <button class="test-button" onclick="startGame()">🚀 Start Enhanced Game</button>
+        <button class="test-button" onclick="testWave5()">⚔️ Test Wave 5 (Boss)</button>
+        <button class="test-button" onclick="testWave10()">💀 Test Wave 10 (Nightmare)</button>
+    </div>
+
+    <script>
+        function startGame() {
+            window.open('../index.html', '_blank');
+        }
+        
+        function testWave5() {
+            // Open game with wave 5 settings
+            const gameWindow = window.open('../index.html', '_blank');
+            // Note: You can add URL parameters to jump to specific waves
+            // For now, just open the game
+        }
+        
+        function testWave10() {
+            // Open game with wave 10 settings
+            const gameWindow = window.open('../index.html', '_blank');
+            // Note: You can add URL parameters to jump to specific waves
+            // For now, just open the game
+        }
+        
+        // Display comparison calculations
+        function calculateStrengthIncrease() {
+            const oldStats = {
+                basic: { hp: 30, damage: 8 },
+                heavy: { hp: 80, damage: 15 },
+                fast: { hp: 20, damage: 6 },
+                sniper: { hp: 25, damage: 20 },
+                boss: { hp: 200, damage: 25 }
+            };
+            
+            const newStats = {
+                basic: { hp: 120, damage: 25 },
+                heavy: { hp: 300, damage: 45 },
+                fast: { hp: 80, damage: 20 },
+                sniper: { hp: 150, damage: 80 },
+                boss: { hp: 800, damage: 60 }
+            };
+            
+            console.log('Enemy Strength Increases:');
+            for (const [type, oldStat] of Object.entries(oldStats)) {
+                const newStat = newStats[type];
+                const hpIncrease = (newStat.hp / oldStat.hp).toFixed(1);
+                const damageIncrease = (newStat.damage / oldStat.damage).toFixed(1);
+                console.log(`${type}: HP ${hpIncrease}x stronger, Damage ${damageIncrease}x stronger`);
+            }
+        }
+        
+        calculateStrengthIncrease();
+    </script>
+</body>
+</html>

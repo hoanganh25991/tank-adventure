@@ -333,7 +333,6 @@ body {
     background: linear-gradient(45deg, #dc2626, #ef4444) !important;
     color: white !important;
     border: 2px solid #991b1b;
-    margin-top: 15px;
 }
 
 .reset-btn:hover {
