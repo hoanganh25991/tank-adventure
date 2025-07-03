@@ -387,30 +387,51 @@ class GameUI {
         // Add event listeners to buttons
         const battleButtons = modal.querySelectorAll('.battle-type-btn');
         battleButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
+            // Helper function to handle both touch and click
+            const handleBattleTypeSelection = (e) => {
+                e.preventDefault(); // Prevent default behavior
                 const battleType = btn.getAttribute('data-type');
-                document.body.removeChild(modal);
                 
-                // Request fullscreen and start battle
-                Utils.requestFullscreen(document.documentElement)
-                    .then(() => {
-                        console.log('Fullscreen mode activated');
-                        // Start the battle after fullscreen is activated
-                        this.gameEngine.startBattle(battleType);
-                    })
-                    .catch((error) => {
-                        console.warn('Fullscreen request failed:', error);
-                        // Start the battle even if fullscreen fails
-                        this.gameEngine.startBattle(battleType);
-                    });
-            });
+                // Add visual feedback
+                btn.classList.add('active');
+                
+                // Small delay for visual feedback
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        document.body.removeChild(modal);
+                    }
+                    
+                    // Request fullscreen and start battle
+                    Utils.requestFullscreen(document.documentElement)
+                        .then(() => {
+                            console.log('Fullscreen mode activated');
+                            // Start the battle after fullscreen is activated
+                            this.gameEngine.startBattle(battleType);
+                        })
+                        .catch((error) => {
+                            console.warn('Fullscreen request failed:', error);
+                            // Start the battle even if fullscreen fails
+                            this.gameEngine.startBattle(battleType);
+                        });
+                }, 150);
+            };
+            
+            // Add both touch and click event listeners
+            btn.addEventListener('touchstart', handleBattleTypeSelection, { passive: false });
+            btn.addEventListener('click', handleBattleTypeSelection);
         });
         
         // Close button
         const closeBtn = modal.querySelector('.modal-close-btn');
-        closeBtn.addEventListener('click', () => {
-            document.body.removeChild(modal);
-        });
+        const handleClose = (e) => {
+            e.preventDefault();
+            if (modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        };
+        
+        closeBtn.addEventListener('touchstart', handleClose, { passive: false });
+        closeBtn.addEventListener('click', handleClose);
     }
 
     handleUpgrade(upgradeType) {

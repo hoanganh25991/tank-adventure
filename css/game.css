@@ -232,6 +232,37 @@ body {
     text-transform: uppercase;
 }
 
+/* Special styling for the main menu buttons */
+#startGameBtn {
+    background: linear-gradient(45deg, #ff7e5f, #feb47b);
+    border: 2px solid #ff7e5f;
+}
+
+#startGameBtn:hover {
+    background: linear-gradient(45deg, #ff8a6f, #fec48b);
+    box-shadow: 0 6px 16px rgba(255, 126, 95, 0.4);
+}
+
+#upgradesBtn {
+    background: linear-gradient(45deg, #4a9eff, #6bb6ff);
+    border: 2px solid #4a9eff;
+}
+
+#upgradesBtn:hover {
+    background: linear-gradient(45deg, #5aafff, #7bc6ff);
+    box-shadow: 0 6px 16px rgba(74, 158, 255, 0.4);
+}
+
+#settingsBtn {
+    background: linear-gradient(45deg, #9a9a9a, #b8b8b8);
+    border: 2px solid #9a9a9a;
+}
+
+#settingsBtn:hover {
+    background: linear-gradient(45deg, #aaaaaa, #c8c8c8);
+    box-shadow: 0 6px 16px rgba(154, 154, 154, 0.4);
+}
+
 
 
 .action-btn:active {
@@ -305,7 +336,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    width: 260px;
+    width: 280px;
     text-align: center;
     text-transform: uppercase;
     
@@ -2085,6 +2116,12 @@ body {
     margin-bottom: 20px;
 }
 
+.modal-instruction {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
 .battle-type-btn {
     display: flex;
     align-items: center;
@@ -2098,12 +2135,22 @@ body {
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove default mobile tap highlight */
 }
 
-.battle-type-btn:hover, .battle-type-btn:active {
+.battle-type-btn:hover, 
+.battle-type-btn:active,
+.battle-type-btn.active {
     background: var(--bg-item);
     border-color: var(--primary-blue);
     transform: translateY(-2px);
+}
+
+/* Active state for touch feedback */
+.battle-type-btn.active {
+    background-color: rgba(74, 158, 255, 0.3);
+    transform: scale(0.98);
+    transition: all 0.1s ease;
 }
 
 /* Add a subtle pulsing effect to indicate clickability */
@@ -2131,14 +2178,20 @@ body {
 }
 
 .battle-icon {
-    font-size: 24px;
+    font-size: 28px;
     margin-right: 15px;
 }
 
-.battle-name {
+.battle-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     text-align: left;
+}
+
+.battle-name {
     font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .battle-desc {
@@ -2146,20 +2199,36 @@ body {
     font-size: 14px;
 }
 
+.battle-click-hint {
+    color: var(--primary-blue);
+    font-size: 20px;
+    margin-left: 10px;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
 .modal-close-btn {
     background: var(--bg-section);
     border: 2px solid var(--border-primary);
     border-radius: 10px;
-    padding: 12px 25px;
+    padding: 15px 30px;
     color: var(--text-secondary);
     font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-top: 10px;
+    -webkit-tap-highlight-color: transparent; /* Remove default mobile tap highlight */
 }
 
-.modal-close-btn:hover {
+.modal-close-btn:hover,
+.modal-close-btn:active {
     background: var(--bg-item);
     color: var(--text-primary);
+    border-color: var(--border-accent);
 }
 
 /* Base Screen Battle Button */
