@@ -408,8 +408,8 @@ body {
 
 #skillOptions {
     display: flex;
-    gap: 15px;
-    flex-wrap: nowrap;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
     justify-content: center;
     max-width: 100%;
     padding: 0 10px;
@@ -419,7 +419,7 @@ body {
     background: var(--bg-section);
     border: 2px solid var(--border-accent);
     border-radius: 12px;
-    padding: 15px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     flex: 1;
@@ -427,6 +427,8 @@ body {
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     max-width: 280px;
+    /* Ensure minimum width for readability */
+    min-width: 100px;
     
     /* Enhanced touch support for iPhone Safari */
     touch-action: manipulation;
@@ -1370,13 +1372,17 @@ body {
     }
     
     #skillOptions {
-        gap: 5px;
-        padding: 0 3px;
+        gap: 8px;
+        padding: 0 5px;
+        flex-direction: column; /* Stack vertically on iPhone */
     }
     
     .skill-option {
-        padding: 10px 5px;
+        padding: 10px 8px;
         border-radius: 8px;
+        margin-bottom: 8px;
+        max-width: 100%; /* Full width on iPhone */
+        min-height: 80px; /* Ensure minimum height for touch targets */
         /* Enhanced touch target size for very small screens */
         min-height: 100px;
         display: flex;
@@ -1509,12 +1515,21 @@ body {
         font-size: 14px;
     }
     
-    /* Back button adjustments for settings */
+    /* Back button adjustments for settings - consistent with other menu buttons */
     #backToMenuFromSettingsBtn {
-        margin-top: 15px;
-        padding: 12px 24px;
-        font-size: 16px;
-        width: 200px;
+        margin-top: 20px;
+        padding: 15px 30px;
+        font-size: 18px;
+        width: 280px;
+        background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+        border: 2px solid var(--primary-blue);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    #backToMenuFromSettingsBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(74, 158, 255, 0.4);
+        background: linear-gradient(45deg, #5aafff, #7bc6ff);
     }
     
     /* Base Screen landscape adjustments */
