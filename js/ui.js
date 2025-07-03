@@ -644,26 +644,77 @@ class GameUI {
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: ${type === 'success' ? '#44aa44' : type === 'error' ? '#aa4444' : '#4a9eff'};
-            color: white;
-            border-radius: 8px;
-            z-index: 1000;
-            animation: slideUp 0.3s ease-out;
-        `;
+        
+        // Special styling for battle notifications
+        if (type === 'battle') {
+            notification.innerHTML = `<div class="battle-notification-content">${message}</div>`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 20px 30px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 15px;
+                border: 3px solid #ff7e5f;
+                z-index: 1000;
+                animation: fadeInOut 2s ease-out;
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 0 30px rgba(255, 126, 95, 0.5);
+            `;
+            
+            // Add CSS animation for battle notification
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+                    30% { transform: translate(-50%, -50%) scale(1); }
+                    80% { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Remove the style element when notification is removed
+            setTimeout(() => {
+                if (style.parentNode) {
+                    style.parentNode.removeChild(style);
+                }
+            }, 2500);
+            
+            // Shorter display time for battle notification
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 2500);
+        } else {
+            // Regular notifications
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#44aa44' : type === 'error' ? '#aa4444' : '#4a9eff'};
+                color: white;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease-out;
+            `;
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
         
         document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
     }
 
     showLoading(progress = 0) {
