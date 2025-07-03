@@ -319,7 +319,7 @@ class Player {
     
     updateMiniTankFormation() {
         const mainTank = this.mainTank;
-        const positions = [
+        const basePositions = [
             { x: -60, y: -60 }, // Top-left
             { x: 60, y: -60 },  // Top-right  
             { x: -60, y: 60 },  // Bottom-left
@@ -329,14 +329,31 @@ class Player {
         
         for (let i = 0; i < this.miniTanks.length; i++) {
             const miniTank = this.miniTanks[i];
-            const targetPos = positions[i];
-            const targetX = mainTank.x + targetPos.x;
-            const targetY = mainTank.y + targetPos.y;
+            const basePos = basePositions[i];
+            
+            // Calculate rotated formation position relative to main tank's direction
+            const rotatedPos = this.rotateFormationPosition(basePos, mainTank.targetAngle);
+            const targetX = mainTank.x + rotatedPos.x;
+            const targetY = mainTank.y + rotatedPos.y;
             
             // Smooth follow movement for mini tanks
             miniTank.x = Utils.lerp(miniTank.x, targetX, 0.15);
             miniTank.y = Utils.lerp(miniTank.y, targetY, 0.15);
+            
+            // Sync rotation with main tank
+            miniTank.targetAngle = mainTank.targetAngle;
         }
+    }
+    
+    rotateFormationPosition(position, angle) {
+        // Rotate formation position around main tank based on main tank's direction
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        
+        return {
+            x: position.x * cos - position.y * sin,
+            y: position.x * sin + position.y * cos
+        };
     }
 
     updateAutoShoot(deltaTime, enemies) {

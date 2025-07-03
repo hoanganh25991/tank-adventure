@@ -414,18 +414,22 @@ class GameUI {
     showSkillSelection(skillChoices) {
         this.elements.skillOptions.innerHTML = '';
         this.skillSelectionInProgress = false;
+        this.selectedSkillElement = null;
         
         skillChoices.forEach(skill => {
             const skillDiv = document.createElement('div');
             skillDiv.className = 'skill-option';
+            skillDiv.setAttribute('data-skill-id', skill.id);
             skillDiv.innerHTML = `
                 <h3>${skill.name}</h3>
                 <p>${skill.description}</p>
                 <p><strong>Type:</strong> ${skill.type}</p>
             `;
             
-            skillDiv.addEventListener('click', () => {
+            // Use mobile-friendly touch events for skill selection
+            this.setupMobileButton(skillDiv, () => {
                 if (!this.skillSelectionInProgress) {
+                    this.selectedSkillElement = skillDiv;
                     this.selectSkill(skill.id);
                 }
             });
@@ -442,13 +446,23 @@ class GameUI {
             return;
         }
         
+        console.log('Skill selected:', skillId);
         this.skillSelectionInProgress = true;
         
-        // Visual feedback - disable all skill options
+        // Enhanced visual feedback for mobile
         document.querySelectorAll('.skill-option').forEach(option => {
             option.style.pointerEvents = 'none';
             option.style.opacity = '0.6';
+            option.style.transform = 'scale(0.95)';
         });
+        
+        // Add selection animation
+        if (this.selectedSkillElement) {
+            this.selectedSkillElement.style.opacity = '1';
+            this.selectedSkillElement.style.transform = 'scale(1.05)';
+            this.selectedSkillElement.style.borderColor = '#00ff00';
+            this.selectedSkillElement.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+        }
         
         this.gameEngine.skillManager.addSkill(skillId);
         this.gameEngine.resumeBattle();

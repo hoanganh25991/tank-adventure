@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Tank Rotation Sync Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        #testCanvas {
+            border: 2px solid #333;
+            background: #2a2a2a;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #4a9eff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .control-btn:hover {
+            background: #3a8eef;
+        }
+        
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mini Tank Rotation Sync Test</h1>
+    <p>This test verifies that mini tanks rotate in the same direction as the main tank when moving.</p>
+    
+    <canvas id="testCanvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <button class="control-btn" onclick="testDirection(0, -1)">↑ North</button>
+        <button class="control-btn" onclick="testDirection(1, -1)">↗ NE</button>
+        <button class="control-btn" onclick="testDirection(1, 0)">→ East</button>
+        <button class="control-btn" onclick="testDirection(1, 1)">↘ SE</button>
+        <button class="control-btn" onclick="testDirection(0, 1)">↓ South</button>
+        <button class="control-btn" onclick="testDirection(-1, 1)">↙ SW</button>
+        <button class="control-btn" onclick="testDirection(-1, 0)">← West</button>
+        <button class="control-btn" onclick="testDirection(-1, -1)">↖ NW</button>
+        <button class="control-btn" onclick="stopMovement()">⏹ Stop</button>
+    </div>
+    
+    <div class="status">
+        <div id="statusText">Click direction buttons to test mini tank rotation synchronization</div>
+        <div id="angleDisplay">Current Angle: 0°</div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+    <script>
+        // Test setup
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusText = document.getElementById('statusText');
+        const angleDisplay = document.getElementById('angleDisplay');
+        
+        // Create test player
+        const player = new Player(canvas.width / 2, canvas.height / 2);
+        
+        let animationId;
+        let lastTime = 0;
+        
+        function testDirection(x, y) {
+            const angle = Math.atan2(y, x);
+            const angleDegrees = Math.round(angle * 180 / Math.PI);
+            
+            statusText.textContent = `Testing direction: ${getDirectionName(x, y)}`;
+            angleDisplay.textContent = `Current Angle: ${angleDegrees}°`;
+            
+            // Set movement direction
+            player.setMovementDirection(x, y, 1.0);
+            
+            // Start animation if not already running
+            if (!animationId) {
+                animate();
+            }
+        }
+        
+        function stopMovement() {
+            player.setMovementDirection(0, 0, 0);
+            statusText.textContent = 'Movement stopped';
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        function getDirectionName(x, y) {
+            if (x === 0 && y === -1) return 'North';
+            if (x === 1 && y === -1) return 'Northeast';
+            if (x === 1 && y === 0) return 'East';
+            if (x === 1 && y === 1) return 'Southeast';
+            if (x === 0 && y === 1) return 'South';
+            if (x === -1 && y === 1) return 'Southwest';
+            if (x === -1 && y === 0) return 'West';
+            if (x === -1 && y === -1) return 'Northwest';
+            return 'Custom';
+        }
+        
+        function animate(currentTime = 0) {
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            // Update player
+            player.update(deltaTime);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid for reference
+            drawGrid();
+            
+            // Draw player formation
+            drawPlayer();
+            
+            // Draw angle indicators
+            drawAngleIndicators();
+            
+            // Continue animation
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            // Vertical lines
+            for (let x = 0; x <= canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Horizontal lines
+            for (let y = 0; y <= canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        function drawPlayer() {
+            // Draw main tank
+            drawTank(player.mainTank, '#3498db', 'MAIN');
+            
+            // Draw mini tanks
+            player.miniTanks.forEach((tank, index) => {
+                drawTank(tank, '#2ecc71', `M${index + 1}`);
+            });
+            
+            // Draw formation lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            player.miniTanks.forEach(tank => {
+                ctx.beginPath();
+                ctx.moveTo(player.mainTank.x, player.mainTank.y);
+                ctx.lineTo(tank.x, tank.y);
+                ctx.stroke();
+            });
+        }
+        
+        function drawTank(tank, color, label) {
+            ctx.save();
+            ctx.translate(tank.x, tank.y);
+            ctx.rotate(tank.angle);
+            
+            // Tank body
+            ctx.fillStyle = color;
+            ctx.fillRect(-tank.size, -tank.size * 0.6, tank.size * 2, tank.size * 1.2);
+            
+            // Tank cannon (to show direction)
+            ctx.fillStyle = '#555555';
+            ctx.fillRect(0, -tank.size * 0.1, tank.size * 1.5, tank.size * 0.2);
+            
+            // Direction arrow
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.moveTo(tank.size * 1.5, 0);
+            ctx.lineTo(tank.size * 1.3, -tank.size * 0.3);
+            ctx.lineTo(tank.size * 1.3, tank.size * 0.3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+            
+            // Tank label
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, tank.x, tank.y - tank.size - 10);
+        }
+        
+        function drawAngleIndicators() {
+            // Draw angle arc for main tank
+            const centerX = player.mainTank.x;
+            const centerY = player.mainTank.y;
+            const radius = 50;
+            
+            ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, player.mainTank.targetAngle);
+            ctx.stroke();
+            
+            // Draw angle text
+            const angleDegrees = Math.round(player.mainTank.targetAngle * 180 / Math.PI);
+            ctx.fillStyle = 'yellow';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${angleDegrees}°`, centerX, centerY + radius + 20);
+        }
+        
+        // Initial draw
+        drawPlayer();
+        
+        console.log('Mini Tank Rotation Sync Test loaded');
+        console.log('Player object:', player);
+    </script>
+</body>
+</html>

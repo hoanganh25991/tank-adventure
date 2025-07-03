@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Skill Selection Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 30px;
+        }
+        
+        #skillOptions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .skill-option {
+            background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
+            border: 2px solid #4a9eff;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            
+            /* Enhanced touch support for iPhone Safari */
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .skill-option h3 {
+            color: #4a9eff;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .skill-option p {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .skill-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(74, 158, 255, 0.3);
+            border-color: #6bb6ff;
+        }
+        
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            #skillOptions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .skill-option {
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Skill Selection Touch Test</h1>
+        <p>Test the skill selection functionality on iPhone Safari:</p>
+        
+        <div id="skillOptions">
+            <div class="skill-option" data-skill-id="damage_boost">
+                <h3>Damage Boost</h3>
+                <p>Increases weapon damage by 25%</p>
+                <p><strong>Type:</strong> Passive</p>
+            </div>
+            
+            <div class="skill-option" data-skill-id="health_regen">
+                <h3>Health Regeneration</h3>
+                <p>Slowly regenerates health over time</p>
+                <p><strong>Type:</strong> Passive</p>
+            </div>
+            
+            <div class="skill-option" data-skill-id="speed_boost">
+                <h3>Speed Boost</h3>
+                <p>Increases movement speed by 30%</p>
+                <p><strong>Type:</strong> Passive</p>
+            </div>
+        </div>
+        
+        <div id="results">
+            <h3>Test Results:</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+    
+    <script>
+        const skillOptions = document.querySelectorAll('.skill-option');
+        const log = document.getElementById('log');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function setupMobileButton(button, callback) {
+            if (!button) return;
+            
+            let touchStarted = false;
+            let touchMoved = false;
+            let selectedSkillElement = null;
+            
+            const handleTouchStart = (e) => {
+                e.preventDefault();
+                touchStarted = true;
+                touchMoved = false;
+                
+                addLog(`Touch started on: ${button.querySelector('h3').textContent}`);
+                
+                // Add visual feedback
+                button.style.transform = 'scale(0.95)';
+                button.style.opacity = '0.8';
+            };
+            
+            const handleTouchMove = (e) => {
+                if (touchStarted) {
+                    touchMoved = true;
+                    addLog('Touch moved');
+                }
+            };
+            
+            const handleTouchEnd = (e) => {
+                e.preventDefault();
+                
+                addLog('Touch ended');
+                
+                // Reset visual feedback
+                button.style.transform = 'scale(1)';
+                button.style.opacity = '1';
+                
+                if (touchStarted && !touchMoved) {
+                    addLog(`✅ SKILL SELECTED: ${button.querySelector('h3').textContent}`);
+                    
+                    // Disable all options
+                    skillOptions.forEach(option => {
+                        option.style.pointerEvents = 'none';
+                        option.style.opacity = '0.6';
+                        option.style.transform = 'scale(0.95)';
+                    });
+                    
+                    // Highlight selected option
+                    button.style.opacity = '1';
+                    button.style.transform = 'scale(1.05)';
+                    button.style.borderColor = '#00ff00';
+                    button.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+                    
+                    // Re-enable after 2 seconds for testing
+                    setTimeout(() => {
+                        skillOptions.forEach(option => {
+                            option.style.pointerEvents = 'auto';
+                            option.style.opacity = '1';
+                            option.style.transform = 'scale(1)';
+                            option.style.borderColor = '#4a9eff';
+                            option.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                        });
+                        addLog('🔄 Options re-enabled for testing');
+                    }, 2000);
+                    
+                    callback();
+                }
+                
+                touchStarted = false;
+                touchMoved = false;
+            };
+            
+            const handleClick = (e) => {
+                e.preventDefault();
+                addLog(`Click event on: ${button.querySelector('h3').textContent}`);
+                callback();
+            };
+            
+            // Add event listeners
+            button.addEventListener('touchstart', handleTouchStart, { passive: false });
+            button.addEventListener('touchmove', handleTouchMove, { passive: false });
+            button.addEventListener('touchend', handleTouchEnd, { passive: false });
+            button.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+            button.addEventListener('click', handleClick);
+            button.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+        
+        // Setup all skill options
+        skillOptions.forEach(option => {
+            setupMobileButton(option, () => {
+                const skillId = option.getAttribute('data-skill-id');
+                console.log('Skill selected:', skillId);
+            });
+        });
+        
+        addLog('Skill selection test page loaded');
+        addLog('Try tapping on the skill options above');
+    </script>
+</body>
+</html>
