@@ -173,6 +173,52 @@ class Utils {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
+    // Fullscreen utilities
+    static requestFullscreen(element = document.documentElement) {
+        if (!element) return Promise.reject(new Error('Element not found'));
+        
+        if (element.requestFullscreen) {
+            return element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) { // Safari
+            return element.webkitRequestFullscreen();
+        } else if (element.mozRequestFullScreen) { // Firefox
+            return element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) { // IE/Edge
+            return element.msRequestFullscreen();
+        } else {
+            return Promise.reject(new Error('Fullscreen not supported'));
+        }
+    }
+
+    static exitFullscreen() {
+        if (document.exitFullscreen) {
+            return document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { // Safari
+            return document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            return document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            return document.msExitFullscreen();
+        } else {
+            return Promise.reject(new Error('Exit fullscreen not supported'));
+        }
+    }
+
+    static isFullscreen() {
+        return !!(document.fullscreenElement || 
+                  document.webkitFullscreenElement || 
+                  document.mozFullScreenElement || 
+                  document.msFullscreenElement);
+    }
+
+    static toggleFullscreen(element = document.documentElement) {
+        if (this.isFullscreen()) {
+            return this.exitFullscreen();
+        } else {
+            return this.requestFullscreen(element);
+        }
+    }
+
     static getTouchPos(canvas, touch) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;

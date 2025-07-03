@@ -250,7 +250,7 @@ class GameUI {
         
         // Menu buttons - Enhanced for mobile touch support
         this.setupMobileButton(this.elements.startGameBtn, () => {
-            this.gameEngine.startBattle();
+            this.handleStartBattle();
         });
         
         this.setupMobileButton(this.elements.upgradesBtn, () => {
@@ -314,6 +314,21 @@ class GameUI {
                 this.gameEngine.waveManager.enemies
             );
         }
+    }
+
+    handleStartBattle() {
+        // Request fullscreen first
+        Utils.requestFullscreen(document.documentElement)
+            .then(() => {
+                console.log('Fullscreen mode activated');
+                // Start the battle after fullscreen is activated
+                this.gameEngine.startBattle();
+            })
+            .catch((error) => {
+                console.warn('Fullscreen request failed:', error);
+                // Start the battle even if fullscreen fails
+                this.gameEngine.startBattle();
+            });
     }
 
     handleUpgrade(upgradeType) {

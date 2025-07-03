@@ -54,6 +54,7 @@ class GameEngine {
         this.initialize();
         this.initializeTankRendering();
         this.setupDebugKeys();
+        this.setupFullscreenHandlers();
     }
 
     async initialize() {
@@ -933,6 +934,50 @@ class GameEngine {
         });
         
         console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, R = Reset Tank Log');
+    }
+
+    setupFullscreenHandlers() {
+        // Handle fullscreen change events
+        const fullscreenEvents = [
+            'fullscreenchange',
+            'webkitfullscreenchange',
+            'mozfullscreenchange',
+            'MSFullscreenChange'
+        ];
+        
+        fullscreenEvents.forEach(event => {
+            document.addEventListener(event, () => {
+                const isFullscreen = Utils.isFullscreen();
+                console.log(`Fullscreen mode: ${isFullscreen ? 'ON' : 'OFF'}`);
+                
+                // Adjust canvas size when fullscreen changes
+                if (this.ui) {
+                    this.ui.adjustCanvasSize();
+                }
+                
+                // Update UI for fullscreen
+                this.handleFullscreenChange(isFullscreen);
+            });
+        });
+        
+        // Handle escape key to exit fullscreen
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && Utils.isFullscreen()) {
+                Utils.exitFullscreen().catch(console.warn);
+            }
+        });
+    }
+
+    handleFullscreenChange(isFullscreen) {
+        // Update body class for CSS styling
+        if (isFullscreen) {
+            document.body.classList.add('fullscreen');
+        } else {
+            document.body.classList.remove('fullscreen');
+        }
+        
+        // Log fullscreen state
+        console.log(`Game is now in ${isFullscreen ? 'fullscreen' : 'windowed'} mode`);
     }
 
     resetGame() {
