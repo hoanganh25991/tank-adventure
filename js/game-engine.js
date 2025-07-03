@@ -46,8 +46,8 @@ class GameEngine {
         this.particles = [];
         
         // Debug flags
-        this.debugMode = false;
-        this.debugEnvironment = false;
+        this.debugMode = true; // Temporarily enable to help see environment objects
+        this.debugEnvironment = true; // Enable environment debug logging
         this.showCollisionBoxes = false;
         
         // Camera system for endless movement
@@ -62,9 +62,18 @@ class GameEngine {
             zoomSmoothing: 0.05
         };
         
+        // Keyboard input state for WASD movement and spacebar shooting
+        this.keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false,
+            space: false
+        };
+        
         this.initialize();
         this.initializeTankRendering();
-        this.setupDebugKeys();
+        this.setupKeyboardControls();
         this.setupFullscreenHandlers();
     }
 
@@ -342,8 +351,65 @@ class GameEngine {
         // Get joystick input
         const joystick = this.ui.getJoystickInput();
         
-        // Set movement direction directly instead of target points
-        this.player.setMovementDirection(joystick.x, joystick.y, joystick.magnitude);
+        // Get keyboard input for WASD movement
+        const keyboard = this.getKeyboardInput();
+        
+        // Combine joystick and keyboard input (keyboard takes priority if both are active)
+        let finalX = joystick.x;
+        let finalY = joystick.y;
+        let finalMagnitude = joystick.magnitude;
+        
+        if (keyboard.magnitude > 0) {
+            finalX = keyboard.x;
+            finalY = keyboard.y;
+            finalMagnitude = keyboard.magnitude;
+        }
+        
+        // Set movement direction
+        this.player.setMovementDirection(finalX, finalY, finalMagnitude);
+        
+        // Handle spacebar shooting
+        if (this.keys.space) {
+            this.handleKeyboardShoot();
+        }
+    }
+
+    getKeyboardInput() {
+        // Calculate WASD movement direction
+        let x = 0;
+        let y = 0;
+        
+        if (this.keys.a) x -= 1; // Left
+        if (this.keys.d) x += 1; // Right
+        if (this.keys.w) y -= 1; // Up
+        if (this.keys.s) y += 1; // Down
+        
+        // Calculate magnitude and normalize
+        const magnitude = Math.sqrt(x * x + y * y);
+        
+        if (magnitude > 0) {
+            x /= magnitude;
+            y /= magnitude;
+        }
+        
+        return {
+            x: x,
+            y: y,
+            magnitude: magnitude
+        };
+    }
+
+    handleKeyboardShoot() {
+        if (this.player) {
+            // Get canvas center as default target for keyboard shooting
+            const canvas = document.getElementById('gameCanvas');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Pass enemies array for auto-aim
+            const enemies = this.waveManager ? this.waveManager.enemies : [];
+            this.player.manualShoot(centerX, centerY, enemies);
+        }
     }
 
     checkCollisions() {
@@ -355,25 +421,45 @@ class GameEngine {
         // Player bullets vs enemies
         for (let i = playerBullets.length - 1; i >= 0; i--) {
             const bullet = playerBullets[i];
+            let bulletHitCount = 0;
+            let shouldRemoveBullet = true;
             
             for (let j = enemies.length - 1; j >= 0; j--) {
                 const enemy = enemies[j];
                 if (!enemy.isAlive) continue;
                 
-                if (Utils.circleCollision(bullet.x, bullet.y, 3, enemy.x, enemy.y, enemy.size)) {
+                // Use bullet size for collision detection (bigger bullets have larger collision)
+                const bulletRadius = bullet.size || 3;
+                if (Utils.circleCollision(bullet.x, bullet.y, bulletRadius, enemy.x, enemy.y, enemy.size)) {
                     // Hit enemy
                     const destroyed = enemy.takeDamage(bullet.damage);
+                    bulletHitCount++;
                     
-                    // Create hit effect
-                    this.createHitEffect(bullet.x, bullet.y, bullet.damage);
-                    
-                    // Check for explosive shot
-                    if (this.player.explosiveShotActive) {
-                        this.createExplosion(bullet.x, bullet.y, 50, bullet.damage / 2);
+                    // Create enhanced hit effect for main tank bullets
+                    if (bullet.isMainTankBullet) {
+                        this.createEnhancedHitEffect(bullet.x, bullet.y, bullet.damage);
+                        // Play enhanced hit sound
+                        if (this.soundManager) {
+                            this.soundManager.play('main_tank_hit');
+                        }
+                    } else {
+                        this.createHitEffect(bullet.x, bullet.y, bullet.damage);
+                        // Play standard hit sound
+                        if (this.soundManager) {
+                            this.soundManager.play('mini_tank_hit');
+                        }
                     }
                     
-                    // Remove bullet
-                    this.removePlayerBullet(bullet);
+                    // Check for explosive shot or main tank bullet explosion
+                    if (this.player.explosiveShotActive) {
+                        this.createExplosion(bullet.x, bullet.y, 50, bullet.damage / 2);
+                    } else if (bullet.isMainTankBullet && bullet.explosionRadius > 0) {
+                        this.createMainTankExplosion(bullet.x, bullet.y, bullet.explosionRadius, bullet.damage * 0.3);
+                        // Play explosion sound
+                        if (this.soundManager) {
+                            this.soundManager.play('main_tank_explosion');
+                        }
+                    }
                     
                     if (destroyed) {
                         this.battleStats.enemiesDefeated++;
@@ -381,8 +467,20 @@ class GameEngine {
                         this.battleStats.expGained += Math.floor(enemy.value / 2);
                     }
                     
-                    break;
+                    // Check if bullet should continue (penetration)
+                    if (bullet.penetration && bulletHitCount >= bullet.penetration) {
+                        shouldRemoveBullet = true;
+                        break;
+                    } else if (!bullet.penetration || bullet.penetration <= 1) {
+                        shouldRemoveBullet = true;
+                        break;
+                    }
                 }
+            }
+            
+            // Remove bullet if it should be removed
+            if (shouldRemoveBullet && bulletHitCount > 0) {
+                this.removePlayerBullet(bullet);
             }
         }
         
@@ -690,8 +788,8 @@ class GameEngine {
         }
         
         // Draw rocks/obstacles
-        this.ctx.fillStyle = '#555555';
-        this.ctx.strokeStyle = '#333333';
+        this.ctx.fillStyle = '#8B7355'; // Warmer brown color for better visibility on Ghibli background
+        this.ctx.strokeStyle = '#5D4037'; // Rich brown border
         this.ctx.lineWidth = 2 / this.camera.zoom; // Adjust line width for zoom
         
         let rockCount = 0;
@@ -699,7 +797,7 @@ class GameEngine {
             for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
                 // Use deterministic random based on position
                 const seed = (x * 31 + y * 17) % 100;
-                if (seed > 70) { // 30% chance for obstacles (increased for testing)
+                if (seed > 50) { // 50% chance for obstacles (increased for better visibility)
                     const rockX = x + (seed % 50) - 25;
                     const rockY = y + ((seed * 7) % 50) - 25;
                     const rockSize = 15 + (seed % 20);
@@ -719,15 +817,15 @@ class GameEngine {
         }
         
         // Draw trees/vegetation
-        this.ctx.fillStyle = '#2d4a2d';
-        this.ctx.strokeStyle = '#1a2e1a';
+        this.ctx.fillStyle = '#4A7C59'; // Brighter green for better visibility
+        this.ctx.strokeStyle = '#2E4A36'; // Darker green border
         this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
         
         let treeCount = 0;
         for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
             for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
                 const seed = (x * 23 + y * 19) % 100;
-                if (seed > 60) { // 40% chance for trees (increased for testing)
+                if (seed > 40) { // 60% chance for trees (increased for better visibility)
                     const treeX = x + (seed % 40) - 20;
                     const treeY = y + ((seed * 11) % 40) - 20;
                     const treeSize = 20 + (seed % 15);
@@ -741,7 +839,7 @@ class GameEngine {
                     this.ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
                     
                     // Tree foliage
-                    this.ctx.fillStyle = '#2d4a2d';
+                    this.ctx.fillStyle = '#4A7C59';
                     this.ctx.beginPath();
                     this.ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
                     this.ctx.fill();
@@ -754,15 +852,15 @@ class GameEngine {
         }
         
         // Draw water/ponds
-        this.ctx.fillStyle = '#1a4d4d';
-        this.ctx.strokeStyle = '#0d3333';
+        this.ctx.fillStyle = '#4A90B8'; // Brighter blue for better visibility
+        this.ctx.strokeStyle = '#2B5A7A'; // Darker blue border
         this.ctx.lineWidth = 1 / this.camera.zoom; // Adjust line width for zoom
         
         let waterCount = 0;
         for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
             for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
                 const seed = (x * 13 + y * 29) % 100;
-                if (seed > 80) { // 20% chance for water (increased for testing)
+                if (seed > 70) { // 30% chance for water (increased for better visibility)
                     const waterX = x + (seed % 60) - 30;
                     const waterY = y + ((seed * 13) % 60) - 30;
                     const waterSize = 30 + (seed % 25);
@@ -787,43 +885,33 @@ class GameEngine {
             console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies`);
         }
         
-        // Always render a few test objects near the player for debugging
-        if (this.debugMode && this.player) {
-            const px = this.player.mainTank.x;
-            const py = this.player.mainTank.y;
-            
-            // Test rock
+        // Draw test objects at fixed world coordinates for debugging
+        if (this.debugMode) {
             this.ctx.save();
-            this.ctx.fillStyle = '#ff0000'; // Red for visibility
-            this.ctx.strokeStyle = '#aa0000';
-            this.ctx.lineWidth = 2 / this.camera.zoom;
-            this.ctx.translate(px + 100, py + 100);
-            this.ctx.fillRect(-15, -15, 30, 30);
-            this.ctx.strokeRect(-15, -15, 30, 30);
-            this.ctx.restore();
+            this.ctx.fillStyle = '#FF0000'; // Bright red for visibility
+            this.ctx.strokeStyle = '#AA0000';
+            this.ctx.lineWidth = 3 / this.camera.zoom;
             
-            // Test tree
-            this.ctx.save();
-            this.ctx.fillStyle = '#00ff00'; // Green for visibility
-            this.ctx.strokeStyle = '#00aa00';
-            this.ctx.lineWidth = 1 / this.camera.zoom;
-            this.ctx.translate(px - 100, py - 100);
-            this.ctx.beginPath();
-            this.ctx.arc(0, 0, 20, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.stroke();
-            this.ctx.restore();
+            // Test rock at world coordinates (0, 0)
+            this.ctx.fillRect(-10, -10, 20, 20);
+            this.ctx.strokeRect(-10, -10, 20, 20);
             
-            // Test water
-            this.ctx.save();
-            this.ctx.fillStyle = '#0000ff'; // Blue for visibility
-            this.ctx.strokeStyle = '#0000aa';
-            this.ctx.lineWidth = 1 / this.camera.zoom;
-            this.ctx.translate(px + 100, py - 100);
-            this.ctx.beginPath();
-            this.ctx.arc(0, 0, 25, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.stroke();
+            // Test rock at world coordinates (100, 100)
+            this.ctx.fillRect(90, 90, 20, 20);
+            this.ctx.strokeRect(90, 90, 20, 20);
+            
+            // Test rock at world coordinates (-100, -100)
+            this.ctx.fillRect(-110, -110, 20, 20);
+            this.ctx.strokeRect(-110, -110, 20, 20);
+            
+            // Test rock at world coordinates (200, 0)
+            this.ctx.fillRect(190, -10, 20, 20);
+            this.ctx.strokeRect(190, -10, 20, 20);
+            
+            // Test rock at world coordinates (0, 200)
+            this.ctx.fillRect(-10, 190, 20, 20);
+            this.ctx.strokeRect(-10, 190, 20, 20);
+            
             this.ctx.restore();
         }
     }
@@ -1035,12 +1123,52 @@ class GameEngine {
         this.ctx.strokeStyle = this.darkenColor(color, 0.4);
         this.ctx.strokeRect(0, -barrelWidth/2, barrelLength, barrelWidth);
         
-        // Muzzle flash effect
+        // Enhanced muzzle flash effect with random variations
         if (tank.muzzleFlash && tank.muzzleFlash > 0) {
-            this.ctx.fillStyle = `rgba(255, 255, 0, ${tank.muzzleFlash * 0.8})`;
-            this.ctx.beginPath();
-            this.ctx.arc(barrelLength, 0, barrelWidth * 2, 0, Math.PI * 2);
-            this.ctx.fill();
+            // Random flicker intensity
+            const flickerIntensity = 0.8 + Math.random() * 0.4;
+            const randomOffset = (Math.random() - 0.5) * 4;
+            
+            if (tank.type === 'main') {
+                // Enhanced main tank muzzle flash with random colors
+                const hue = 30 + Math.random() * 30; // Random yellow-orange hue
+                const saturation = 80 + Math.random() * 20;
+                
+                // Outer glow with random flicker
+                this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, 70%, ${tank.muzzleFlash * 0.3 * flickerIntensity})`;
+                this.ctx.beginPath();
+                this.ctx.arc(barrelLength + randomOffset, 0, barrelWidth * (3.5 + Math.random()), 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Main flash with random size
+                this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, 60%, ${tank.muzzleFlash * 0.8 * flickerIntensity})`;
+                this.ctx.beginPath();
+                this.ctx.arc(barrelLength + randomOffset, 0, barrelWidth * (2 + Math.random() * 1.5), 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Hot center with random white-hot intensity
+                this.ctx.fillStyle = `rgba(255, 255, ${200 + Math.random() * 55}, ${tank.muzzleFlash * flickerIntensity})`;
+                this.ctx.beginPath();
+                this.ctx.arc(barrelLength + randomOffset, 0, barrelWidth * (1 + Math.random() * 0.5), 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Random sparks
+                if (Math.random() < 0.3) {
+                    this.addRandomSparks(barrelLength, 0, 3 + Math.random() * 4);
+                }
+            } else {
+                // Mini tank muzzle flash with random variations
+                const hue = 50 + Math.random() * 20;
+                this.ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${tank.muzzleFlash * 0.8 * flickerIntensity})`;
+                this.ctx.beginPath();
+                this.ctx.arc(barrelLength + randomOffset, 0, barrelWidth * (1.5 + Math.random() * 1), 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Random mini sparks
+                if (Math.random() < 0.2) {
+                    this.addRandomSparks(barrelLength, 0, 1 + Math.random() * 2);
+                }
+            }
         }
         
         // Tank treads (side strips)
@@ -1135,42 +1263,94 @@ class GameEngine {
         console.log('Collision boxes:', this.showCollisionBoxes);
     }
 
-    setupDebugKeys() {
+    setupKeyboardControls() {
+        // Setup keydown events
         document.addEventListener('keydown', (event) => {
-            // Only handle debug keys during battle
-            if (this.currentScene !== 'battle') return;
+            const key = event.key.toLowerCase();
             
-            switch (event.key.toLowerCase()) {
-                case 'c':
-                    this.toggleCollisionBoxes();
+            // Handle WASD movement and spacebar shooting (only during battle)
+            if (this.currentScene === 'battle') {
+                switch (key) {
+                    case 'w':
+                        this.keys.w = true;
+                        event.preventDefault();
+                        break;
+                    case 'a':
+                        this.keys.a = true;
+                        event.preventDefault();
+                        break;
+                    case 's':
+                        this.keys.s = true;
+                        event.preventDefault();
+                        break;
+                    case 'd':
+                        this.keys.d = true;
+                        event.preventDefault();
+                        break;
+                    case ' ': // Spacebar
+                        this.keys.space = true;
+                        event.preventDefault();
+                        break;
+                }
+            }
+            
+            // Handle debug keys (only during battle)
+            if (this.currentScene === 'battle') {
+                switch (key) {
+                    case 'c':
+                        this.toggleCollisionBoxes();
+                        break;
+                    case 'r':
+                        // Reset tank rendering log
+                        this.hasLoggedTankRender = false;
+                        console.log('Tank rendering log reset');
+                        break;
+                    case 'z':
+                        // Zoom out
+                        this.camera.targetZoom = Math.max(0.3, this.camera.targetZoom - 0.1);
+                        console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
+                        break;
+                    case 'x':
+                        // Zoom in
+                        this.camera.targetZoom = Math.min(1.5, this.camera.targetZoom + 0.1);
+                        console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
+                        break;
+                    case 'e':
+                        // Toggle environment debug
+                        this.debugEnvironment = !this.debugEnvironment;
+                        console.log(`Environment debug: ${this.debugEnvironment ? 'ON' : 'OFF'}`);
+                        break;
+                }
+            }
+        });
+        
+        // Setup keyup events for movement keys
+        document.addEventListener('keyup', (event) => {
+            const key = event.key.toLowerCase();
+            
+            switch (key) {
+                case 'w':
+                    this.keys.w = false;
+                    break;
+                case 'a':
+                    this.keys.a = false;
+                    break;
+                case 's':
+                    this.keys.s = false;
                     break;
                 case 'd':
-                    this.toggleDebug();
+                    this.keys.d = false;
                     break;
-                case 'r':
-                    // Reset tank rendering log
-                    this.hasLoggedTankRender = false;
-                    console.log('Tank rendering log reset');
-                    break;
-                case 'z':
-                    // Zoom out
-                    this.camera.targetZoom = Math.max(0.3, this.camera.targetZoom - 0.1);
-                    console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
-                    break;
-                case 'x':
-                    // Zoom in
-                    this.camera.targetZoom = Math.min(1.5, this.camera.targetZoom + 0.1);
-                    console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
-                    break;
-                case 'e':
-                    // Toggle environment debug
-                    this.debugEnvironment = !this.debugEnvironment;
-                    console.log(`Environment debug: ${this.debugEnvironment ? 'ON' : 'OFF'}`);
+                case ' ': // Spacebar
+                    this.keys.space = false;
                     break;
             }
         });
         
-        console.log('Debug keys setup: C = Collision Boxes, D = Debug Mode, E = Environment Debug, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
+        console.log('Keyboard controls setup:');
+        console.log('Movement: WASD keys');
+        console.log('Shooting: Spacebar');
+        console.log('Debug keys: C = Collision Boxes, E = Environment Debug, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
     }
 
     setupFullscreenHandlers() {

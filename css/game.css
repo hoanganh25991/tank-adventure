@@ -9,8 +9,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background: #c8a882; /* Warm sepia/tan - classic Ghibli tone */
-    color: #5d4037; /* Rich brown text */
+    background: #1a1a1a;
+    color: white;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -36,7 +36,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background: #a8956b; /* Warm battlefield green-brown like Ghibli landscapes */
+    background: #2a4a2a;
     display: block;
     /* Size will be set by JavaScript */
     image-rendering: pixelated; /* For crisp pixel art scaling */
@@ -58,9 +58,10 @@ body {
 /* HUD */
 #hud {
     position: absolute;
-    top: 15px;
+    top: 20px;
     left: 20px;
     right: 20px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -68,23 +69,18 @@ body {
 }
 
 #healthBar {
-    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
-    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
-    border-radius: 8px;
-    padding: 8px; /* Reduced padding */
-    width: 180px; /* Slightly smaller width */
-    height: 44px; /* Fixed height to match other HUD elements */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 10px;
+    width: 200px;
     position: relative;
-    backdrop-filter: blur(2px); /* Subtle blur for readability */
-    opacity: 0.85; /* Consistent opacity */
-    display: flex;
-    align-items: center;
 }
 
 #healthFill {
-    background: linear-gradient(90deg, #9acd32, #adff2f); /* Ghibli green gradient */
-    height: 16px; /* Slightly smaller height */
-    border-radius: 4px;
+    background: linear-gradient(90deg, #ff4444, #ff8844);
+    height: 20px;
+    border-radius: 5px;
     width: 100%;
     transition: width 0.3s ease;
 }
@@ -95,43 +91,19 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    font-size: 12px; /* Smaller font size */
-    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.7);
-    color: #5d4037; /* Rich brown text */
+    text-shadow: 1px 1px 2px black;
 }
 
 #waveInfo, #scoreInfo {
-    background: rgba(200, 168, 130, 0.4); /* Reduced opacity for better battlefield visibility */
-    border: 2px solid rgba(139, 69, 19, 0.6); /* Reduced border opacity */
-    border-radius: 8px;
-    padding: 8px; /* Reduced padding */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 10px;
     text-align: center;
     font-weight: bold;
-    font-size: 13px; /* Smaller font size */
-    color: #5d4037; /* Rich brown text */
-    backdrop-filter: blur(2px); /* Subtle blur for readability */
-    height: 44px; /* Fixed height to match health bar */
-    opacity: 0.85; /* Consistent opacity */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
-#waveInfo {
-    /* Make wave info more compact and horizontal */
-    min-width: 180px; /* Reduced width */
-    flex-direction: row; /* Override to horizontal for wave info */
-    align-items: center;
-    justify-content: center;
-}
-
-#waveInfo span {
-    display: inline-block; /* Change to horizontal layout */
-    margin: 0 6px; /* Reduced horizontal spacing */
-    font-size: 12px; /* Smaller font for compact layout */
-}
-
-#scoreInfo span {
+#waveInfo span, #scoreInfo span {
     display: block;
     margin: 2px 0;
 }
@@ -142,46 +114,44 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 160px; /* Reduced height for more battlefield space */
+    height: 200px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 15px; /* Reduced padding */
+    padding: 20px;
     pointer-events: all;
 }
 
 /* Virtual Joystick */
 #joystickArea {
     position: relative;
-    width: 130px; /* Reduced size */
-    height: 130px; /* Reduced size */
+    width: 150px;
+    height: 150px;
 }
 
 #joystickBase {
     position: absolute;
-    width: 100px; /* Reduced size */
-    height: 100px; /* Reduced size */
-    border: 2px solid rgba(139, 69, 19, 0.4); /* Thinner border */
+    width: 120px;
+    height: 120px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    background: rgba(200, 168, 130, 0.3); /* More transparent background */
+    background: rgba(0, 0, 0, 0.2);
     bottom: 0;
     left: 15px;
-    backdrop-filter: blur(1px); /* Subtle blur */
 }
 
 #joystickStick {
     position: absolute;
-    width: 40px; /* Reduced size */
-    height: 40px; /* Reduced size */
-    background: linear-gradient(45deg, #cd853f, #daa520); /* Warm copper to goldenrod */
-    border: 2px solid rgba(139, 69, 19, 0.6); /* More transparent border */
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, #4a9eff, #2a7eff);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.1s ease;
     cursor: pointer;
-    opacity: 0.8; /* Slight transparency */
 }
 
 /* Action Buttons */
@@ -193,49 +163,41 @@ body {
 }
 
 .action-btn {
-    padding: 12px 16px; /* Reduced padding */
-    border: 2px solid rgba(139, 69, 19, 0.6); /* More transparent border */
-    border-radius: 8px; /* Smaller border radius */
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
     font-weight: bold;
-    font-size: 12px; /* Smaller font */
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 3px 6px rgba(93, 64, 55, 0.2); /* Reduced shadow */
-    min-width: 70px; /* Smaller minimum width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    min-width: 80px;
     /* Make all buttons equal width */
-    width: 85px; /* Smaller width */
-    height: 45px; /* Smaller height */
+    width: 100px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.85; /* Slight transparency */
-    backdrop-filter: blur(1px); /* Subtle blur */
 }
 
-.action-btn:hover {
-    opacity: 1; /* Full opacity on hover for better visibility */
-    transform: translateY(-1px);
-}
+
 
 .action-btn:active {
     transform: translateY(2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    opacity: 1; /* Full opacity when pressed */
 }
 
 .action-btn.primary {
-    background: linear-gradient(45deg, #cd853f, #daa520); /* Warm copper to goldenrod */
-    color: #5d4037; /* Rich brown text */
-    border: 2px solid #8b4513; /* Rich brown border */
+    background: linear-gradient(45deg, #ff4444, #ff6666);
+    color: white;
     /* Remove different sizing for primary button */
     font-size: 14px;
     padding: 15px 20px;
 }
 
 .action-btn.skill {
-    background: linear-gradient(45deg, #9acd32, #adff2f); /* Yellow-green to green-yellow */
-    color: #5d4037; /* Rich brown text */
-    border: 2px solid #6b8e23; /* Olive border */
+    background: linear-gradient(45deg, #4a9eff, #6bb6ff);
+    color: white;
 }
 
 .action-btn:disabled {
@@ -266,25 +228,15 @@ body {
 /* Main Menu */
 #mainMenu {
     background: url('../assets/background.jpg') center/cover no-repeat,
-                linear-gradient(135deg, rgba(200, 168, 130, 0.9), rgba(168, 149, 107, 0.8));
+                linear-gradient(135deg, rgba(26, 42, 58, 0.8), rgba(42, 58, 74, 0.8));
     background-blend-mode: overlay;
 }
 
 #mainMenu h1 {
-    font-size: 56px;
+    font-size: 48px;
     margin-bottom: 50px;
-    /* Enhanced visibility with stronger contrast and glow effect */
-    text-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.8),
-        2px 2px 6px rgba(0, 0, 0, 0.7),
-        4px 4px 12px rgba(93, 64, 55, 0.5);
-    color: #2c1810; /* Much darker brown for strong contrast */
-    font-weight: bold;
-    /* Add subtle background for extra prominence */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    padding: 15px 30px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: #4a9eff;
 }
 
 .menu-btn {

@@ -12,11 +12,11 @@ class Tank {
         if (type === 'main') {
             this.maxHealth = 100;
             this.health = 100;
-            this.damage = 10;
+            this.damage = 20; // Increased from 10 to 20 for stronger bullets
             this.speed = 8; // Increased from 3 to 8 for faster movement
             this.size = 25;
             this.shootCooldown = 0;
-            this.maxShootCooldown = 300; // milliseconds
+            this.maxShootCooldown = 250; // Reduced from 300 to 250 for faster firing
         } else {
             this.maxHealth = 50;
             this.health = 50;
@@ -78,21 +78,35 @@ class Tank {
                 this.targetAngle = angle;
             }
             
-            // Create bullet
-            const bulletSpeed = 8;
+            // Create bullet with different properties for main vs mini tanks
+            const bulletSpeed = this.type === 'main' ? 10 : 8; // Main tank has faster bullets
+            const bulletSize = this.type === 'main' ? 6 : 3; // Main tank has bigger bullets
+            const bulletLife = this.type === 'main' ? 1500 : 1000; // Main tank bullets travel further
+            
             const bullet = {
                 x: this.x + Math.cos(angle) * this.size,
                 y: this.y + Math.sin(angle) * this.size,
                 angle: angle,
                 speed: bulletSpeed,
                 damage: this.damage,
-                life: 1000, // Reduced from 2000 to 1000ms (shorter range)
-                owner: this.type
+                life: bulletLife,
+                owner: this.type,
+                size: bulletSize,
+                // Enhanced properties for main tank bullets
+                isMainTankBullet: this.type === 'main',
+                penetration: this.type === 'main' ? 2 : 1, // Main tank bullets can hit multiple enemies
+                explosionRadius: this.type === 'main' ? 20 : 0 // Main tank bullets have small explosion
             };
             
             this.bullets.push(bullet);
             this.shootCooldown = this.maxShootCooldown;
             this.muzzleFlash = 1.0;
+            
+            // Play enhanced shooting sound effect
+            if (window.gameInstance && window.gameInstance.soundManager) {
+                const soundId = this.type === 'main' ? 'main_tank_shoot' : 'mini_tank_shoot';
+                window.gameInstance.soundManager.play(soundId);
+            }
         }
     }
 
@@ -122,7 +136,7 @@ class Tank {
         
         // Use enhanced rendering if game engine is provided
         if (gameEngine && gameEngine.renderTank) {
-            const color = this.type === 'main' ? '#9acd32' : '#8fbc8f'; // Ghibli green colors
+            const color = this.type === 'main' ? '#daa520' : '#8fbc8f'; // Main tank: goldenrod, Mini tanks: sea green
             gameEngine.renderTank(this, color);
         } else {
             // Fallback to original rendering
@@ -149,7 +163,7 @@ class Tank {
         }
         
         // Tank body
-        const bodyColor = this.type === 'main' ? '#9acd32' : '#8fbc8f'; // Ghibli green colors
+        const bodyColor = this.type === 'main' ? '#daa520' : '#8fbc8f'; // Main tank: goldenrod, Mini tanks: sea green
         ctx.fillStyle = bodyColor;
         ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
         
@@ -159,7 +173,7 @@ class Tank {
         ctx.fillRect(-this.size, this.size * 0.5, this.size * 2, this.size * 0.3);
         
         // Tank turret
-        ctx.fillStyle = this.type === 'main' ? '#adff2f' : '#98fb98'; // Brighter Ghibli greens
+        ctx.fillStyle = this.type === 'main' ? '#ffd700' : '#98fb98'; // Main tank: gold, Mini tanks: light green
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.7, 0, Math.PI * 2);
         ctx.fill();
@@ -168,12 +182,34 @@ class Tank {
         ctx.fillStyle = '#cd853f'; // Warm bronze cannon
         ctx.fillRect(0, -this.size * 0.15, this.size * 1.2, this.size * 0.3);
         
-        // Muzzle flash
+        // Enhanced muzzle flash for main tank
         if (this.muzzleFlash > 0) {
-            ctx.fillStyle = `rgba(255, 140, 0, ${this.muzzleFlash})`; // Orange flame color
-            ctx.beginPath();
-            ctx.arc(this.size * 1.2, 0, this.size * 0.3, 0, Math.PI * 2);
-            ctx.fill();
+            if (this.type === 'main') {
+                // Enhanced main tank muzzle flash
+                // Outer glow
+                ctx.fillStyle = `rgba(255, 215, 0, ${this.muzzleFlash * 0.3})`; // Golden glow
+                ctx.beginPath();
+                ctx.arc(this.size * 1.2, 0, this.size * 0.6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Main flash
+                ctx.fillStyle = `rgba(255, 140, 0, ${this.muzzleFlash})`; // Orange flame
+                ctx.beginPath();
+                ctx.arc(this.size * 1.2, 0, this.size * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Hot center
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.muzzleFlash * 0.8})`; // White hot center
+                ctx.beginPath();
+                ctx.arc(this.size * 1.2, 0, this.size * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Standard mini tank muzzle flash
+                ctx.fillStyle = `rgba(255, 140, 0, ${this.muzzleFlash})`; // Orange flame color
+                ctx.beginPath();
+                ctx.arc(this.size * 1.2, 0, this.size * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
         
         ctx.restore();
@@ -216,19 +252,67 @@ class Tank {
             ctx.translate(bullet.x, bullet.y);
             ctx.rotate(bullet.angle);
             
-            // Bullet trail
-            ctx.strokeStyle = 'rgba(255, 140, 0, 0.5)'; // Orange trail
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(-8, 0);
-            ctx.lineTo(0, 0);
-            ctx.stroke();
-            
-            // Bullet head
-            ctx.fillStyle = '#cd7f32'; // Bronze/copper bullet
-            ctx.beginPath();
-            ctx.arc(0, 0, 3, 0, Math.PI * 2);
-            ctx.fill();
+            if (bullet.isMainTankBullet) {
+                // Enhanced main tank bullet rendering
+                
+                // Bullet trail (longer and brighter)
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)'; // Golden trail
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(-15, 0);
+                ctx.lineTo(0, 0);
+                ctx.stroke();
+                
+                // Secondary trail glow
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.4)'; // Orange glow
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(-12, 0);
+                ctx.lineTo(0, 0);
+                ctx.stroke();
+                
+                // Main bullet body (larger)
+                ctx.fillStyle = '#ffd700'; // Gold bullet
+                ctx.beginPath();
+                ctx.arc(0, 0, bullet.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bullet core (darker center)
+                ctx.fillStyle = '#daa520'; // Goldenrod core
+                ctx.beginPath();
+                ctx.arc(0, 0, bullet.size * 0.6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bullet highlight
+                ctx.fillStyle = '#ffff99'; // Light yellow highlight
+                ctx.beginPath();
+                ctx.arc(-bullet.size * 0.3, -bullet.size * 0.3, bullet.size * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Energy aura around bullet
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, bullet.size * 1.5, 0, Math.PI * 2);
+                ctx.stroke();
+                
+            } else {
+                // Standard mini tank bullet rendering
+                
+                // Bullet trail
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.5)'; // Orange trail
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-8, 0);
+                ctx.lineTo(0, 0);
+                ctx.stroke();
+                
+                // Bullet head
+                ctx.fillStyle = '#cd7f32'; // Bronze/copper bullet
+                ctx.beginPath();
+                ctx.arc(0, 0, bullet.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
             
             ctx.restore();
         }

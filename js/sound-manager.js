@@ -47,7 +47,13 @@ class SoundManager {
             'time_slow_cast': 200,      // G3 - mystical
             'time_slow_end': 400,       // G4 - return to normal
             'auto_repair_cast': 466,    // A#4 - mechanical
-            'auto_repair_end': 392      // G4 - completion
+            'auto_repair_end': 392,     // G4 - completion
+            // Tank shooting sounds
+            'main_tank_shoot': 180,     // A3 - deep powerful shot
+            'mini_tank_shoot': 300,     // D4 - lighter shot
+            'main_tank_hit': 250,       // B3 - heavy impact
+            'mini_tank_hit': 350,       // F4 - lighter impact
+            'main_tank_explosion': 120  // A2 - deep explosion
         };
         
         return frequencies[soundId] || 440;
