@@ -10,16 +10,16 @@ class Tank {
         
         // Base stats (will be modified by upgrades)
         if (type === 'main') {
-            this.maxHealth = 100;
-            this.health = 100;
+            this.maxHealth = 200;
+            this.health = 200;
             this.damage = 20; // Increased from 10 to 20 for stronger bullets
             this.speed = 8; // Increased from 3 to 8 for faster movement
             this.size = 25;
             this.shootCooldown = 0;
             this.maxShootCooldown = 250; // Reduced from 300 to 250 for faster firing
         } else {
-            this.maxHealth = 50;
-            this.health = 50;
+            this.maxHealth = 100;
+            this.health = 100;
             this.damage = 5;
             this.speed = 6; // Increased from 2.5 to 6 for faster movement
             this.size = 15;
