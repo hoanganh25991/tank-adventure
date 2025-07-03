@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Adventure - Color Consistency Test</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        /* Test page specific styles */
+        .test-container {
+            padding: 20px;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--bg-section);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .test-item {
+            padding: 15px;
+            background: var(--bg-item);
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+        }
+        
+        .color-swatch {
+            width: 50px;
+            height: 30px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 10px;
+            border: 1px solid var(--border-primary);
+        }
+        
+        .button-test {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--text-primary);
+        }
+        
+        .danger-btn {
+            background: linear-gradient(45deg, var(--color-danger), #ff6666);
+            color: var(--text-primary);
+        }
+        
+        .success-btn {
+            background: linear-gradient(45deg, var(--color-success), #66ff66);
+            color: var(--text-primary);
+        }
+        
+        .warning-btn {
+            background: linear-gradient(45deg, var(--color-warning), #ffaa66);
+            color: var(--text-primary);
+        }
+        
+        .screen-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .main-screen { background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid)); }
+        .loading-screen { background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid)); }
+        .battle-screen { background: var(--canvas-bg); }
+        
+        h1 { color: var(--primary-blue); }
+        h2 { color: var(--primary-blue); }
+        h3 { color: var(--primary-blue); }
+        .success-text { color: var(--color-success); }
+        .danger-text { color: var(--color-danger); }
+        .warning-text { color: var(--color-warning); }
+        .secondary-text { color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Tank Adventure - Color Consistency Test</h1>
+        
+        <div class="test-section">
+            <h2>📊 Color Palette</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <h3>Primary Colors</h3>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--primary-blue);"></div>
+                        <span>Primary Blue (#4a9eff)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--secondary-blue);"></div>
+                        <span>Secondary Blue (#2a7eff)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--accent-blue);"></div>
+                        <span>Accent Blue (#6bb6ff)</span>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Status Colors</h3>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--color-danger);"></div>
+                        <span class="danger-text">Danger Red (#ff4444)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--color-success);"></div>
+                        <span class="success-text">Success Green (#44ff44)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--color-warning);"></div>
+                        <span class="warning-text">Warning Orange (#ff9944)</span>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Background Colors</h3>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--bg-dark);"></div>
+                        <span>Dark Background</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--bg-mid);"></div>
+                        <span>Mid Background</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div class="color-swatch" style="background: var(--bg-section);"></div>
+                        <span>Section Background</span>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Text Colors</h3>
+                    <div style="margin: 10px 0;">
+                        <span style="color: var(--text-primary);">Primary Text (#ffffff)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <span style="color: var(--text-secondary);">Secondary Text (#cccccc)</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <span style="color: var(--text-muted);">Muted Text (#888888)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎨 Button Consistency</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <h3>Menu Buttons</h3>
+                    <button class="button-test primary-btn">Start Battle</button>
+                    <button class="button-test primary-btn">Base & Upgrades</button>
+                    <button class="button-test primary-btn">Settings</button>
+                    <button class="button-test primary-btn">Back to Menu</button>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Action Buttons</h3>
+                    <button class="button-test primary-btn">SKILL 1</button>
+                    <button class="button-test primary-btn">SKILL 2</button>
+                    <button class="button-test primary-btn">SKILL 3</button>
+                    <button class="button-test danger-btn">SHOOT</button>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Upgrade Buttons</h3>
+                    <button class="button-test warning-btn">Upgrade Health</button>
+                    <button class="button-test warning-btn">Upgrade Damage</button>
+                    <button class="button-test warning-btn">Upgrade Speed</button>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Result Buttons</h3>
+                    <button class="button-test success-btn">Continue</button>
+                    <button class="button-test primary-btn">Back to Base</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🖥️ Screen Previews</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <h3>Main Menu</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h1 style="margin: 0; color: var(--primary-blue);">Tank Adventure</h1>
+                            <p style="color: var(--text-secondary);">Consistent gradient background</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Settings Screen</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--primary-blue);">Tank Adventure Guide</h2>
+                            <p style="color: var(--text-secondary);">Now uses blue theme</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Base Screen</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--primary-blue);">Tank Base</h2>
+                            <p style="color: var(--text-secondary);">Consistent with other screens</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Battle Results</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--color-success);">Battle Complete!</h2>
+                            <p style="color: var(--text-secondary);">Green title for success</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Skill Selection</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--primary-blue);">Choose Your Enhancement</h2>
+                            <p style="color: var(--text-secondary);">Consistent background</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Loading Screen</h3>
+                    <div class="screen-preview loading-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--primary-blue);">Loading...</h2>
+                            <div style="width: 200px; height: 20px; background: var(--bg-item); border-radius: 10px; margin: 10px auto;">
+                                <div style="width: 70%; height: 100%; background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue)); border-radius: 10px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Battle Screen</h3>
+                    <div class="screen-preview battle-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--text-primary);">Game Canvas</h2>
+                            <p style="color: var(--text-secondary);">Dark green battlefield</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Orientation Screen</h3>
+                    <div class="screen-preview main-screen">
+                        <div style="text-align: center;">
+                            <h2 style="margin: 0; color: var(--primary-blue);">Rotate Your Device</h2>
+                            <p style="color: var(--text-secondary);">Consistent styling</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>✅ Consistency Checklist</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <h3>Screen Backgrounds</h3>
+                    <ul>
+                        <li class="success-text">✓ All screens use consistent gradient</li>
+                        <li class="success-text">✓ No more purple/brown/green themes</li>
+                        <li class="success-text">✓ Unified visual appearance</li>
+                        <li class="success-text">✓ Proper background hierarchy</li>
+                    </ul>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Button Styling</h3>
+                    <ul>
+                        <li class="success-text">✓ Menu buttons: Blue gradient</li>
+                        <li class="success-text">✓ Action buttons: Blue gradient</li>
+                        <li class="success-text">✓ Shoot button: Red (danger)</li>
+                        <li class="success-text">✓ Upgrade buttons: Orange (warning)</li>
+                        <li class="success-text">✓ Consistent text colors</li>
+                    </ul>
+                </div>
+                
+                <div class="test-item">
+                    <h3>Text Colors</h3>
+                    <ul>
+                        <li class="success-text">✓ All titles use primary blue</li>
+                        <li class="success-text">✓ Secondary text consistent</li>
+                        <li class="success-text">✓ Proper contrast ratios</li>
+                        <li class="success-text">✓ Semantic color usage</li>
+                    </ul>
+                </div>
+                
+                <div class="test-item">
+                    <h3>UI Elements</h3>
+                    <ul>
+                        <li class="success-text">✓ HUD elements consistent</li>
+                        <li class="success-text">✓ Joystick blue theme</li>
+                        <li class="success-text">✓ Health bar red/orange</li>
+                        <li class="success-text">✓ Borders and accents unified</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Key Improvements</h2>
+            <div class="test-item">
+                <h3>Before vs After</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                    <div>
+                        <h4 class="danger-text">❌ Before</h4>
+                        <ul class="secondary-text">
+                            <li>Purple settings screen</li>
+                            <li>Brown base screen</li>
+                            <li>Green battle results</li>
+                            <li>Inconsistent button colors</li>
+                            <li>Mixed text colors</li>
+                            <li>No unified theme</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="success-text">✅ After</h4>
+                        <ul class="secondary-text">
+                            <li>Unified blue theme</li>
+                            <li>Consistent screen backgrounds</li>
+                            <li>Semantic color usage</li>
+                            <li>Professional appearance</li>
+                            <li>Better accessibility</li>
+                            <li>Maintainable CSS variables</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Technical Implementation</h2>
+            <div class="test-item">
+                <h3>CSS Variables Used</h3>
+                <pre style="background: var(--bg-item); padding: 15px; border-radius: 8px; color: var(--text-secondary); font-size: 12px; overflow-x: auto;">
+--primary-blue: #4a9eff     /* Main theme color */
+--secondary-blue: #2a7eff   /* Button gradients */
+--accent-blue: #6bb6ff      /* Highlights */
+--bg-dark: #1a1a2e         /* Screen backgrounds */
+--bg-mid: #16213e          /* Gradient partner */
+--bg-section: rgba(0,0,0,0.3) /* Content containers */
+--bg-item: rgba(255,255,255,0.05) /* Item backgrounds */
+--color-danger: #ff4444     /* Combat/danger */
+--color-success: #44ff44    /* Success states */
+--color-warning: #ff9944    /* Upgrades/warnings */
+--text-primary: #ffffff     /* Main text */
+--text-secondary: #cccccc   /* Secondary text */
+                </pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -69,7 +69,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background: #2a4a2a;
+    background: var(--canvas-bg);
     display: block;
     /* Size will be set by JavaScript */
     image-rendering: pixelated; /* For crisp pixel art scaling */
@@ -103,8 +103,8 @@ body {
 }
 
 #healthBar {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
+    background: var(--bg-section);
+    border: 2px solid var(--border-primary);
     border-radius: 10px;
     padding: 10px;
     width: 200px;
@@ -112,7 +112,7 @@ body {
 }
 
 #healthFill {
-    background: linear-gradient(90deg, #ff4444, #ff8844);
+    background: linear-gradient(90deg, var(--color-danger), var(--color-warning));
     height: 20px;
     border-radius: 5px;
     width: 100%;
@@ -127,15 +127,17 @@ body {
     font-weight: bold;
     font-size: 14px; /* Consistent with HUD base font size */
     text-shadow: 1px 1px 2px black;
+    color: var(--text-primary);
 }
 
 #waveInfo, #scoreInfo {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #444;
+    background: var(--bg-section);
+    border: 2px solid var(--border-primary);
     border-radius: 10px;
     padding: 10px;
     text-align: center;
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 #waveInfo {
@@ -185,7 +187,7 @@ body {
     height: 120px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-section);
     bottom: 0;
     left: 15px;
 }
@@ -194,7 +196,7 @@ body {
     position: absolute;
     width: 50px;
     height: 50px;
-    background: linear-gradient(45deg, #4a9eff, #2a7eff);
+    background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
     border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     top: 50%;
@@ -238,16 +240,16 @@ body {
 }
 
 .action-btn.primary {
-    background: linear-gradient(45deg, #ff4444, #ff6666);
-    color: white;
+    background: linear-gradient(45deg, var(--color-danger), #ff6666);
+    color: var(--text-primary);
     /* Remove different sizing for primary button */
     font-size: 14px;
     padding: 15px 20px;
 }
 
 .action-btn.skill {
-    background: linear-gradient(45deg, #4a9eff, #6bb6ff);
-    color: white;
+    background: linear-gradient(45deg, var(--primary-blue), var(--accent-blue));
+    color: var(--text-primary);
 }
 
 .action-btn:disabled {
@@ -263,7 +265,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
     display: none;
     flex-direction: column;
     justify-content: center;
@@ -277,8 +279,9 @@ body {
 
 /* Main Menu */
 #mainMenu {
+    /* Use consistent background with optional image overlay */
     background: url('../assets/background.jpg') center/cover no-repeat,
-                linear-gradient(135deg, rgba(26, 42, 58, 0.8), rgba(42, 58, 74, 0.8));
+                linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
     background-blend-mode: overlay;
 }
 
@@ -286,7 +289,7 @@ body {
     font-size: 48px;
     margin-bottom: 50px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    color: #4a9eff;
+    color: var(--primary-blue);
 }
 
 .menu-btn {
@@ -294,8 +297,8 @@ body {
     margin: 10px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(45deg, #4a9eff, #2a7eff);
-    color: white;
+    background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--text-primary);
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
@@ -331,13 +334,13 @@ body {
 
 /* Skill Selection */
 #skillSelection {
-    background: rgba(0, 0, 0, 0.9);
+    /* Inherit the consistent screen background */
 }
 
 #skillSelection h2 {
     margin-bottom: 30px;
     font-size: 32px;
-    color: #4a9eff;
+    color: var(--primary-blue);
 }
 
 #skillOptions {
@@ -350,8 +353,8 @@ body {
 }
 
 .skill-option {
-    background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
-    border: 2px solid #4a9eff;
+    background: var(--bg-section);
+    border: 2px solid var(--border-accent);
     border-radius: 12px;
     padding: 15px;
     cursor: pointer;
@@ -375,17 +378,17 @@ body {
 .skill-option:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(74, 158, 255, 0.3);
-    border-color: #6bb6ff;
+    border-color: var(--accent-blue);
 }
 
 .skill-option h3 {
-    color: #4a9eff;
+    color: var(--primary-blue);
     margin-bottom: 12px;
     font-size: 18px;
 }
 
 .skill-option p {
-    color: #cccccc;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.4;
 }
@@ -398,17 +401,17 @@ body {
 
 /* Battle Results */
 #battleResults {
-    background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
+    /* Inherit the consistent screen background */
 }
 
 #battleResults h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #44ff44;
+    color: var(--color-success);
 }
 
 #resultsContent {
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--bg-section);
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 30px;
@@ -418,11 +421,11 @@ body {
 #battleStats p {
     font-size: 18px;
     margin: 10px 0;
-    color: #cccccc;
+    color: var(--text-secondary);
 }
 
 #battleStats span {
-    color: #44ff44;
+    color: var(--color-success);
     font-weight: bold;
 }
 
@@ -433,7 +436,7 @@ body {
 
 /* Settings Screen */
 #settingsScreen {
-    background: linear-gradient(135deg, #2a1a3a, #3a2a4a);
+    /* Inherit the consistent screen background */
     overflow-y: auto;
     padding: 20px;
 }
@@ -441,7 +444,7 @@ body {
 #settingsScreen h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #9a6fff;
+    color: var(--primary-blue);
     text-align: center;
 }
 
@@ -454,21 +457,21 @@ body {
 }
 
 .info-section {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-section);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    border-left: 4px solid #9a6fff;
+    border-left: 4px solid var(--primary-blue);
 }
 
 .info-section h3 {
-    color: #9a6fff;
+    color: var(--primary-blue);
     margin-bottom: 15px;
     font-size: 20px;
 }
 
 .info-section p {
-    color: #cccccc;
+    color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 10px;
 }
@@ -482,7 +485,7 @@ body {
     align-items: flex-start;
     margin-bottom: 15px;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-item);
     border-radius: 8px;
 }
 
@@ -495,12 +498,12 @@ body {
 }
 
 .control-text {
-    color: #cccccc;
+    color: var(--text-secondary);
     line-height: 1.5;
 }
 
 .control-text strong {
-    color: #9a6fff;
+    color: var(--primary-blue);
 }
 
 .feature-list, .tips-list {
@@ -509,31 +512,31 @@ body {
 }
 
 .feature-list li, .tips-list li {
-    color: #cccccc;
+    color: var(--text-secondary);
     margin-bottom: 8px;
     line-height: 1.5;
 }
 
 .feature-list li strong, .tips-list li strong {
-    color: #9a6fff;
+    color: var(--primary-blue);
 }
 
 .landscape-note {
-    background: rgba(154, 111, 255, 0.1);
-    border: 1px solid #9a6fff;
+    background: rgba(74, 158, 255, 0.1);
+    border: 1px solid var(--primary-blue);
     border-radius: 8px;
     padding: 15px;
     text-align: center;
-    color: #cccccc;
+    color: var(--text-secondary);
 }
 
 .landscape-note strong {
-    color: #9a6fff;
+    color: var(--primary-blue);
 }
 
 /* Base Screen */
 #baseScreen {
-    background: linear-gradient(135deg, #3a2a1a, #4a3a2a);
+    /* Inherit the consistent screen background */
     overflow-y: auto;
     padding: 20px;
 }
@@ -541,7 +544,7 @@ body {
 #baseScreen h2 {
     margin-bottom: 30px;
     font-size: 36px;
-    color: #ff9944;
+    color: var(--primary-blue);
     text-align: center;
 }
 
@@ -550,15 +553,30 @@ body {
     margin: 0 auto;
 }
 
-.upgrade-section {
-    background: rgba(0, 0, 0, 0.3);
+/* Individual upgrade categories */
+#tankUpgrades, #miniTankUpgrades {
+    background: var(--bg-section);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
+    border-left: 4px solid var(--primary-blue);
+}
+
+#tankUpgrades h3, #miniTankUpgrades h3 {
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.upgrade-section {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 0;
 }
 
 .upgrade-section h3 {
-    color: #ff9944;
+    color: var(--primary-blue);
     margin-bottom: 15px;
     font-size: 20px;
 }
@@ -569,16 +587,26 @@ body {
     align-items: center;
     padding: 12px;
     margin: 8px 0;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-item);
     border-radius: 8px;
+    color: var(--text-secondary);
+}
+
+.upgrade-item span {
+    font-weight: bold;
+}
+
+.upgrade-item span span {
+    color: var(--primary-blue);
+    font-weight: bold;
 }
 
 .upgrade-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
-    background: linear-gradient(45deg, #ff9944, #ffaa66);
-    color: white;
+    background: linear-gradient(45deg, var(--color-warning), #ffaa66);
+    color: var(--text-primary);
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -605,20 +633,26 @@ body {
 }
 
 #playerStats {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-section);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
 }
 
 #playerStats h3 {
-    color: #4a9eff;
+    color: var(--primary-blue);
     margin-bottom: 15px;
 }
 
 #playerStats p {
     margin: 8px 0;
     font-size: 16px;
+    color: var(--text-secondary);
+}
+
+#playerStats span {
+    color: var(--primary-blue);
+    font-weight: bold;
 }
 
 /* Loading Screen */
@@ -628,7 +662,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
     display: flex;
     justify-content: center;
     align-items: center;
@@ -642,13 +676,13 @@ body {
 .loading-content h2 {
     font-size: 32px;
     margin-bottom: 30px;
-    color: #4a9eff;
+    color: var(--primary-blue);
 }
 
 .loading-bar {
     width: 300px;
     height: 20px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-item);
     border-radius: 10px;
     overflow: hidden;
     margin: 0 auto;
@@ -656,9 +690,48 @@ body {
 
 #loadingProgress {
     height: 100%;
-    background: linear-gradient(90deg, #4a9eff, #6bb6ff);
+    background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
     width: 0%;
     transition: width 0.3s ease;
+}
+
+/* Orientation Screen */
+#orientationScreen {
+    /* Use consistent background */
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
+}
+
+.orientation-content {
+    text-align: center;
+    padding: 20px;
+    max-width: 400px;
+}
+
+.orientation-content h2 {
+    color: var(--primary-blue);
+    margin: 20px 0;
+    font-size: 32px;
+}
+
+.orientation-content p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.orientation-tip {
+    background: var(--bg-section);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 20px;
+    border-left: 4px solid var(--primary-blue);
+}
+
+.orientation-tip p {
+    color: var(--text-primary);
+    font-size: 16px;
+    margin: 0;
 }
 
 /* Responsive Design */
