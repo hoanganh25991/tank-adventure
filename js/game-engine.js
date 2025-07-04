@@ -1053,14 +1053,14 @@ class GameEngine {
         
         // 🗿 Draw rocks with 4 shapes (square, circle, hexagon, triangle)
         let rockCount = 0;
-        const rockGrid = 1000; // 5x larger grid (was 200)
+        const rockGrid = 500; // 1000 -> 300
         for (let x = Math.floor(viewLeft / rockGrid) * rockGrid; x < viewRight; x += rockGrid) {
             for (let y = Math.floor(viewTop / rockGrid) * rockGrid; y < viewBottom; y += rockGrid) {
                 // Use absolute coordinates for consistent seeding
                 const seed = (Math.abs(x) * 31 + Math.abs(y) * 17) % 100;
                 if (seed > 50) { // 50% chance for rocks
-                    const rockX = x + (seed % 250) - 125; // Larger spread within grid
-                    const rockY = y + ((seed * 7) % 250) - 125;
+                    const rockX = x + (seed % 500) - 250; // Larger spread within grid
+                    const rockY = y + ((seed * 7) % 500) - 250;
                     const rockSize = (15 + (seed % 20)) / this.camera.zoom;
                     
                     this.ctx.font = `${rockSize}px Arial`;
@@ -1073,13 +1073,13 @@ class GameEngine {
         
         // 🌳 Draw trees with 3 types (standard, pine, bushy)
         let treeCount = 0;
-        const treeGrid = 750; // 5x larger grid (was 150)
+        const treeGrid = 250; // 3x denser (was 750, now ~1.67x original 150)
         for (let x = Math.floor(viewLeft / treeGrid) * treeGrid; x < viewRight; x += treeGrid) {
             for (let y = Math.floor(viewTop / treeGrid) * treeGrid; y < viewBottom; y += treeGrid) {
                 const seed = (Math.abs(x) * 23 + Math.abs(y) * 19) % 100;
                 if (seed > 40) { // 60% chance for trees
-                    const treeX = x + (seed % 200) - 100; // Larger spread within grid
-                    const treeY = y + ((seed * 11) % 200) - 100;
+                    const treeX = x + (seed % 67) - 33; // Adjusted spread within grid
+                    const treeY = y + ((seed * 11) % 67) - 33;
                     const treeSize = (20 + (seed % 15)) / this.camera.zoom;
                     const treeType = (seed * 7) % 3; // 3 tree types
                     
@@ -1102,13 +1102,13 @@ class GameEngine {
         // 🟦 Draw water with animated ripples
         let waterCount = 0;
         const time = Date.now() * 0.001;
-        const waterGrid = 1500; // 5x larger grid (was 300)
+        const waterGrid = 500; // 3x denser (was 1500, now ~1.67x original 300)
         for (let x = Math.floor(viewLeft / waterGrid) * waterGrid; x < viewRight; x += waterGrid) {
             for (let y = Math.floor(viewTop / waterGrid) * waterGrid; y < viewBottom; y += waterGrid) {
                 const seed = (Math.abs(x) * 13 + Math.abs(y) * 29) % 100;
                 if (seed > 70) { // 30% chance for water
-                    const waterX = x + (seed % 300) - 150; // Larger spread within grid
-                    const waterY = y + ((seed * 13) % 300) - 150;
+                    const waterX = x + (seed % 100) - 50; // Adjusted spread within grid
+                    const waterY = y + ((seed * 13) % 100) - 50;
                     const waterSize = (30 + (seed % 25)) / this.camera.zoom;
                     
                     // Animated water effect with slight movement
@@ -1134,13 +1134,13 @@ class GameEngine {
         
         // 🌿 Draw bushes as small clustered shrubs
         let bushCount = 0;
-        const bushGrid = 600; // 5x larger grid (was 120)
+        const bushGrid = 200; // 3x denser (was 600, now ~1.67x original 120)
         for (let x = Math.floor(viewLeft / bushGrid) * bushGrid; x < viewRight; x += bushGrid) {
             for (let y = Math.floor(viewTop / bushGrid) * bushGrid; y < viewBottom; y += bushGrid) {
                 const seed = (Math.abs(x) * 41 + Math.abs(y) * 37) % 100;
                 if (seed > 65) { // 35% chance for bushes
-                    const bushX = x + (seed % 150) - 75; // Larger spread within grid
-                    const bushY = y + ((seed * 9) % 150) - 75;
+                    const bushX = x + (seed % 50) - 25; // Adjusted spread within grid
+                    const bushY = y + ((seed * 9) % 50) - 25;
                     const bushSize = (8 + (seed % 8)) / this.camera.zoom;
                     
                     this.ctx.font = `${bushSize}px Arial`;
@@ -1156,8 +1156,8 @@ class GameEngine {
                         // Add 1-2 smaller bushes nearby
                         const clusterCount = 1 + (seed % 2);
                         for (let i = 0; i < clusterCount; i++) {
-                            const offsetX = ((seed * (i + 1)) % 30) - 15; // Larger cluster spread
-                            const offsetY = ((seed * (i + 2)) % 30) - 15;
+                            const offsetX = ((seed * (i + 1)) % 10) - 5; // Adjusted cluster spread
+                            const offsetY = ((seed * (i + 2)) % 10) - 5;
                             this.ctx.fillText('🌱', bushX + offsetX, bushY + offsetY);
                         }
                         this.ctx.globalAlpha = 1.0;
@@ -1170,13 +1170,13 @@ class GameEngine {
         
         // 🌸 Draw flowers with 4 colors (red, teal, blue, yellow)
         let flowerCount = 0;
-        const flowerGrid = 400; // 5x larger grid (was 80)
+        const flowerGrid = 133; // 3x denser (was 400, now ~1.67x original 80)
         for (let x = Math.floor(viewLeft / flowerGrid) * flowerGrid; x < viewRight; x += flowerGrid) {
             for (let y = Math.floor(viewTop / flowerGrid) * flowerGrid; y < viewBottom; y += flowerGrid) {
                 const seed = (Math.abs(x) * 47 + Math.abs(y) * 43) % 100;
                 if (seed > 75) { // 25% chance for flowers
-                    const flowerX = x + (seed % 100) - 50; // Larger spread within grid
-                    const flowerY = y + ((seed * 11) % 100) - 50;
+                    const flowerX = x + (seed % 33) - 16; // Adjusted spread within grid
+                    const flowerY = y + ((seed * 11) % 33) - 16;
                     const flowerSize = (3 + (seed % 3)) / this.camera.zoom;
                     
                     // 4 flower colors as requested
@@ -1197,50 +1197,50 @@ class GameEngine {
             }
         }
         
-        // 🟫 Draw dirt patches as irregular brown areas
-        let dirtCount = 0;
-        const dirtGrid = 1250; // 5x larger grid (was 250)
-        for (let x = Math.floor(viewLeft / dirtGrid) * dirtGrid; x < viewRight; x += dirtGrid) {
-            for (let y = Math.floor(viewTop / dirtGrid) * dirtGrid; y < viewBottom; y += dirtGrid) {
-                const seed = (Math.abs(x) * 59 + Math.abs(y) * 61) % 100;
-                if (seed > 80) { // 20% chance for dirt patches
-                    const dirtX = x + (seed % 200) - 100; // Larger spread within grid
-                    const dirtY = y + ((seed * 17) % 200) - 100;
-                    const dirtSize = (25 + (seed % 15)) / this.camera.zoom;
+        // // 🟫 Draw dirt patches as irregular brown areas
+        // let dirtCount = 0;
+        // const dirtGrid = 417; // 3x denser (was 1250, now ~1.67x original 250)
+        // for (let x = Math.floor(viewLeft / dirtGrid) * dirtGrid; x < viewRight; x += dirtGrid) {
+        //     for (let y = Math.floor(viewTop / dirtGrid) * dirtGrid; y < viewBottom; y += dirtGrid) {
+        //         const seed = (Math.abs(x) * 59 + Math.abs(y) * 61) % 100;
+        //         if (seed > 80) { // 20% chance for dirt patches
+        //             const dirtX = x + (seed % 67) - 33; // Adjusted spread within grid
+        //             const dirtY = y + ((seed * 17) % 67) - 33;
+        //             const dirtSize = (25 + (seed % 15)) / this.camera.zoom;
                     
-                    this.ctx.font = `${dirtSize}px Arial`;
-                    this.ctx.fillStyle = '#8B4513'; // Saddle brown shadow
-                    this.ctx.fillText('🟫', dirtX, dirtY);
+        //             this.ctx.font = `${dirtSize}px Arial`;
+        //             this.ctx.fillStyle = '#8B4513'; // Saddle brown shadow
+        //             this.ctx.fillText('🟫', dirtX, dirtY);
                     
-                    // Add irregular effect with multiple dirt patches
-                    if (dirtSize > 15) {
-                        const patchCount = 2 + (seed % 3);
-                        for (let i = 0; i < patchCount; i++) {
-                            const patchSize = dirtSize * (0.5 + (seed * (i + 1) % 30) / 100);
-                            const offsetX = ((seed * (i + 1)) % 50) - 25; // Larger patch spread
-                            const offsetY = ((seed * (i + 2)) % 50) - 25;
+        //             // Add irregular effect with multiple dirt patches
+        //             if (dirtSize > 15) {
+        //                 const patchCount = 2 + (seed % 3);
+        //                 for (let i = 0; i < patchCount; i++) {
+        //                     const patchSize = dirtSize * (0.5 + (seed * (i + 1) % 30) / 100);
+        //                     const offsetX = ((seed * (i + 1)) % 17) - 8; // Adjusted patch spread
+        //                     const offsetY = ((seed * (i + 2)) % 17) - 8;
                             
-                            this.ctx.font = `${patchSize}px Arial`;
-                            this.ctx.globalAlpha = 0.6 + (i * 0.1);
-                            this.ctx.fillText('🟤', dirtX + offsetX, dirtY + offsetY);
-                        }
-                        this.ctx.globalAlpha = 1.0;
-                    }
+        //                     this.ctx.font = `${patchSize}px Arial`;
+        //                     this.ctx.globalAlpha = 0.6 + (i * 0.1);
+        //                     this.ctx.fillText('🟤', dirtX + offsetX, dirtY + offsetY);
+        //                 }
+        //                 this.ctx.globalAlpha = 1.0;
+        //             }
                     
-                    dirtCount++;
-                }
-            }
-        }
+        //             dirtCount++;
+        //         }
+        //     }
+        // }
         
         // 🍄 Draw mushrooms for additional variety
         let mushroomCount = 0;
-        const mushroomGrid = 900; // 5x larger grid (was 180)
+        const mushroomGrid = 300; // 3x denser (was 900, now ~1.67x original 180)
         for (let x = Math.floor(viewLeft / mushroomGrid) * mushroomGrid; x < viewRight; x += mushroomGrid) {
             for (let y = Math.floor(viewTop / mushroomGrid) * mushroomGrid; y < viewBottom; y += mushroomGrid) {
                 const seed = (Math.abs(x) * 67 + Math.abs(y) * 71) % 100;
                 if (seed > 85) { // 15% chance for mushrooms
-                    const mushroomX = x + (seed % 150) - 75; // Larger spread within grid
-                    const mushroomY = y + ((seed * 19) % 150) - 75;
+                    const mushroomX = x + (seed % 50) - 25; // Adjusted spread within grid
+                    const mushroomY = y + ((seed * 19) % 50) - 25;
                     const mushroomSize = (6 + (seed % 6)) / this.camera.zoom;
                     
                     this.ctx.font = `${Math.max(8, mushroomSize)}px Arial`;
@@ -1253,13 +1253,13 @@ class GameEngine {
         
         // 🌾 Draw grass/wheat for additional texture
         let grassCount = 0;
-        const grassGrid = 300; // 5x larger grid (was 60)
+        const grassGrid = 100; // 3x denser (was 300, now ~1.67x original 60)
         for (let x = Math.floor(viewLeft / grassGrid) * grassGrid; x < viewRight; x += grassGrid) {
             for (let y = Math.floor(viewTop / grassGrid) * grassGrid; y < viewBottom; y += grassGrid) {
                 const seed = (Math.abs(x) * 73 + Math.abs(y) * 79) % 100;
                 if (seed > 70) { // 30% chance for grass
-                    const grassX = x + (seed % 75) - 37; // Larger spread within grid
-                    const grassY = y + ((seed * 23) % 75) - 37;
+                    const grassX = x + (seed % 25) - 12; // Adjusted spread within grid
+                    const grassY = y + ((seed * 23) % 25) - 12;
                     const grassSize = (4 + (seed % 4)) / this.camera.zoom;
                     
                     this.ctx.font = `${Math.max(6, grassSize)}px Arial`;
@@ -1272,13 +1272,13 @@ class GameEngine {
         
         // 🪨 Draw additional stone variations
         let stoneCount = 0;
-        const stoneGrid = 1100; // 5x larger grid (was 220)
+        const stoneGrid = 367; // 3x denser (was 1100, now ~1.67x original 220)
         for (let x = Math.floor(viewLeft / stoneGrid) * stoneGrid; x < viewRight; x += stoneGrid) {
             for (let y = Math.floor(viewTop / stoneGrid) * stoneGrid; y < viewBottom; y += stoneGrid) {
                 const seed = (Math.abs(x) * 83 + Math.abs(y) * 89) % 100;
                 if (seed > 75) { // 25% chance for stones
-                    const stoneX = x + (seed % 200) - 100; // Larger spread within grid
-                    const stoneY = y + ((seed * 29) % 200) - 100;
+                    const stoneX = x + (seed % 67) - 33; // Adjusted spread within grid
+                    const stoneY = y + ((seed * 29) % 67) - 33;
                     const stoneSize = (10 + (seed % 12)) / this.camera.zoom;
                     
                     this.ctx.font = `${Math.max(8, stoneSize)}px Arial`;
@@ -1291,13 +1291,13 @@ class GameEngine {
         
         // 🌵 Draw cacti for desert areas
         let cactusCount = 0;
-        const cactusGrid = 2000; // 5x larger grid (was 400)
+        const cactusGrid = 667; // 3x denser (was 2000, now ~1.67x original 400)
         for (let x = Math.floor(viewLeft / cactusGrid) * cactusGrid; x < viewRight; x += cactusGrid) {
             for (let y = Math.floor(viewTop / cactusGrid) * cactusGrid; y < viewBottom; y += cactusGrid) {
                 const seed = (Math.abs(x) * 97 + Math.abs(y) * 101) % 100;
                 if (seed > 90) { // 10% chance for cacti (rare)
-                    const cactusX = x + (seed % 400) - 200; // Larger spread within grid
-                    const cactusY = y + ((seed * 31) % 400) - 200;
+                    const cactusX = x + (seed % 133) - 66; // Adjusted spread within grid
+                    const cactusY = y + ((seed * 31) % 133) - 66;
                     const cactusSize = (18 + (seed % 12)) / this.camera.zoom;
                     
                     this.ctx.font = `${Math.max(12, cactusSize)}px Arial`;
