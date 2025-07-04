@@ -447,6 +447,8 @@ class Player {
     
     updateMiniTankFormation() {
         const mainTank = this.mainTank;
+        
+        // Fixed formation positions (relative to main tank when facing right at angle 0)
         const basePositions = [
             { x: -60, y: -60 }, // Top-left
             { x: 60, y: -60 },  // Top-right  
@@ -455,22 +457,92 @@ class Player {
             { x: 0, y: -80 }    // Top-center
         ];
         
-        for (let i = 0; i < this.miniTanks.length; i++) {
-            const miniTank = this.miniTanks[i];
-            const basePos = basePositions[i];
+        // Only calculate movement direction if we're actually moving
+        if (this.moveIntensity > 0.1) {
+            // Get the movement direction vector
+            const movementVector = {
+                x: this.moveDirectionX,
+                y: this.moveDirectionY
+            };
             
-            // Calculate rotated formation position relative to main tank's direction
-            const rotatedPos = this.rotateFormationPosition(basePos, mainTank.targetAngle);
-            const targetX = mainTank.x + rotatedPos.x;
-            const targetY = mainTank.y + rotatedPos.y;
+            // Calculate the dot product between movement vector and tank's facing direction
+            // This tells us if we're moving forward (positive) or backward (negative)
+            const tankDirectionVector = {
+                x: Math.cos(mainTank.targetAngle),
+                y: Math.sin(mainTank.targetAngle)
+            };
             
-            // Smooth follow movement for mini tanks
-            miniTank.x = Utils.lerp(miniTank.x, targetX, 0.15);
-            miniTank.y = Utils.lerp(miniTank.y, targetY, 0.15);
+            // Dot product to determine forward/backward movement
+            const dotProduct = movementVector.x * tankDirectionVector.x + 
+                              movementVector.y * tankDirectionVector.y;
             
-            // Sync rotation with main tank
-            miniTank.targetAngle = mainTank.targetAngle;
+            // Process each mini tank
+            for (let i = 0; i < this.miniTanks.length; i++) {
+                const miniTank = this.miniTanks[i];
+                
+                // Calculate target position based on movement direction
+                let targetPos;
+                
+                if (dotProduct >= 0) {
+                    // Moving forward or sideways - use standard formation
+                    targetPos = this.calculateFormationPosition(basePositions[i], mainTank);
+                } else {
+                    // Moving backward - adjust formation to be behind the tank
+                    // Flip the y coordinate for a more natural backward formation
+                    const adjustedPos = {
+                        x: basePositions[i].x,
+                        y: -basePositions[i].y
+                    };
+                    targetPos = this.calculateFormationPosition(adjustedPos, mainTank);
+                }
+                
+                // Apply smooth movement with variable lerp factor
+                // Use a faster lerp factor for quick direction changes
+                // Calculate distance to target position to adjust lerp factor
+                const distToTarget = Utils.distance(miniTank.x, miniTank.y, targetPos.x, targetPos.y);
+                
+                // Adjust lerp factor based on distance - faster when far away, smoother when close
+                const baseLerpFactor = 0.15;
+                const distanceBoost = Math.min(distToTarget / 100, 0.5); // Cap the boost
+                const lerpFactor = baseLerpFactor + distanceBoost;
+                
+                miniTank.x = Utils.lerp(miniTank.x, targetPos.x, lerpFactor);
+                miniTank.y = Utils.lerp(miniTank.y, targetPos.y, lerpFactor);
+                
+                // Sync rotation with main tank
+                miniTank.targetAngle = mainTank.targetAngle;
+            }
+        } else {
+            // When not moving, maintain standard formation
+            for (let i = 0; i < this.miniTanks.length; i++) {
+                const miniTank = this.miniTanks[i];
+                const targetPos = this.calculateFormationPosition(basePositions[i], mainTank);
+                
+                // Apply smooth movement with distance-based adjustment
+                const distToTarget = Utils.distance(miniTank.x, miniTank.y, targetPos.x, targetPos.y);
+                const baseLerpFactor = 0.1;
+                const distanceBoost = Math.min(distToTarget / 150, 0.3); // Gentler boost when not moving
+                const lerpFactor = baseLerpFactor + distanceBoost;
+                
+                miniTank.x = Utils.lerp(miniTank.x, targetPos.x, lerpFactor);
+                miniTank.y = Utils.lerp(miniTank.y, targetPos.y, lerpFactor);
+                
+                // Sync rotation with main tank
+                miniTank.targetAngle = mainTank.targetAngle;
+            }
         }
+    }
+    
+    // Helper method to calculate the final position of a mini tank in formation
+    calculateFormationPosition(basePos, mainTank) {
+        // Rotate the position based on main tank's angle
+        const rotatedPos = this.rotateFormationPosition(basePos, mainTank.targetAngle);
+        
+        // Return the world position
+        return {
+            x: mainTank.x + rotatedPos.x,
+            y: mainTank.y + rotatedPos.y
+        };
     }
     
     rotateFormationPosition(position, angle) {
