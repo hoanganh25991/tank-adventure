@@ -62,6 +62,13 @@
             z-index: 10;
         }
         
+        .skill-emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+            line-height: 1;
+        }
+        
         .skill-option h3 {
             color: #4a9eff;
             margin-bottom: 12px;
@@ -101,6 +108,11 @@
                 flex-direction: column;
                 justify-content: center;
             }
+            
+            .skill-emoji {
+                font-size: 24px;
+                margin-bottom: 6px;
+            }
         }
     </style>
 </head>
@@ -111,21 +123,24 @@
         
         <div id="skillOptions">
             <div class="skill-option" data-skill-id="damage_boost">
-                <h3>Damage Boost</h3>
-                <p>Increases weapon damage by 25%</p>
-                <p><strong>Type:</strong> Passive</p>
+                <div class="skill-emoji">💥</div>
+                <h3>Combat Overdrive</h3>
+                <p>Increases damage for 10 seconds</p>
+                <p><strong>Type:</strong> active</p>
             </div>
             
-            <div class="skill-option" data-skill-id="health_regen">
-                <h3>Health Regeneration</h3>
-                <p>Slowly regenerates health over time</p>
-                <p><strong>Type:</strong> Passive</p>
+            <div class="skill-option" data-skill-id="heal">
+                <div class="skill-emoji">🔧</div>
+                <h3>Emergency Repair</h3>
+                <p>Instantly repairs all tanks</p>
+                <p><strong>Type:</strong> active</p>
             </div>
             
             <div class="skill-option" data-skill-id="speed_boost">
-                <h3>Speed Boost</h3>
-                <p>Increases movement speed by 30%</p>
-                <p><strong>Type:</strong> Passive</p>
+                <div class="skill-emoji">🚀</div>
+                <h3>Nitro Boost</h3>
+                <p>Increases movement speed for 8 seconds</p>
+                <p><strong>Type:</strong> active</p>
             </div>
         </div>
         

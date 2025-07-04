@@ -318,8 +318,9 @@ body {
 }
 
 #mainMenu h1 {
-    font-size: 48px;
-    margin-bottom: 50px;
+    font-size: 4rem;
+    font-weight: 1000;
+    margin-bottom: 3rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     color: var(--primary-blue);
     text-transform: uppercase;

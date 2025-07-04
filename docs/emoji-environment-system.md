@@ -6,35 +6,39 @@ The Tank Adventure game now features a rich emoji-based environment system that 
 ## Environment Elements
 
 ### 🗿 Rocks
-- **Spawn Rate**: 50% chance per grid cell (200x200 units)
+- **Spawn Rate**: 50% chance per grid cell (1000x1000 units)
 - **Size**: 15-35 pixels (scales with zoom)
 - **Purpose**: Static obstacles that add visual interest
 - **Variations**: Single emoji with size variations
+- **Spread**: 250x250 unit spread within grid cell
 
 ### 🌳🌲🌴 Trees (3 Types)
-- **Spawn Rate**: 60% chance per grid cell (150x150 units)
+- **Spawn Rate**: 60% chance per grid cell (750x750 units)
 - **Types**:
   - 🌳 Standard deciduous tree
   - 🌲 Pine/coniferous tree  
   - 🌴 Palm/tropical tree
 - **Size**: 20-35 pixels (scales with zoom)
 - **Purpose**: Major landscape features
+- **Spread**: 200x200 unit spread within grid cell
 
 ### 🟦💧 Water Bodies
-- **Spawn Rate**: 30% chance per grid cell (300x300 units)
+- **Spawn Rate**: 30% chance per grid cell (1500x1500 units)
 - **Size**: 30-55 pixels (scales with zoom)
 - **Animation**: Sine wave movement for ripple effect
 - **Special Effects**: 💧 droplet emojis for larger water bodies
 - **Purpose**: Animated environmental features
+- **Spread**: 300x300 unit spread within grid cell
 
 ### 🌿🌱 Bushes
-- **Spawn Rate**: 35% chance per grid cell (120x120 units)
+- **Spawn Rate**: 35% chance per grid cell (600x600 units)
 - **Size**: 8-16 pixels (scales with zoom)
 - **Clustering**: 1-2 additional 🌱 sprouts nearby for larger bushes
 - **Purpose**: Small vegetation clusters
+- **Spread**: 150x150 unit spread within grid cell
 
 ### 🌺🌸💙🌻 Flowers (4 Colors)
-- **Spawn Rate**: 25% chance per grid cell (80x80 units)
+- **Spawn Rate**: 25% chance per grid cell (400x400 units)
 - **Colors**:
   - 🌺 Red hibiscus
   - 🌸 Pink cherry blossom
@@ -42,32 +46,38 @@ The Tank Adventure game now features a rich emoji-based environment system that 
   - 🌻 Yellow sunflower
 - **Size**: 3-6 pixels minimum 8px (scales with zoom)
 - **Purpose**: Colorful accent elements
+- **Spread**: 100x100 unit spread within grid cell
 
 ### 🟫🟤 Dirt Patches
-- **Spawn Rate**: 20% chance per grid cell (250x250 units)
+- **Spawn Rate**: 20% chance per grid cell (1250x1250 units)
 - **Size**: 25-40 pixels (scales with zoom)
 - **Variations**: Multiple 🟤 patches for irregular shapes
 - **Purpose**: Ground texture variation
+- **Spread**: 200x200 unit spread within grid cell
 
 ### 🍄 Mushrooms
-- **Spawn Rate**: 15% chance per grid cell (180x180 units)
+- **Spawn Rate**: 15% chance per grid cell (900x900 units)
 - **Size**: 6-12 pixels minimum 8px (scales with zoom)
 - **Purpose**: Additional variety and forest atmosphere
+- **Spread**: 150x150 unit spread within grid cell
 
 ### 🌾 Grass/Wheat
-- **Spawn Rate**: 30% chance per grid cell (60x60 units)
+- **Spawn Rate**: 30% chance per grid cell (300x300 units)
 - **Size**: 4-8 pixels minimum 6px (scales with zoom)
 - **Purpose**: Fine texture and ground cover
+- **Spread**: 75x75 unit spread within grid cell
 
 ### 🪨 Additional Stones
-- **Spawn Rate**: 25% chance per grid cell (220x220 units)
+- **Spawn Rate**: 25% chance per grid cell (1100x1100 units)
 - **Size**: 10-22 pixels minimum 8px (scales with zoom)
 - **Purpose**: Stone variation from main rocks
+- **Spread**: 200x200 unit spread within grid cell
 
 ### 🌵 Cacti (Rare)
-- **Spawn Rate**: 10% chance per grid cell (400x400 units)
+- **Spawn Rate**: 10% chance per grid cell (2000x2000 units)
 - **Size**: 18-30 pixels minimum 12px (scales with zoom)
 - **Purpose**: Desert/arid environment elements
+- **Spread**: 400x400 unit spread within grid cell
 
 ## Technical Implementation
 
@@ -108,19 +118,19 @@ stones: 25%       // 1 in 4 grid cells
 cacti: 10%        // 1 in 10 grid cells
 ```
 
-### Grid Sizes
+### Grid Sizes (5x Larger for Reduced Density)
 ```javascript
-// Grid spacing for different elements
-rocks: 200x200 units
-trees: 150x150 units
-water: 300x300 units
-bushes: 120x120 units
-flowers: 80x80 units
-dirt: 250x250 units
-mushrooms: 180x180 units
-grass: 60x60 units
-stones: 220x220 units
-cacti: 400x400 units
+// Grid spacing for different elements (5x larger than original)
+rocks: 1000x1000 units (was 200x200)
+trees: 750x750 units (was 150x150)
+water: 1500x1500 units (was 300x300)
+bushes: 600x600 units (was 120x120)
+flowers: 400x400 units (was 80x80)
+dirt: 1250x1250 units (was 250x250)
+mushrooms: 900x900 units (was 180x180)
+grass: 300x300 units (was 60x60)
+stones: 1100x1100 units (was 220x220)
+cacti: 2000x2000 units (was 400x400)
 ```
 
 ## Debug Features

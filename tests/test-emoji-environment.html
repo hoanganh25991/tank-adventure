@@ -252,12 +252,13 @@
             ctx.textBaseline = 'middle';
             
             // 🗿 Draw rocks
-            for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
-                for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
-                    const seed = (x * 31 + y * 17) % 100;
+            const rockGrid = 1000; // 5x larger grid
+            for (let x = Math.floor(viewLeft / rockGrid) * rockGrid; x < viewRight; x += rockGrid) {
+                for (let y = Math.floor(viewTop / rockGrid) * rockGrid; y < viewBottom; y += rockGrid) {
+                    const seed = (Math.abs(x) * 31 + Math.abs(y) * 17) % 100;
                     if (seed > 50) {
-                        const rockX = x + (seed % 50) - 25;
-                        const rockY = y + ((seed * 7) % 50) - 25;
+                        const rockX = x + (seed % 250) - 125;
+                        const rockY = y + ((seed * 7) % 250) - 125;
                         const rockSize = (15 + (seed % 20)) / camera.zoom;
                         
                         ctx.font = `${rockSize}px Arial`;
