@@ -24,6 +24,7 @@
     --color-success: #44ff44;
     --color-warning: #ff9944;
     --color-neutral: #cccccc;
+    --danger-color: #ff4444;
     
     /* Text Colors */
     --text-primary: #ffffff;
@@ -2369,6 +2370,117 @@ body {
     max-height: 380px;
     transform: scale(0.95);
     transform-origin: center;
+}
+
+/* Custom Confirm Dialog Styles */
+.confirm-dialog {
+    border: 3px solid var(--danger-color, #ff4d4d);
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+}
+
+.confirm-dialog h2 {
+    color: var(--danger-color, #ff4d4d);
+    margin-bottom: 15px;
+    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-message {
+    color: var(--text-primary);
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.confirm-bullets {
+    text-align: left;
+    margin: 15px 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.confirm-bullets li {
+    margin-bottom: 8px;
+}
+
+.confirm-warning {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 15px 0;
+    font-size: 16px;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.cancel-btn {
+    flex: 1;
+    background: var(--bg-section);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-primary);
+}
+
+.confirm-btn {
+    flex: 1;
+    background: var(--danger-color, #ff4d4d);
+    color: white;
+    border: 2px solid #cc0000;
+    border-radius: 10px;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.confirm-btn:hover,
+.confirm-btn:active {
+    background: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+/* Responsive styles for confirm dialog */
+@media (max-height: 450px) {
+    .confirm-dialog h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .confirm-message {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .confirm-bullets {
+        margin: 10px 0;
+        font-size: 14px;
+    }
+    
+    .confirm-bullets li {
+        margin-bottom: 5px;
+    }
+    
+    .confirm-warning {
+        margin: 10px 0;
+        font-size: 14px;
+    }
+    
+    .confirm-buttons {
+        margin-top: 15px;
+    }
+    
+    .confirm-btn, .cancel-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
 }
 
 /* Base Screen Battle Button */

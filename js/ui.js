@@ -491,30 +491,101 @@ class GameUI {
     }
 
     handleResetGame() {
-        // Show confirmation dialog before resetting
-        const confirmed = confirm(
-            '⚠️ WARNING: This will delete ALL your progress!\n\n' +
-            '• All tank upgrades will be lost\n' +
-            '• Your level and experience will reset\n' +
-            '• All earned coins will be removed\n' +
-            '• All unlocked skills will be lost\n\n' +
-            'This action cannot be undone. Are you sure you want to reset the game?'
+        // Show custom confirmation dialog before resetting
+        this.showConfirmDialog(
+            'Reset Game',
+            '⚠️ WARNING: This will delete ALL your progress!',
+            [
+                '• All tank upgrades will be lost',
+                '• Your level and experience will reset',
+                '• All earned coins will be removed',
+                '• All unlocked skills will be lost'
+            ],
+            'This action cannot be undone.',
+            () => {
+                // Call the resetGame function from the game engine
+                this.gameEngine.resetGame();
+                
+                // Navigate back to main menu
+                this.showScreen('mainMenu');
+                
+                // Update all screens to reflect the reset
+                this.updateBaseScreen();
+                this.updateHUD();
+            }
         );
+    }
+    
+    showConfirmDialog(title, message, bulletPoints = [], warningText = '', confirmCallback) {
+        // Create a modal dialog for confirmation
+        const modal = document.createElement('div');
+        modal.className = 'modal';
         
-        if (confirmed) {
-            // Call the resetGame function from the game engine
-            this.gameEngine.resetGame();
-            
-            // Show success notification
-            this.showNotification('Game Reset Successfully!', 'info');
-            
-            // Navigate back to main menu
-            this.showScreen('mainMenu');
-            
-            // Update all screens to reflect the reset
-            this.updateBaseScreen();
-            this.updateHUD();
+        // Check if we're on a small screen in landscape mode
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const isSmallScreen = window.innerHeight < 450;
+        const isIPhone14ProMaxLandscape = window.innerWidth >= 900 && window.innerHeight <= 430;
+        
+        // Add a class for iPhone 14 Pro Max
+        if (isIPhone14ProMaxLandscape) {
+            modal.classList.add('iphone14-landscape');
         }
+        
+        // Create bullet points HTML if provided
+        let bulletPointsHtml = '';
+        if (bulletPoints.length > 0) {
+            bulletPointsHtml = '<ul class="confirm-bullets">';
+            bulletPoints.forEach(point => {
+                bulletPointsHtml += `<li>${point}</li>`;
+            });
+            bulletPointsHtml += '</ul>';
+        }
+        
+        // Create warning text HTML if provided
+        let warningHtml = '';
+        if (warningText) {
+            warningHtml = `<p class="confirm-warning">${warningText}</p>`;
+        }
+        
+        modal.innerHTML = `
+            <div class="modal-content confirm-dialog">
+                <h2>${title}</h2>
+                <p class="confirm-message">${message}</p>
+                ${bulletPointsHtml}
+                ${warningHtml}
+                <div class="confirm-buttons">
+                    <button class="modal-close-btn cancel-btn">Cancel</button>
+                    <button class="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listeners to buttons
+        const confirmBtn = modal.querySelector('.confirm-btn');
+        const handleConfirm = (e) => {
+            e.preventDefault();
+            if (modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+        };
+        confirmBtn.addEventListener('click', handleConfirm);
+        confirmBtn.addEventListener('touchend', handleConfirm);
+        
+        // Close button
+        const closeBtn = modal.querySelector('.cancel-btn');
+        const handleClose = (e) => {
+            e.preventDefault();
+            if (modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        };
+        closeBtn.addEventListener('click', handleClose);
+        closeBtn.addEventListener('touchend', handleClose);
     }
 
     updateHUD() {
