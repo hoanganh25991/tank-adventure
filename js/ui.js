@@ -380,6 +380,7 @@ class GameUI {
                         <div class="battle-info">
                             <span class="battle-name">Quick Battle</span>
                             <span class="battle-desc">3 Waves</span>
+                            <span class="battle-reward">Reward: x1.0 (x1.3 bonus)</span>
                         </div>
                         <span class="battle-click-hint">▶</span>
                     </button>
@@ -388,6 +389,7 @@ class GameUI {
                         <div class="battle-info">
                             <span class="battle-name">Standard Battle</span>
                             <span class="battle-desc">5 Waves</span>
+                            <span class="battle-reward">Reward: x1.2 (x1.5 bonus)</span>
                         </div>
                         <span class="battle-click-hint">▶</span>
                     </button>
@@ -396,6 +398,7 @@ class GameUI {
                         <div class="battle-info">
                             <span class="battle-name">Extended Battle</span>
                             <span class="battle-desc">10 Waves</span>
+                            <span class="battle-reward">Reward: x1.5 (x2.0 bonus)</span>
                         </div>
                         <span class="battle-click-hint">▶</span>
                     </button>
@@ -662,7 +665,29 @@ class GameUI {
         // Add bonus message for final wave completion
         const bonusMessage = document.getElementById('bonusMessage') || this.createBonusMessageElement();
         if (results.bonusApplied) {
-            bonusMessage.textContent = '🌟 Final Wave Bonus: +50% Score, XP, and Coins! 🌟';
+            let bonusText = '';
+            let baseMultiplierText = '';
+            
+            // Set bonus text based on battle type
+            switch (results.battleType) {
+                case 'quick':
+                    bonusText = '+30%';
+                    baseMultiplierText = '';  // No base multiplier for quick battles
+                    break;
+                case 'standard':
+                    bonusText = '+50%';
+                    baseMultiplierText = ' (Base: +20%)';
+                    break;
+                case 'extended':
+                    bonusText = '+100%';
+                    baseMultiplierText = ' (Base: +50%)';
+                    break;
+                default:
+                    bonusText = '+50%';
+                    baseMultiplierText = '';
+            }
+            
+            bonusMessage.textContent = `🌟 ${results.battleType.charAt(0).toUpperCase() + results.battleType.slice(1)} Battle Rewards: ${bonusText} Completion Bonus${baseMultiplierText}! 🌟`;
             bonusMessage.style.display = 'block';
         } else {
             bonusMessage.style.display = 'none';

@@ -784,15 +784,35 @@ class GameEngine {
         
         // Apply bonus rewards for completing all waves
         let bonusMultiplier = 1.0;
-        if (victory && isFinalWave) {
-            // 50% bonus for completing all waves
-            bonusMultiplier = 1.5;
-            console.log(`Final wave completed! Applying ${(bonusMultiplier-1)*100}% bonus to rewards.`);
+        let baseMultiplier = 1.0;
+        
+        // Apply different base multipliers based on battle type
+        if (this.battleType === 'quick') {
+            baseMultiplier = 1.0; // Base multiplier for quick battles
+        } else if (this.battleType === 'standard') {
+            baseMultiplier = 1.2; // 20% higher base rewards for standard battles
+        } else if (this.battleType === 'extended') {
+            baseMultiplier = 1.5; // 50% higher base rewards for extended battles
         }
         
-        // Update player stats with potential bonus
-        const finalScore = Math.floor(this.battleStats.scoreEarned * bonusMultiplier);
-        const finalExp = Math.floor(this.battleStats.expGained * bonusMultiplier);
+        // Apply completion bonus if player won the final wave
+        if (victory && isFinalWave) {
+            // Different completion bonuses based on battle type
+            if (this.battleType === 'quick') {
+                bonusMultiplier = 1.3; // 30% bonus for completing quick battle
+            } else if (this.battleType === 'standard') {
+                bonusMultiplier = 1.5; // 50% bonus for completing standard battle
+            } else if (this.battleType === 'extended') {
+                bonusMultiplier = 2.0; // 100% bonus for completing extended battle (double rewards)
+            }
+            
+            console.log(`Final wave completed! Battle type: ${this.battleType}. Applying ${(bonusMultiplier-1)*100}% completion bonus to rewards.`);
+        }
+        
+        // Calculate final rewards with both base multiplier and completion bonus
+        const totalMultiplier = baseMultiplier * bonusMultiplier;
+        const finalScore = Math.floor(this.battleStats.scoreEarned * totalMultiplier);
+        const finalExp = Math.floor(this.battleStats.expGained * totalMultiplier);
         const finalCoins = Math.floor(finalScore / 4);
         
         this.player.addScore(finalScore);
@@ -811,7 +831,10 @@ class GameEngine {
             expGained: finalExp,
             battleType: this.battleType,
             isFinalWave: isFinalWave,
-            bonusApplied: isFinalWave && victory
+            bonusApplied: isFinalWave && victory,
+            baseMultiplier: baseMultiplier,
+            bonusMultiplier: bonusMultiplier,
+            totalMultiplier: totalMultiplier
         });
     }
 
