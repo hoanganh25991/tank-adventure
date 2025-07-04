@@ -1,7 +1,7 @@
 // Skills System
 
 class Skill {
-    constructor(id, name, description, type, effect, duration = 0, cooldown = 0) {
+    constructor(id, name, description, type, effect, duration = 0, cooldown = 0, emoji = '⚡') {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -9,6 +9,7 @@ class Skill {
         this.effect = effect; // Object describing the effect
         this.duration = duration; // For active skills (ms)
         this.cooldown = cooldown; // For active skills (ms)
+        this.emoji = emoji; // Emoji for visual representation
         this.isActive = false;
         this.remainingDuration = 0;
         this.remainingCooldown = 0;
@@ -222,44 +223,44 @@ class SkillManager {
         return [
             // Active Skills
             new Skill('heal', 'Emergency Repair', 'Instantly repairs all tanks', 'active', 
-                { type: 'heal', value: 30 }, 0, 8000),
+                { type: 'heal', value: 30 }, 0, 8000, '🔧'),
             
             new Skill('damage_boost', 'Combat Overdrive', 'Increases damage for 10 seconds', 'active',
-                { type: 'damage_boost', multiplier: 1.5 }, 10000, 15000),
+                { type: 'damage_boost', multiplier: 1.5 }, 10000, 15000, '💥'),
             
             new Skill('speed_boost', 'Nitro Boost', 'Increases movement speed for 8 seconds', 'active',
-                { type: 'speed_boost', multiplier: 1.8 }, 8000, 12000),
+                { type: 'speed_boost', multiplier: 1.8 }, 8000, 12000, '🚀'),
             
             new Skill('shield', 'Energy Shield', 'Adds temporary shield to all tanks', 'active',
-                { type: 'shield', value: 25 }, 15000, 20000),
+                { type: 'shield', value: 25 }, 15000, 20000, '🛡️'),
             
             new Skill('explosive_shot', 'Explosive Rounds', 'Shots explode on impact for 12 seconds', 'active',
-                { type: 'explosive_shot', radius: 50, damage: 15 }, 12000, 18000),
+                { type: 'explosive_shot', radius: 50, damage: 15 }, 12000, 18000, '💣'),
             
             new Skill('multi_shot', 'Multi-Cannon', 'Fire multiple shots at once for 10 seconds', 'active',
-                { type: 'multi_shot', count: 3 }, 10000, 16000),
+                { type: 'multi_shot', count: 3 }, 10000, 16000, '🔫'),
             
             new Skill('time_slow', 'Temporal Field', 'Slows all enemies for 6 seconds', 'active',
-                { type: 'time_slow', slowFactor: 0.5 }, 6000, 25000),
+                { type: 'time_slow', slowFactor: 0.5 }, 6000, 25000, '⏰'),
             
             new Skill('auto_repair', 'Auto-Repair System', 'Gradually repairs tanks for 20 seconds', 'active',
-                { type: 'auto_repair', value: 5 }, 20000, 30000),
+                { type: 'auto_repair', value: 5 }, 20000, 30000, '🔄'),
             
             // Passive Skills
             new Skill('armor_upgrade', 'Reinforced Armor', 'Permanently increases max health', 'passive',
-                { type: 'health_increase', value: 20 }),
+                { type: 'health_increase', value: 20 }, 0, 0, '🛡️'),
             
             new Skill('weapon_upgrade', 'Enhanced Weapons', 'Permanently increases damage', 'passive',
-                { type: 'damage_increase', value: 3 }),
+                { type: 'damage_increase', value: 3 }, 0, 0, '⚔️'),
             
             new Skill('engine_upgrade', 'Improved Engine', 'Permanently increases speed', 'passive',
-                { type: 'speed_increase', value: 0.5 }),
+                { type: 'speed_increase', value: 0.5 }, 0, 0, '⚙️'),
             
             new Skill('rapid_fire', 'Rapid Fire System', 'Permanently reduces shoot cooldown', 'passive',
-                { type: 'cooldown_reduction', value: 0.8 }),
+                { type: 'cooldown_reduction', value: 0.8 }, 0, 0, '🔥'),
             
             new Skill('targeting_system', 'Advanced Targeting', 'Increases bullet speed and accuracy', 'passive',
-                { type: 'accuracy_boost', value: 1.5 }),
+                { type: 'accuracy_boost', value: 1.5 }, 0, 0, '🎯'),
         ];
     }
 
@@ -333,7 +334,8 @@ class SkillManager {
             skillTemplate.type,
             skillTemplate.effect,
             skillTemplate.duration,
-            skillTemplate.cooldown
+            skillTemplate.cooldown,
+            skillTemplate.emoji
         );
         
         if (newSkill.type === 'active') {
@@ -528,7 +530,7 @@ class SkillManager {
             if (skill) {
                 const newSkill = new Skill(
                     skill.id, skill.name, skill.description, skill.type,
-                    skill.effect, skill.duration, skill.cooldown
+                    skill.effect, skill.duration, skill.cooldown, skill.emoji
                 );
                 newSkill.level = skillData.level;
                 this.passiveSkills.push(newSkill);

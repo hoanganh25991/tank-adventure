@@ -1024,7 +1024,7 @@ class GameEngine {
     }
 
     drawEnvironment() {
-        // Draw environmental elements to make the battlefield more interesting
+        // Draw environmental elements using emojis to make the battlefield more interesting
         // Calculate visible area in world coordinates (accounting for zoom)
         const canvasDims = this.getCanvasCSSDimensions();
         const viewWidth = canvasDims.width / this.camera.zoom;
@@ -1047,220 +1047,123 @@ class GameEngine {
             console.log(`Camera: x=${this.camera.x.toFixed(0)}, y=${this.camera.y.toFixed(0)}, zoom=${this.camera.zoom.toFixed(2)}`);
         }
         
-        // Draw rocks/obstacles with random variations
+        // Set up emoji rendering
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        
+        // 🗿 Draw rocks with 4 shapes (square, circle, hexagon, triangle)
         let rockCount = 0;
         for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
             for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
-                // Use deterministic random based on position
                 const seed = (x * 31 + y * 17) % 100;
-                if (seed > 50) { // 50% chance for obstacles (increased for better visibility)
+                if (seed > 50) { // 50% chance for rocks
                     const rockX = x + (seed % 50) - 25;
                     const rockY = y + ((seed * 7) % 50) - 25;
-                    const rockSize = 15 + (seed % 20);
+                    const rockSize = (15 + (seed % 20)) / this.camera.zoom;
                     
-                    // Random rock variations based on seed
-                    const colorVariation = (seed * 3) % 40;
-                    const shapeVariation = (seed * 5) % 4;
-                    
-                    // Random brown color variations
-                    const baseRed = 139 + colorVariation - 20;
-                    const baseGreen = 115 + colorVariation - 20;
-                    const baseBue = 85 + colorVariation - 20;
-                    
-                    this.ctx.fillStyle = `rgb(${baseRed}, ${baseGreen}, ${baseBue})`;
-                    this.ctx.strokeStyle = `rgb(${baseRed - 40}, ${baseGreen - 40}, ${baseBue - 40})`;
-                    this.ctx.lineWidth = 2 / this.camera.zoom;
-                    
-                    // Draw rock with random shape
-                    this.ctx.save();
-                    this.ctx.translate(rockX, rockY);
-                    this.ctx.rotate(seed * 0.1);
-                    
-                    if (shapeVariation === 0) {
-                        // Square rock
-                        this.ctx.fillRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
-                        this.ctx.strokeRect(-rockSize/2, -rockSize/2, rockSize, rockSize);
-                    } else if (shapeVariation === 1) {
-                        // Circular rock
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, 0, rockSize/2, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    } else if (shapeVariation === 2) {
-                        // Hexagonal rock
-                        this.ctx.beginPath();
-                        for (let i = 0; i < 6; i++) {
-                            const angle = (i * Math.PI * 2) / 6;
-                            const px = Math.cos(angle) * rockSize/2;
-                            const py = Math.sin(angle) * rockSize/2;
-                            if (i === 0) this.ctx.moveTo(px, py);
-                            else this.ctx.lineTo(px, py);
-                        }
-                        this.ctx.closePath();
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    } else {
-                        // Triangular rock
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(0, -rockSize/2);
-                        this.ctx.lineTo(-rockSize/2, rockSize/2);
-                        this.ctx.lineTo(rockSize/2, rockSize/2);
-                        this.ctx.closePath();
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    }
-                    
-                    this.ctx.restore();
+                    this.ctx.font = `${rockSize}px Arial`;
+                    this.ctx.fillStyle = '#8B4513'; // Brown color for rock emoji shadow
+                    this.ctx.fillText('🗿', rockX, rockY);
                     rockCount++;
                 }
             }
         }
         
-        // Draw trees/vegetation with multiple types
+        // 🌳 Draw trees with 3 types (standard, pine, bushy)
         let treeCount = 0;
         for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
             for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
                 const seed = (x * 23 + y * 19) % 100;
-                if (seed > 40) { // 60% chance for trees (increased for better visibility)
+                if (seed > 40) { // 60% chance for trees
                     const treeX = x + (seed % 40) - 20;
                     const treeY = y + ((seed * 11) % 40) - 20;
-                    const treeSize = 20 + (seed % 15);
+                    const treeSize = (20 + (seed % 15)) / this.camera.zoom;
                     const treeType = (seed * 7) % 3; // 3 tree types
                     
-                    // Draw tree
-                    this.ctx.save();
-                    this.ctx.translate(treeX, treeY);
+                    this.ctx.font = `${treeSize}px Arial`;
                     
-                    if (treeType === 0) {
-                        // Standard tree
-                        this.ctx.fillStyle = '#654321';
-                        this.ctx.fillRect(-3, treeSize/2 - 5, 6, 10);
-                        
-                        this.ctx.fillStyle = '#4A7C59';
-                        this.ctx.strokeStyle = '#2E4A36';
-                        this.ctx.lineWidth = 1 / this.camera.zoom;
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, 0, treeSize/2, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    } else if (treeType === 1) {
-                        // Pine tree
-                        this.ctx.fillStyle = '#654321';
-                        this.ctx.fillRect(-2, treeSize/2 - 3, 4, 8);
-                        
-                        this.ctx.fillStyle = '#2D5016';
-                        this.ctx.strokeStyle = '#1A3009';
-                        this.ctx.lineWidth = 1 / this.camera.zoom;
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(0, -treeSize/2);
-                        this.ctx.lineTo(-treeSize/3, treeSize/3);
-                        this.ctx.lineTo(treeSize/3, treeSize/3);
-                        this.ctx.closePath();
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    } else {
-                        // Bushy tree
-                        this.ctx.fillStyle = '#654321';
-                        this.ctx.fillRect(-2, treeSize/2 - 3, 4, 6);
-                        
-                        this.ctx.fillStyle = '#5A8B3A';
-                        this.ctx.strokeStyle = '#3A5B2A';
-                        this.ctx.lineWidth = 1 / this.camera.zoom;
-                        
-                        // Multiple overlapping circles for bushy effect
-                        for (let i = 0; i < 3; i++) {
-                            const offsetX = (seed * (i + 1)) % 6 - 3;
-                            const offsetY = (seed * (i + 2)) % 6 - 3;
-                            this.ctx.beginPath();
-                            this.ctx.arc(offsetX, offsetY, treeSize/3, 0, Math.PI * 2);
-                            this.ctx.fill();
-                            this.ctx.stroke();
-                        }
+                    let treeEmoji;
+                    switch (treeType) {
+                        case 0: treeEmoji = '🌳'; break; // Standard tree
+                        case 1: treeEmoji = '🌲'; break; // Pine tree
+                        case 2: treeEmoji = '🌴'; break; // Bushy/palm tree
                     }
                     
-                    this.ctx.restore();
+                    this.ctx.fillStyle = '#228B22'; // Forest green shadow
+                    this.ctx.fillText(treeEmoji, treeX, treeY);
                     treeCount++;
                 }
             }
         }
         
-        // Draw water/ponds with animated effect
+        // 🟦 Draw water with animated ripples
         let waterCount = 0;
+        const time = Date.now() * 0.001;
         for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
             for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
                 const seed = (x * 13 + y * 29) % 100;
-                if (seed > 70) { // 30% chance for water (increased for better visibility)
+                if (seed > 70) { // 30% chance for water
                     const waterX = x + (seed % 60) - 30;
                     const waterY = y + ((seed * 13) % 60) - 30;
-                    const waterSize = 30 + (seed % 25);
+                    const waterSize = (30 + (seed % 25)) / this.camera.zoom;
                     
-                    // Animated water effect
-                    const time = Date.now() * 0.001;
-                    const waveOffset = Math.sin(time + seed * 0.1) * 0.1;
+                    // Animated water effect with slight movement
+                    const waveOffset = Math.sin(time + seed * 0.1) * 2;
                     
-                    // Draw water
-                    this.ctx.save();
-                    this.ctx.translate(waterX, waterY);
+                    this.ctx.font = `${waterSize}px Arial`;
+                    this.ctx.fillStyle = '#4169E1'; // Royal blue shadow
+                    this.ctx.fillText('🟦', waterX + waveOffset, waterY);
                     
-                    // Main water body
-                    this.ctx.fillStyle = '#4A90B8';
-                    this.ctx.strokeStyle = '#2B5A7A';
-                    this.ctx.lineWidth = 1 / this.camera.zoom;
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, waterSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.stroke();
-                    
-                    // Animated ripples
-                    this.ctx.strokeStyle = 'rgba(74, 144, 184, 0.4)';
-                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
-                    for (let i = 0; i < 2; i++) {
-                        const rippleRadius = (waterSize/2 - 5) * (0.7 + waveOffset + i * 0.3);
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, 0, rippleRadius, 0, Math.PI * 2);
-                        this.ctx.stroke();
+                    // Add some ripple effects with smaller water emojis
+                    if (waterSize > 20) {
+                        const rippleSize = waterSize * 0.6;
+                        this.ctx.font = `${rippleSize}px Arial`;
+                        this.ctx.globalAlpha = 0.5;
+                        this.ctx.fillText('💧', waterX - waveOffset, waterY + waveOffset);
+                        this.ctx.globalAlpha = 1.0;
                     }
                     
-                    this.ctx.restore();
                     waterCount++;
                 }
             }
         }
         
-        // Draw bushes/shrubs
+        // 🌿 Draw bushes as small clustered shrubs
         let bushCount = 0;
-        this.ctx.fillStyle = '#3A5B2A';
-        this.ctx.strokeStyle = '#2A4B1A';
-        this.ctx.lineWidth = 1 / this.camera.zoom;
-        
         for (let x = Math.floor(viewLeft / 120) * 120; x < viewRight; x += 120) {
             for (let y = Math.floor(viewTop / 120) * 120; y < viewBottom; y += 120) {
                 const seed = (x * 41 + y * 37) % 100;
                 if (seed > 65) { // 35% chance for bushes
                     const bushX = x + (seed % 30) - 15;
                     const bushY = y + ((seed * 9) % 30) - 15;
-                    const bushSize = 8 + (seed % 8);
+                    const bushSize = (8 + (seed % 8)) / this.camera.zoom;
                     
-                    this.ctx.save();
-                    this.ctx.translate(bushX, bushY);
+                    this.ctx.font = `${bushSize}px Arial`;
+                    this.ctx.fillStyle = '#32CD32'; // Lime green shadow
+                    this.ctx.fillText('🌿', bushX, bushY);
                     
-                    // Small clustered circles for bush effect
-                    for (let i = 0; i < 3; i++) {
-                        const offsetX = (seed * (i + 1)) % 4 - 2;
-                        const offsetY = (seed * (i + 3)) % 4 - 2;
-                        this.ctx.beginPath();
-                        this.ctx.arc(offsetX, offsetY, bushSize/3, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
+                    // Add clustered effect with smaller bushes nearby
+                    if (bushSize > 6) {
+                        const clusterSize = bushSize * 0.7;
+                        this.ctx.font = `${clusterSize}px Arial`;
+                        this.ctx.globalAlpha = 0.7;
+                        
+                        // Add 1-2 smaller bushes nearby
+                        const clusterCount = 1 + (seed % 2);
+                        for (let i = 0; i < clusterCount; i++) {
+                            const offsetX = ((seed * (i + 1)) % 12) - 6;
+                            const offsetY = ((seed * (i + 2)) % 12) - 6;
+                            this.ctx.fillText('🌱', bushX + offsetX, bushY + offsetY);
+                        }
+                        this.ctx.globalAlpha = 1.0;
                     }
                     
-                    this.ctx.restore();
                     bushCount++;
                 }
             }
         }
         
-        // Draw flowers/small vegetation
+        // 🌸 Draw flowers with 4 colors (red, teal, blue, yellow)
         let flowerCount = 0;
         for (let x = Math.floor(viewLeft / 80) * 80; x < viewRight; x += 80) {
             for (let y = Math.floor(viewTop / 80) * 80; y < viewBottom; y += 80) {
@@ -1268,50 +1171,27 @@ class GameEngine {
                 if (seed > 75) { // 25% chance for flowers
                     const flowerX = x + (seed % 20) - 10;
                     const flowerY = y + ((seed * 11) % 20) - 10;
-                    const flowerSize = 3 + (seed % 3);
+                    const flowerSize = (3 + (seed % 3)) / this.camera.zoom;
                     
-                    // Updated flower colors (avoiding red to not conflict with bullets)
-                    const colorType = (seed * 13) % 5;
-                    let flowerColor;
+                    // 4 flower colors as requested
+                    const colorType = (seed * 13) % 4;
+                    let flowerEmoji;
                     switch (colorType) {
-                        case 0: flowerColor = '#7FB069'; break; // Sage green
-                        case 1: flowerColor = '#4ECDC4'; break; // Teal
-                        case 2: flowerColor = '#6C7B7F'; break; // Gray-blue
-                        case 3: flowerColor = '#9CAF88'; break; // Muted green
-                        case 4: flowerColor = '#8B9A46'; break; // Olive green
+                        case 0: flowerEmoji = '🌺'; break; // Red flower
+                        case 1: flowerEmoji = '🌸'; break; // Teal/pink flower
+                        case 2: flowerEmoji = '💙'; break; // Blue flower (using blue heart as flower)
+                        case 3: flowerEmoji = '🌻'; break; // Yellow flower (sunflower)
                     }
                     
-                    this.ctx.save();
-                    this.ctx.translate(flowerX, flowerY);
-                    
-                    // Small flower petals
-                    this.ctx.fillStyle = flowerColor;
-                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
-                    
-                    for (let i = 0; i < 5; i++) {
-                        const angle = (i * Math.PI * 2) / 5;
-                        const petalX = Math.cos(angle) * flowerSize/2;
-                        const petalY = Math.sin(angle) * flowerSize/2;
-                        this.ctx.beginPath();
-                        this.ctx.arc(petalX, petalY, flowerSize/3, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.stroke();
-                    }
-                    
-                    // Center
-                    this.ctx.fillStyle = '#E8D5A3'; // Muted yellow center
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, flowerSize/4, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    this.ctx.restore();
+                    this.ctx.font = `${Math.max(8, flowerSize)}px Arial`;
+                    this.ctx.fillStyle = '#FF69B4'; // Hot pink shadow
+                    this.ctx.fillText(flowerEmoji, flowerX, flowerY);
                     flowerCount++;
                 }
             }
         }
         
-        // Draw dirt patches/sand areas
+        // 🟫 Draw dirt patches as irregular brown areas
         let dirtCount = 0;
         for (let x = Math.floor(viewLeft / 250) * 250; x < viewRight; x += 250) {
             for (let y = Math.floor(viewTop / 250) * 250; y < viewBottom; y += 250) {
@@ -1319,181 +1199,109 @@ class GameEngine {
                 if (seed > 80) { // 20% chance for dirt patches
                     const dirtX = x + (seed % 40) - 20;
                     const dirtY = y + ((seed * 17) % 40) - 20;
-                    const dirtSize = 25 + (seed % 15);
+                    const dirtSize = (25 + (seed % 15)) / this.camera.zoom;
                     
-                    this.ctx.save();
-                    this.ctx.translate(dirtX, dirtY);
+                    this.ctx.font = `${dirtSize}px Arial`;
+                    this.ctx.fillStyle = '#8B4513'; // Saddle brown shadow
+                    this.ctx.fillText('🟫', dirtX, dirtY);
                     
-                    // Irregular dirt patch
-                    this.ctx.fillStyle = '#8B4513';
-                    this.ctx.strokeStyle = '#654321';
-                    this.ctx.lineWidth = 1 / this.camera.zoom;
-                    
-                    this.ctx.beginPath();
-                    for (let i = 0; i < 8; i++) {
-                        const angle = (i * Math.PI * 2) / 8;
-                        const variation = 0.7 + ((seed * (i + 1)) % 30) / 100;
-                        const radius = (dirtSize/2) * variation;
-                        const px = Math.cos(angle) * radius;
-                        const py = Math.sin(angle) * radius;
-                        if (i === 0) this.ctx.moveTo(px, py);
-                        else this.ctx.lineTo(px, py);
+                    // Add irregular effect with multiple dirt patches
+                    if (dirtSize > 15) {
+                        const patchCount = 2 + (seed % 3);
+                        for (let i = 0; i < patchCount; i++) {
+                            const patchSize = dirtSize * (0.5 + (seed * (i + 1) % 30) / 100);
+                            const offsetX = ((seed * (i + 1)) % 20) - 10;
+                            const offsetY = ((seed * (i + 2)) % 20) - 10;
+                            
+                            this.ctx.font = `${patchSize}px Arial`;
+                            this.ctx.globalAlpha = 0.6 + (i * 0.1);
+                            this.ctx.fillText('🟤', dirtX + offsetX, dirtY + offsetY);
+                        }
+                        this.ctx.globalAlpha = 1.0;
                     }
-                    this.ctx.closePath();
-                    this.ctx.fill();
-                    this.ctx.stroke();
                     
-                    this.ctx.restore();
                     dirtCount++;
                 }
             }
         }
         
-        // Draw mushrooms
+        // 🍄 Draw mushrooms for additional variety
         let mushroomCount = 0;
-        for (let x = Math.floor(viewLeft / 100) * 100; x < viewRight; x += 100) {
-            for (let y = Math.floor(viewTop / 100) * 100; y < viewBottom; y += 100) {
+        for (let x = Math.floor(viewLeft / 180) * 180; x < viewRight; x += 180) {
+            for (let y = Math.floor(viewTop / 180) * 180; y < viewBottom; y += 180) {
                 const seed = (x * 67 + y * 71) % 100;
                 if (seed > 85) { // 15% chance for mushrooms
-                    const mushroomX = x + (seed % 25) - 12;
-                    const mushroomY = y + ((seed * 7) % 25) - 12;
-                    const mushroomSize = 6 + (seed % 4);
+                    const mushroomX = x + (seed % 30) - 15;
+                    const mushroomY = y + ((seed * 19) % 30) - 15;
+                    const mushroomSize = (6 + (seed % 6)) / this.camera.zoom;
                     
-                    this.ctx.save();
-                    this.ctx.translate(mushroomX, mushroomY);
-                    
-                    // Mushroom stem
-                    this.ctx.fillStyle = '#D4CDB7';
-                    this.ctx.strokeStyle = '#A8A084';
-                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
-                    this.ctx.fillRect(-1, mushroomSize/3, 2, mushroomSize/2);
-                    this.ctx.strokeRect(-1, mushroomSize/3, 2, mushroomSize/2);
-                    
-                    // Mushroom cap
-                    const capColors = ['#8B7355', '#A0845C', '#6B5B73', '#7A6F47'];
-                    this.ctx.fillStyle = capColors[seed % capColors.length];
-                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, mushroomSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.stroke();
-                    
-                    // Spots on cap
-                    if ((seed * 3) % 2 === 0) {
-                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                        for (let i = 0; i < 3; i++) {
-                            const spotX = (seed * (i + 2)) % 4 - 2;
-                            const spotY = (seed * (i + 4)) % 4 - 2;
-                            this.ctx.beginPath();
-                            this.ctx.arc(spotX, spotY, 1, 0, Math.PI * 2);
-                            this.ctx.fill();
-                        }
-                    }
-                    
-                    this.ctx.restore();
+                    this.ctx.font = `${Math.max(8, mushroomSize)}px Arial`;
+                    this.ctx.fillStyle = '#8B4513'; // Brown shadow
+                    this.ctx.fillText('🍄', mushroomX, mushroomY);
                     mushroomCount++;
                 }
             }
         }
         
-        // Draw crystals
-        let crystalCount = 0;
-        for (let x = Math.floor(viewLeft / 180) * 180; x < viewRight; x += 180) {
-            for (let y = Math.floor(viewTop / 180) * 180; y < viewBottom; y += 180) {
+        // 🌾 Draw grass/wheat for additional texture
+        let grassCount = 0;
+        for (let x = Math.floor(viewLeft / 60) * 60; x < viewRight; x += 60) {
+            for (let y = Math.floor(viewTop / 60) * 60; y < viewBottom; y += 60) {
                 const seed = (x * 73 + y * 79) % 100;
-                if (seed > 90) { // 10% chance for crystals
-                    const crystalX = x + (seed % 30) - 15;
-                    const crystalY = y + ((seed * 9) % 30) - 15;
-                    const crystalSize = 8 + (seed % 6);
+                if (seed > 70) { // 30% chance for grass
+                    const grassX = x + (seed % 15) - 7;
+                    const grassY = y + ((seed * 23) % 15) - 7;
+                    const grassSize = (4 + (seed % 4)) / this.camera.zoom;
                     
-                    this.ctx.save();
-                    this.ctx.translate(crystalX, crystalY);
-                    
-                    // Crystal colors
-                    const crystalColors = ['#B8C5D6', '#A8B8C8', '#9BADB8', '#87A3B8'];
-                    this.ctx.fillStyle = crystalColors[seed % crystalColors.length];
-                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-                    this.ctx.lineWidth = 1 / this.camera.zoom;
-                    
-                    // Draw crystal as angular shape
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0, -crystalSize/2);
-                    this.ctx.lineTo(crystalSize/3, -crystalSize/4);
-                    this.ctx.lineTo(crystalSize/2, crystalSize/4);
-                    this.ctx.lineTo(0, crystalSize/2);
-                    this.ctx.lineTo(-crystalSize/2, crystalSize/4);
-                    this.ctx.lineTo(-crystalSize/3, -crystalSize/4);
-                    this.ctx.closePath();
-                    this.ctx.fill();
-                    this.ctx.stroke();
-                    
-                    // Crystal shine effect
-                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(-crystalSize/4, -crystalSize/3);
-                    this.ctx.lineTo(0, -crystalSize/2);
-                    this.ctx.lineTo(crystalSize/4, -crystalSize/3);
-                    this.ctx.fill();
-                    
-                    this.ctx.restore();
-                    crystalCount++;
+                    this.ctx.font = `${Math.max(6, grassSize)}px Arial`;
+                    this.ctx.fillStyle = '#9ACD32'; // Yellow green shadow
+                    this.ctx.fillText('🌾', grassX, grassY);
+                    grassCount++;
                 }
             }
         }
         
-        // Draw ancient ruins/stone blocks
-        let ruinCount = 0;
+        // 🪨 Draw additional stone variations
+        let stoneCount = 0;
+        for (let x = Math.floor(viewLeft / 220) * 220; x < viewRight; x += 220) {
+            for (let y = Math.floor(viewTop / 220) * 220; y < viewBottom; y += 220) {
+                const seed = (x * 83 + y * 89) % 100;
+                if (seed > 75) { // 25% chance for stones
+                    const stoneX = x + (seed % 40) - 20;
+                    const stoneY = y + ((seed * 29) % 40) - 20;
+                    const stoneSize = (10 + (seed % 12)) / this.camera.zoom;
+                    
+                    this.ctx.font = `${Math.max(8, stoneSize)}px Arial`;
+                    this.ctx.fillStyle = '#696969'; // Dim gray shadow
+                    this.ctx.fillText('🪨', stoneX, stoneY);
+                    stoneCount++;
+                }
+            }
+        }
+        
+        // 🌵 Draw cacti for desert areas
+        let cactusCount = 0;
         for (let x = Math.floor(viewLeft / 400) * 400; x < viewRight; x += 400) {
             for (let y = Math.floor(viewTop / 400) * 400; y < viewBottom; y += 400) {
-                const seed = (x * 83 + y * 89) % 100;
-                if (seed > 92) { // 8% chance for ruins
-                    const ruinX = x + (seed % 60) - 30;
-                    const ruinY = y + ((seed * 11) % 60) - 30;
-                    const ruinSize = 15 + (seed % 10);
+                const seed = (x * 97 + y * 101) % 100;
+                if (seed > 90) { // 10% chance for cacti (rare)
+                    const cactusX = x + (seed % 80) - 40;
+                    const cactusY = y + ((seed * 31) % 80) - 40;
+                    const cactusSize = (18 + (seed % 12)) / this.camera.zoom;
                     
-                    this.ctx.save();
-                    this.ctx.translate(ruinX, ruinY);
-                    
-                    // Ruin colors
-                    this.ctx.fillStyle = '#8B8680';
-                    this.ctx.strokeStyle = '#6B665F';
-                    this.ctx.lineWidth = 1 / this.camera.zoom;
-                    
-                    // Draw irregular stone block
-                    this.ctx.beginPath();
-                    for (let i = 0; i < 6; i++) {
-                        const angle = (i * Math.PI * 2) / 6;
-                        const variation = 0.8 + ((seed * (i + 1)) % 20) / 100;
-                        const radius = (ruinSize/2) * variation;
-                        const px = Math.cos(angle) * radius;
-                        const py = Math.sin(angle) * radius;
-                        if (i === 0) this.ctx.moveTo(px, py);
-                        else this.ctx.lineTo(px, py);
-                    }
-                    this.ctx.closePath();
-                    this.ctx.fill();
-                    this.ctx.stroke();
-                    
-                    // Add weathering lines
-                    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-                    this.ctx.lineWidth = 0.5 / this.camera.zoom;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(-ruinSize/3, -ruinSize/4);
-                    this.ctx.lineTo(ruinSize/3, ruinSize/4);
-                    this.ctx.moveTo(-ruinSize/4, ruinSize/3);
-                    this.ctx.lineTo(ruinSize/4, -ruinSize/3);
-                    this.ctx.stroke();
-                    
-                    this.ctx.restore();
-                    ruinCount++;
+                    this.ctx.font = `${Math.max(12, cactusSize)}px Arial`;
+                    this.ctx.fillStyle = '#228B22'; // Forest green shadow
+                    this.ctx.fillText('🌵', cactusX, cactusY);
+                    cactusCount++;
                 }
             }
         }
         
-        // Debug logging for environment objects
+        // Debug information
         if (this.debugEnvironment) {
-            console.log(`Rendered: ${rockCount} rocks, ${treeCount} trees, ${waterCount} water bodies, ${bushCount} bushes, ${flowerCount} flowers, ${dirtCount} dirt patches, ${mushroomCount} mushrooms, ${crystalCount} crystals, ${ruinCount} ruins`);
+            console.log(`Environment counts - Rocks: ${rockCount}, Trees: ${treeCount}, Water: ${waterCount}, Bushes: ${bushCount}, Flowers: ${flowerCount}, Dirt: ${dirtCount}, Mushrooms: ${mushroomCount}, Grass: ${grassCount}, Stones: ${stoneCount}, Cacti: ${cactusCount}`);
         }
+    }
         
         // Draw test objects at fixed world coordinates for debugging
         if (this.debugMode) {

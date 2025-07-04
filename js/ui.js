@@ -662,6 +662,7 @@ class GameUI {
             skillDiv.className = 'skill-option';
             skillDiv.setAttribute('data-skill-id', skill.id);
             skillDiv.innerHTML = `
+                <div class="skill-emoji">${skill.emoji}</div>
                 <h3>${skill.name}</h3>
                 <p>${skill.description}</p>
                 <p><strong>Type:</strong> ${skill.type}</p>

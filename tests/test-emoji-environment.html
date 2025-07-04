@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Environment Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .controls h3 {
+            margin: 0 0 10px 0;
+            color: #4a9eff;
+        }
+        
+        .control-item {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            background: rgba(74, 158, 255, 0.2);
+            border-radius: 5px;
+            border: 1px solid #4a9eff;
+        }
+        
+        .status {
+            background: rgba(0, 100, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            background: #2a4a2a;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .legend-symbol {
+            font-size: 20px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-info">
+            <h1>🎮 Emoji Environment Test</h1>
+            <p>This test demonstrates the new emoji-based environment system with various environmental elements that create a rich battlefield experience.</p>
+            <div class="status">
+                <strong>Status:</strong> <span id="status">Initializing...</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>Test Controls</h3>
+            <div class="control-item">WASD - Move Tank</div>
+            <div class="control-item">E - Toggle Environment Debug</div>
+            <div class="control-item">Z - Zoom Out</div>
+            <div class="control-item">X - Zoom In</div>
+            <div class="control-item">Space - Shoot</div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol">🗿</span>
+                <strong>Rocks:</strong> Ancient stone formations scattered across the battlefield
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌳🌲🌴</span>
+                <strong>Trees:</strong> 3 types - Standard, Pine, and Palm trees
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🟦💧</span>
+                <strong>Water:</strong> Animated water bodies with ripple effects
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌿🌱</span>
+                <strong>Bushes:</strong> Clustered shrubs and small plants
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌺🌸💙🌻</span>
+                <strong>Flowers:</strong> 4 colors - Red, Pink, Blue, and Yellow
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🟫🟤</span>
+                <strong>Dirt:</strong> Irregular brown patches and soil areas
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🍄</span>
+                <strong>Mushrooms:</strong> Scattered fungi for additional variety
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌾</span>
+                <strong>Grass:</strong> Wheat and grass patches for texture
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🪨</span>
+                <strong>Stones:</strong> Additional stone variations
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol">🌵</span>
+                <strong>Cacti:</strong> Desert plants (rare spawns)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test setup to demonstrate the emoji environment
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusElement = document.getElementById('status');
+        
+        // Test camera system
+        const camera = {
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            smoothing: 0.1,
+            zoom: 0.7,
+            targetZoom: 0.7,
+            zoomSmoothing: 0.05
+        };
+        
+        // Test tank
+        const tank = {
+            x: 0,
+            y: 0,
+            speed: 200
+        };
+        
+        // Input handling
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false
+        };
+        
+        let debugEnvironment = false;
+        let lastTime = 0;
+        
+        // Key event handlers
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'w': keys.w = true; break;
+                case 'a': keys.a = true; break;
+                case 's': keys.s = true; break;
+                case 'd': keys.d = true; break;
+                case 'e': 
+                    debugEnvironment = !debugEnvironment;
+                    console.log(`Environment debug: ${debugEnvironment ? 'ON' : 'OFF'}`);
+                    break;
+                case 'z':
+                    camera.targetZoom = Math.max(0.3, camera.targetZoom - 0.1);
+                    console.log(`Zoom level: ${camera.targetZoom.toFixed(1)}`);
+                    break;
+                case 'x':
+                    camera.targetZoom = Math.min(1.5, camera.targetZoom + 0.1);
+                    console.log(`Zoom level: ${camera.targetZoom.toFixed(1)}`);
+                    break;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'w': keys.w = false; break;
+                case 'a': keys.a = false; break;
+                case 's': keys.s = false; break;
+                case 'd': keys.d = false; break;
+            }
+        });
+        
+        // Update function
+        function update(deltaTime) {
+            // Update tank position
+            if (keys.w) tank.y -= tank.speed * deltaTime;
+            if (keys.s) tank.y += tank.speed * deltaTime;
+            if (keys.a) tank.x -= tank.speed * deltaTime;
+            if (keys.d) tank.x += tank.speed * deltaTime;
+            
+            // Update camera to follow tank
+            camera.targetX = tank.x - (canvas.width / 2) / camera.zoom;
+            camera.targetY = tank.y - (canvas.height / 2) / camera.zoom;
+            
+            camera.x += (camera.targetX - camera.x) * camera.smoothing;
+            camera.y += (camera.targetY - camera.y) * camera.smoothing;
+            camera.zoom += (camera.targetZoom - camera.zoom) * camera.zoomSmoothing;
+            
+            // Update status
+            statusElement.textContent = `Tank: (${tank.x.toFixed(0)}, ${tank.y.toFixed(0)}) | Camera: (${camera.x.toFixed(0)}, ${camera.y.toFixed(0)}) | Zoom: ${camera.zoom.toFixed(2)}`;
+        }
+        
+        // Emoji environment drawing function
+        function drawEmojiEnvironment() {
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            const buffer = 200;
+            
+            const viewLeft = camera.x - buffer;
+            const viewRight = camera.x + viewWidth + buffer;
+            const viewTop = camera.y - buffer;
+            const viewBottom = camera.y + viewHeight + buffer;
+            
+            let totalElements = 0;
+            
+            // Set up emoji rendering
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // 🗿 Draw rocks
+            for (let x = Math.floor(viewLeft / 200) * 200; x < viewRight; x += 200) {
+                for (let y = Math.floor(viewTop / 200) * 200; y < viewBottom; y += 200) {
+                    const seed = (x * 31 + y * 17) % 100;
+                    if (seed > 50) {
+                        const rockX = x + (seed % 50) - 25;
+                        const rockY = y + ((seed * 7) % 50) - 25;
+                        const rockSize = (15 + (seed % 20)) / camera.zoom;
+                        
+                        ctx.font = `${rockSize}px Arial`;
+                        ctx.fillStyle = '#8B4513';
+                        ctx.fillText('🗿', rockX, rockY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🌳 Draw trees
+            for (let x = Math.floor(viewLeft / 150) * 150; x < viewRight; x += 150) {
+                for (let y = Math.floor(viewTop / 150) * 150; y < viewBottom; y += 150) {
+                    const seed = (x * 23 + y * 19) % 100;
+                    if (seed > 40) {
+                        const treeX = x + (seed % 40) - 20;
+                        const treeY = y + ((seed * 11) % 40) - 20;
+                        const treeSize = (20 + (seed % 15)) / camera.zoom;
+                        const treeType = (seed * 7) % 3;
+                        
+                        let treeEmoji;
+                        switch (treeType) {
+                            case 0: treeEmoji = '🌳'; break;
+                            case 1: treeEmoji = '🌲'; break;
+                            case 2: treeEmoji = '🌴'; break;
+                        }
+                        
+                        ctx.font = `${treeSize}px Arial`;
+                        ctx.fillStyle = '#228B22';
+                        ctx.fillText(treeEmoji, treeX, treeY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🟦 Draw water with animation
+            const time = Date.now() * 0.001;
+            for (let x = Math.floor(viewLeft / 300) * 300; x < viewRight; x += 300) {
+                for (let y = Math.floor(viewTop / 300) * 300; y < viewBottom; y += 300) {
+                    const seed = (x * 13 + y * 29) % 100;
+                    if (seed > 70) {
+                        const waterX = x + (seed % 60) - 30;
+                        const waterY = y + ((seed * 13) % 60) - 30;
+                        const waterSize = (30 + (seed % 25)) / camera.zoom;
+                        const waveOffset = Math.sin(time + seed * 0.1) * 2;
+                        
+                        ctx.font = `${waterSize}px Arial`;
+                        ctx.fillStyle = '#4169E1';
+                        ctx.fillText('🟦', waterX + waveOffset, waterY);
+                        
+                        if (waterSize > 20) {
+                            const rippleSize = waterSize * 0.6;
+                            ctx.font = `${rippleSize}px Arial`;
+                            ctx.globalAlpha = 0.5;
+                            ctx.fillText('💧', waterX - waveOffset, waterY + waveOffset);
+                            ctx.globalAlpha = 1.0;
+                        }
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🌿 Draw bushes
+            for (let x = Math.floor(viewLeft / 120) * 120; x < viewRight; x += 120) {
+                for (let y = Math.floor(viewTop / 120) * 120; y < viewBottom; y += 120) {
+                    const seed = (x * 41 + y * 37) % 100;
+                    if (seed > 65) {
+                        const bushX = x + (seed % 30) - 15;
+                        const bushY = y + ((seed * 9) % 30) - 15;
+                        const bushSize = (8 + (seed % 8)) / camera.zoom;
+                        
+                        ctx.font = `${bushSize}px Arial`;
+                        ctx.fillStyle = '#32CD32';
+                        ctx.fillText('🌿', bushX, bushY);
+                        
+                        if (bushSize > 6) {
+                            const clusterSize = bushSize * 0.7;
+                            ctx.font = `${clusterSize}px Arial`;
+                            ctx.globalAlpha = 0.7;
+                            
+                            const clusterCount = 1 + (seed % 2);
+                            for (let i = 0; i < clusterCount; i++) {
+                                const offsetX = ((seed * (i + 1)) % 12) - 6;
+                                const offsetY = ((seed * (i + 2)) % 12) - 6;
+                                ctx.fillText('🌱', bushX + offsetX, bushY + offsetY);
+                            }
+                            ctx.globalAlpha = 1.0;
+                        }
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🌸 Draw flowers
+            for (let x = Math.floor(viewLeft / 80) * 80; x < viewRight; x += 80) {
+                for (let y = Math.floor(viewTop / 80) * 80; y < viewBottom; y += 80) {
+                    const seed = (x * 47 + y * 43) % 100;
+                    if (seed > 75) {
+                        const flowerX = x + (seed % 20) - 10;
+                        const flowerY = y + ((seed * 11) % 20) - 10;
+                        const flowerSize = (3 + (seed % 3)) / camera.zoom;
+                        
+                        const colorType = (seed * 13) % 4;
+                        let flowerEmoji;
+                        switch (colorType) {
+                            case 0: flowerEmoji = '🌺'; break;
+                            case 1: flowerEmoji = '🌸'; break;
+                            case 2: flowerEmoji = '💙'; break;
+                            case 3: flowerEmoji = '🌻'; break;
+                        }
+                        
+                        ctx.font = `${Math.max(8, flowerSize)}px Arial`;
+                        ctx.fillStyle = '#FF69B4';
+                        ctx.fillText(flowerEmoji, flowerX, flowerY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🟫 Draw dirt patches
+            for (let x = Math.floor(viewLeft / 250) * 250; x < viewRight; x += 250) {
+                for (let y = Math.floor(viewTop / 250) * 250; y < viewBottom; y += 250) {
+                    const seed = (x * 59 + y * 61) % 100;
+                    if (seed > 80) {
+                        const dirtX = x + (seed % 40) - 20;
+                        const dirtY = y + ((seed * 17) % 40) - 20;
+                        const dirtSize = (25 + (seed % 15)) / camera.zoom;
+                        
+                        ctx.font = `${dirtSize}px Arial`;
+                        ctx.fillStyle = '#8B4513';
+                        ctx.fillText('🟫', dirtX, dirtY);
+                        
+                        if (dirtSize > 15) {
+                            const patchCount = 2 + (seed % 3);
+                            for (let i = 0; i < patchCount; i++) {
+                                const patchSize = dirtSize * (0.5 + (seed * (i + 1) % 30) / 100);
+                                const offsetX = ((seed * (i + 1)) % 20) - 10;
+                                const offsetY = ((seed * (i + 2)) % 20) - 10;
+                                
+                                ctx.font = `${patchSize}px Arial`;
+                                ctx.globalAlpha = 0.6 + (i * 0.1);
+                                ctx.fillText('🟤', dirtX + offsetX, dirtY + offsetY);
+                            }
+                            ctx.globalAlpha = 1.0;
+                        }
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // Additional elements
+            // 🍄 Mushrooms
+            for (let x = Math.floor(viewLeft / 180) * 180; x < viewRight; x += 180) {
+                for (let y = Math.floor(viewTop / 180) * 180; y < viewBottom; y += 180) {
+                    const seed = (x * 67 + y * 71) % 100;
+                    if (seed > 85) {
+                        const mushroomX = x + (seed % 30) - 15;
+                        const mushroomY = y + ((seed * 19) % 30) - 15;
+                        const mushroomSize = (6 + (seed % 6)) / camera.zoom;
+                        
+                        ctx.font = `${Math.max(8, mushroomSize)}px Arial`;
+                        ctx.fillStyle = '#8B4513';
+                        ctx.fillText('🍄', mushroomX, mushroomY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🌾 Grass
+            for (let x = Math.floor(viewLeft / 60) * 60; x < viewRight; x += 60) {
+                for (let y = Math.floor(viewTop / 60) * 60; y < viewBottom; y += 60) {
+                    const seed = (x * 73 + y * 79) % 100;
+                    if (seed > 70) {
+                        const grassX = x + (seed % 15) - 7;
+                        const grassY = y + ((seed * 23) % 15) - 7;
+                        const grassSize = (4 + (seed % 4)) / camera.zoom;
+                        
+                        ctx.font = `${Math.max(6, grassSize)}px Arial`;
+                        ctx.fillStyle = '#9ACD32';
+                        ctx.fillText('🌾', grassX, grassY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            // 🌵 Cacti (rare)
+            for (let x = Math.floor(viewLeft / 400) * 400; x < viewRight; x += 400) {
+                for (let y = Math.floor(viewTop / 400) * 400; y < viewBottom; y += 400) {
+                    const seed = (x * 97 + y * 101) % 100;
+                    if (seed > 90) {
+                        const cactusX = x + (seed % 80) - 40;
+                        const cactusY = y + ((seed * 31) % 80) - 40;
+                        const cactusSize = (18 + (seed % 12)) / camera.zoom;
+                        
+                        ctx.font = `${Math.max(12, cactusSize)}px Arial`;
+                        ctx.fillStyle = '#228B22';
+                        ctx.fillText('🌵', cactusX, cactusY);
+                        totalElements++;
+                    }
+                }
+            }
+            
+            if (debugEnvironment) {
+                console.log(`Rendered ${totalElements} environment elements`);
+            }
+        }
+        
+        // Draw tank
+        function drawTank() {
+            ctx.save();
+            ctx.translate(tank.x, tank.y);
+            
+            // Tank body
+            ctx.fillStyle = '#4A7C59';
+            ctx.strokeStyle = '#2E4A36';
+            ctx.lineWidth = 2 / camera.zoom;
+            ctx.fillRect(-15, -10, 30, 20);
+            ctx.strokeRect(-15, -10, 30, 20);
+            
+            // Tank turret
+            ctx.fillStyle = '#3A5B2A';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Tank barrel
+            ctx.strokeStyle = '#2A4B1A';
+            ctx.lineWidth = 3 / camera.zoom;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(20, 0);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        // Render function
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Apply camera transform
+            ctx.save();
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-camera.x, -camera.y);
+            
+            // Draw environment
+            drawEmojiEnvironment();
+            
+            // Draw tank
+            drawTank();
+            
+            ctx.restore();
+        }
+        
+        // Game loop
+        function gameLoop(currentTime) {
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            
+            update(deltaTime);
+            render();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize
+        statusElement.textContent = 'Ready! Use WASD to move, E for debug, Z/X to zoom';
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
