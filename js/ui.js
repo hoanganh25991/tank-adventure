@@ -197,6 +197,7 @@ class GameUI {
             startGameBtn: document.getElementById('startGameBtn'),
             upgradesBtn: document.getElementById('upgradesBtn'),
             settingsBtn: document.getElementById('settingsBtn'),
+            fullscreenBtn: document.getElementById('fullscreenBtn'),
             continueBtn: document.getElementById('continueBtn'),
             backToBaseBtn: document.getElementById('backToBaseBtn'),
             backToMenuBtn: document.getElementById('backToMenuBtn'),
@@ -264,6 +265,15 @@ class GameUI {
         this.setupMobileButton(this.elements.settingsBtn, () => {
             this.showScreen('settingsScreen');
         });
+        
+        // Fullscreen button
+        if (this.elements.fullscreenBtn) {
+            this.setupMobileButton(this.elements.fullscreenBtn, () => {
+                Utils.toggleFullscreen().catch(err => {
+                    console.warn('Error toggling fullscreen:', err);
+                });
+            });
+        }
         
         this.setupMobileButton(this.elements.continueBtn, () => {
             this.gameEngine.continueToNextWave();

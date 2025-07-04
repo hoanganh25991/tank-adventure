@@ -2238,6 +2238,23 @@ window.addEventListener('load', () => {
     
     console.log('Tank Adventure loaded successfully!');
     
+    // Request fullscreen on page load
+    // Note: Most browsers require a user interaction before allowing fullscreen
+    // We'll add a click event listener to the document to request fullscreen on first interaction
+    const requestFullscreenOnInteraction = () => {
+        // Only request fullscreen if not already in fullscreen mode
+        if (!Utils.isFullscreen()) {
+            Utils.requestFullscreen().catch(err => {
+                console.warn('Error attempting to enable fullscreen:', err);
+            });
+        }
+        // Remove the event listener after first interaction
+        document.removeEventListener('click', requestFullscreenOnInteraction);
+    };
+    
+    // Add event listener for the first user interaction
+    document.addEventListener('click', requestFullscreenOnInteraction);
+    
     // Execute notification as requested
     if (typeof notifyMessage === 'function') {
         notifyMessage("Tank Adventure Game Implementation Complete", "ZenCoder");
