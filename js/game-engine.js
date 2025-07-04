@@ -912,6 +912,9 @@ class GameEngine {
         this.currentWave++;
         this.currentScene = 'battle';
         
+        // Regenerate health for all tanks to 100% after each wave
+        this.regenerateAllTanksHealth();
+        
         // Start next wave
         this.waveManager.startWave(this.currentWave);
         this.waveManager.resumeWave();
@@ -927,6 +930,10 @@ class GameEngine {
         // Start the next wave after skill selection
         this.currentWave++;
         this.waveCompleted = false; // Reset wave completion flag for new wave
+        
+        // Regenerate health for all tanks to 100% after each wave
+        this.regenerateAllTanksHealth();
+        
         this.waveManager.startWave(this.currentWave);
         
         this.ui.showScreen('battleScreen');
@@ -2257,6 +2264,27 @@ class GameEngine {
         
         if (this.ui) {
             this.ui.showNotification('Game Reset!', 'info');
+        }
+    }
+
+    regenerateAllTanksHealth() {
+        if (!this.player) return;
+        
+        console.log('Regenerating health for all tanks to 100%');
+        
+        // Regenerate main tank health to 100%
+        this.player.mainTank.health = this.player.mainTank.maxHealth;
+        this.player.mainTank.isAlive = true;
+        
+        // Regenerate all mini tanks health to 100%
+        for (const miniTank of this.player.miniTanks) {
+            miniTank.health = miniTank.maxHealth;
+            miniTank.isAlive = true;
+        }
+        
+        // Show a visual notification to the player
+        if (this.ui) {
+            this.ui.showNotification('💚 All Tanks Fully Healed!', 'success');
         }
     }
 

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Health Regeneration</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: var(--primary-hover);
+        }
+        .tank-status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+        }
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        .health-fill {
+            height: 100%;
+            background: var(--success-color);
+            transition: width 0.5s ease;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Health Regeneration Test</h1>
+        <p>This test simulates the health regeneration feature for tanks after each wave.</p>
+        
+        <div class="test-controls">
+            <button class="test-button" onclick="createTestPlayer()">Create Test Player</button>
+            <button class="test-button" onclick="damageRandomTank()">Damage Random Tank</button>
+            <button class="test-button" onclick="regenerateHealth()">Regenerate All Health</button>
+            <button class="test-button" onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <div id="tankStatus"></div>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/player.js"></script>
+    <script>
+        let testPlayer = null;
+        
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}<br>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function createTestPlayer() {
+            testPlayer = new Player(400, 300);
+            log('✅ Test player created with main tank and 5 mini tanks');
+            updateTankStatus();
+        }
+        
+        function damageRandomTank() {
+            if (!testPlayer) {
+                log('❌ No test player created yet');
+                return;
+            }
+            
+            const allTanks = [testPlayer.mainTank, ...testPlayer.miniTanks];
+            const aliveTanks = allTanks.filter(tank => tank.isAlive);
+            
+            if (aliveTanks.length === 0) {
+                log('❌ No alive tanks to damage');
+                return;
+            }
+            
+            const randomTank = Utils.randomChoice(aliveTanks);
+            const damage = Math.floor(Math.random() * 50) + 10; // 10-60 damage
+            const tankType = randomTank.type === 'main' ? 'Main Tank' : 'Mini Tank';
+            const oldHealth = randomTank.health;
+            
+            randomTank.takeDamage(damage);
+            
+            log(`💥 ${tankType} took ${damage} damage (${oldHealth} → ${randomTank.health} HP)`);
+            if (!randomTank.isAlive) {
+                log(`💀 ${tankType} was destroyed!`);
+            }
+            
+            updateTankStatus();
+        }
+        
+        function regenerateHealth() {
+            if (!testPlayer) {
+                log('❌ No test player created yet');
+                return;
+            }
+            
+            log('🔄 Starting health regeneration...');
+            
+            // Regenerate main tank health to 100%
+            const mainTankOldHealth = testPlayer.mainTank.health;
+            testPlayer.mainTank.health = testPlayer.mainTank.maxHealth;
+            testPlayer.mainTank.isAlive = true;
+            log(`💚 Main Tank: ${mainTankOldHealth} → ${testPlayer.mainTank.health} HP (${testPlayer.mainTank.isAlive ? 'ALIVE' : 'DEAD'})`);
+            
+            // Regenerate all mini tanks health to 100%
+            for (let i = 0; i < testPlayer.miniTanks.length; i++) {
+                const miniTank = testPlayer.miniTanks[i];
+                const oldHealth = miniTank.health;
+                miniTank.health = miniTank.maxHealth;
+                miniTank.isAlive = true;
+                log(`💚 Mini Tank ${i + 1}: ${oldHealth} → ${miniTank.health} HP (${miniTank.isAlive ? 'ALIVE' : 'DEAD'})`);
+            }
+            
+            log('✅ All tanks fully healed and revived!');
+            updateTankStatus();
+        }
+        
+        function updateTankStatus() {
+            if (!testPlayer) {
+                document.getElementById('tankStatus').innerHTML = '<p>No test player created</p>';
+                return;
+            }
+            
+            let html = '<h3>Tank Status</h3>';
+            
+            // Main tank status
+            const mainTank = testPlayer.mainTank;
+            const mainHealthPercent = (mainTank.health / mainTank.maxHealth) * 100;
+            html += `
+                <div class="tank-status">
+                    <h4>🚗 Main Tank ${mainTank.isAlive ? '(ALIVE)' : '(DEAD)'}</h4>
+                    <p>Health: ${mainTank.health}/${mainTank.maxHealth} HP</p>
+                    <div class="health-bar">
+                        <div class="health-fill" style="width: ${mainHealthPercent}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Mini tanks status
+            for (let i = 0; i < testPlayer.miniTanks.length; i++) {
+                const miniTank = testPlayer.miniTanks[i];
+                const healthPercent = (miniTank.health / miniTank.maxHealth) * 100;
+                html += `
+                    <div class="tank-status">
+                        <h4>🚙 Mini Tank ${i + 1} ${miniTank.isAlive ? '(ALIVE)' : '(DEAD)'}</h4>
+                        <p>Health: ${miniTank.health}/${miniTank.maxHealth} HP</p>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: ${healthPercent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('tankStatus').innerHTML = html;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        // Initialize
+        log('🎮 Health Regeneration Test initialized');
+        log('📝 Click "Create Test Player" to start testing');
+    </script>
+</body>
+</html>
