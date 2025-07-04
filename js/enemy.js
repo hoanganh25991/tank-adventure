@@ -1369,7 +1369,7 @@ class WaveManager {
             }
         }
         
-        // Regular enemy spawning
+        // Regular enemy spawning - only if we haven't spawned all enemies yet
         if (this.enemiesSpawned < this.totalEnemiesInWave && this.enemies.length < adjustedMaxEnemies) {
             this.spawnTimer += deltaTime;
             if (this.spawnTimer >= this.spawnInterval) {
@@ -1377,7 +1377,11 @@ class WaveManager {
                 const baseSpawns = Math.min(Math.floor(this.currentWave / 4) + 1, 3); // Reduced from /3 to /4, max 3 instead of 4
                 const simultaneousSpawns = Math.min(baseSpawns, Math.max(1, Math.floor(playerLevel / 5)));
                 
-                for (let i = 0; i < simultaneousSpawns && this.enemiesSpawned < this.totalEnemiesInWave; i++) {
+                // Calculate how many enemies we can still spawn
+                const remainingToSpawn = this.totalEnemiesInWave - this.enemiesSpawned;
+                const spawnCount = Math.min(simultaneousSpawns, remainingToSpawn);
+                
+                for (let i = 0; i < spawnCount; i++) {
                     // Only spawn if we're still under the adjusted max enemies
                     if (this.enemies.length < adjustedMaxEnemies) {
                         this.spawnEnemy(player);
@@ -1387,13 +1391,17 @@ class WaveManager {
             }
         }
         
-        // Burst spawning for higher waves (additional enemies beyond the normal count)
-        if (this.burstSpawning && this.currentWave >= 3) { // Changed from 2 to 3
+        // Burst spawning for higher waves - only if we haven't spawned all enemies yet
+        if (this.burstSpawning && this.currentWave >= 3 && this.enemiesSpawned < this.totalEnemiesInWave) {
             this.burstTimer += deltaTime;
             if (this.burstTimer >= this.burstInterval) {
                 // Only spawn burst if we have room for at least a few more enemies
                 if (this.enemies.length < adjustedMaxEnemies - 2) {
-                    this.spawnBurst(player);
+                    // Calculate how many enemies we can still spawn in this burst
+                    const remainingToSpawn = this.totalEnemiesInWave - this.enemiesSpawned;
+                    if (remainingToSpawn > 0) {
+                        this.spawnBurst(player, remainingToSpawn);
+                    }
                 }
                 this.burstTimer = 0;
             }
@@ -1402,6 +1410,7 @@ class WaveManager {
         // Check if wave is complete
         if (this.enemiesSpawned >= this.totalEnemiesInWave && this.enemies.length === 0) {
             this.waveActive = false;
+            console.log(`Wave ${this.currentWave} completed! All ${this.totalEnemiesInWave} enemies defeated.`);
         }
     }
 
@@ -1426,7 +1435,7 @@ class WaveManager {
         this.enemiesSpawned++;
     }
 
-    spawnBurst(player) {
+    spawnBurst(player, remainingToSpawn = Infinity) {
         if (!player || !player.mainTank) return;
         
         // Get player level for scaling
@@ -1435,9 +1444,12 @@ class WaveManager {
         
         // Adjust burst count based on player level
         // Lower level players get fewer burst enemies
-        const adjustedBurstCount = Math.max(2, Math.floor(this.burstCount * (0.5 + playerLevel / 20)));
+        let adjustedBurstCount = Math.max(2, Math.floor(this.burstCount * (0.5 + playerLevel / 20)));
         
-        console.log(`Spawning burst of ${adjustedBurstCount} enemies (Player Level: ${playerLevel})`);
+        // Make sure we don't spawn more enemies than the wave total
+        adjustedBurstCount = Math.min(adjustedBurstCount, remainingToSpawn);
+        
+        console.log(`Spawning burst of ${adjustedBurstCount} enemies (Player Level: ${playerLevel}, Remaining: ${remainingToSpawn})`);
         
         for (let i = 0; i < adjustedBurstCount; i++) {
             const playerX = player.mainTank.x;
@@ -1456,6 +1468,12 @@ class WaveManager {
             const enemy = new Enemy(x, y, enemyType);
             
             this.enemies.push(enemy);
+            this.enemiesSpawned++;
+            
+            // Stop if we've reached the total enemies for this wave
+            if (this.enemiesSpawned >= this.totalEnemiesInWave) {
+                break;
+            }
         }
     }
 

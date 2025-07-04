@@ -642,21 +642,35 @@ class GameUI {
         this.elements.scoreEarned.textContent = Utils.formatNumber(results.scoreEarned);
         this.elements.expGained.textContent = results.expGained;
         
-        // Update title based on victory/defeat
+        // Update title based on victory/defeat and final wave status
         const battleResultTitle = document.getElementById('battleResultTitle');
         if (battleResultTitle) {
             if (results.victory) {
-                battleResultTitle.textContent = '🎖️ Battle Victory!';
-                battleResultTitle.style.color = '#44ff44'; // Success green
+                if (results.isFinalWave) {
+                    battleResultTitle.textContent = '🏆 Complete Victory!';
+                    battleResultTitle.style.color = '#ffdd44'; // Gold color for final victory
+                } else {
+                    battleResultTitle.textContent = '🎖️ Battle Victory!';
+                    battleResultTitle.style.color = '#44ff44'; // Success green
+                }
             } else {
                 battleResultTitle.textContent = '☠️ Battle Defeat';
                 battleResultTitle.style.color = '#ff4444'; // Danger red
             }
         }
         
-        // Show/hide continue button based on victory
+        // Add bonus message for final wave completion
+        const bonusMessage = document.getElementById('bonusMessage') || this.createBonusMessageElement();
+        if (results.bonusApplied) {
+            bonusMessage.textContent = '🌟 Final Wave Bonus: +50% Score, XP, and Coins! 🌟';
+            bonusMessage.style.display = 'block';
+        } else {
+            bonusMessage.style.display = 'none';
+        }
+        
+        // Show/hide continue button based on victory and if it's not the final wave
         if (this.elements.continueBtn) {
-            if (results.victory) {
+            if (results.victory && !results.isFinalWave) {
                 this.elements.continueBtn.style.display = 'inline-block';
             } else {
                 this.elements.continueBtn.style.display = 'none';
@@ -665,6 +679,35 @@ class GameUI {
         
         // Show the results screen
         this.showScreen('battleResults');
+    }
+    
+    createBonusMessageElement() {
+        // Create bonus message element if it doesn't exist
+        const bonusMessage = document.createElement('div');
+        bonusMessage.id = 'bonusMessage';
+        bonusMessage.style.color = '#ffdd44'; // Gold color
+        bonusMessage.style.fontSize = '1.2em';
+        bonusMessage.style.fontWeight = 'bold';
+        bonusMessage.style.marginTop = '10px';
+        bonusMessage.style.marginBottom = '10px';
+        bonusMessage.style.textAlign = 'center';
+        bonusMessage.style.padding = '5px';
+        bonusMessage.style.borderRadius = '5px';
+        bonusMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        
+        // Insert after the battle result title
+        const battleResultTitle = document.getElementById('battleResultTitle');
+        if (battleResultTitle && battleResultTitle.parentNode) {
+            battleResultTitle.parentNode.insertBefore(bonusMessage, battleResultTitle.nextSibling);
+        } else {
+            // Fallback - insert at the beginning of the battle results screen
+            const battleResults = document.getElementById('battleResults');
+            if (battleResults) {
+                battleResults.insertBefore(bonusMessage, battleResults.firstChild);
+            }
+        }
+        
+        return bonusMessage;
     }
 
     updateBaseScreen() {

@@ -779,10 +779,25 @@ class GameEngine {
     endBattle(victory) {
         this.currentScene = 'results';
         
-        // Update player stats
-        this.player.addScore(this.battleStats.scoreEarned);
-        this.player.addExperience(this.battleStats.expGained);
-        this.player.addCoins(Math.floor(this.battleStats.scoreEarned / 4));
+        // Check if this was the final wave
+        const isFinalWave = this.currentWave >= this.maxWaves;
+        
+        // Apply bonus rewards for completing all waves
+        let bonusMultiplier = 1.0;
+        if (victory && isFinalWave) {
+            // 50% bonus for completing all waves
+            bonusMultiplier = 1.5;
+            console.log(`Final wave completed! Applying ${(bonusMultiplier-1)*100}% bonus to rewards.`);
+        }
+        
+        // Update player stats with potential bonus
+        const finalScore = Math.floor(this.battleStats.scoreEarned * bonusMultiplier);
+        const finalExp = Math.floor(this.battleStats.expGained * bonusMultiplier);
+        const finalCoins = Math.floor(finalScore / 4);
+        
+        this.player.addScore(finalScore);
+        this.player.addExperience(finalExp);
+        this.player.addCoins(finalCoins);
         
         // Save progress
         this.saveGame();
@@ -792,9 +807,11 @@ class GameEngine {
             victory: victory,
             wave: this.currentWave,
             enemiesDefeated: this.battleStats.enemiesDefeated,
-            scoreEarned: this.battleStats.scoreEarned,
-            expGained: this.battleStats.expGained,
-            battleType: this.battleType
+            scoreEarned: finalScore,
+            expGained: finalExp,
+            battleType: this.battleType,
+            isFinalWave: isFinalWave,
+            bonusApplied: isFinalWave && victory
         });
     }
 
