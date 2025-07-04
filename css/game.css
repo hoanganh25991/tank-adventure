@@ -42,7 +42,8 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 400;
     background: var(--bg-dark);
     color: var(--text-primary);
     overflow: hidden;
@@ -125,7 +126,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     font-size: 14px; /* Consistent with HUD base font size */
     text-shadow: 1px 1px 2px black;
     color: var(--text-primary);
@@ -137,7 +139,8 @@ body {
     border-radius: 10px;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
@@ -218,7 +221,8 @@ body {
     padding: 15px 20px;
     border: none;
     border-radius: 10px;
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -231,6 +235,7 @@ body {
     align-items: center;
     justify-content: center;
     text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 /* Special styling for the main menu buttons */
@@ -318,12 +323,14 @@ body {
 }
 
 #mainMenu h1 {
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 4rem;
-    font-weight: 1000;
+    font-weight: 700;
     margin-bottom: 3rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     color: var(--primary-blue);
     text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 .menu-btn {
@@ -333,14 +340,16 @@ body {
     border-radius: 8px;
     background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
     color: var(--text-primary);
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     width: 280px;
     text-align: center;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
     
     /* Enhanced touch support for iPhone Safari */
     touch-action: manipulation;
@@ -404,8 +413,11 @@ body {
 
 #skillSelection h2 {
     margin-bottom: 30px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 32px;
+    font-weight: 600;
     color: var(--primary-blue);
+    letter-spacing: 0.05em;
 }
 
 #skillOptions {
@@ -458,13 +470,18 @@ body {
 .skill-option h3 {
     color: var(--primary-blue);
     margin-bottom: 10px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 18px;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .skill-option p {
     color: var(--text-secondary);
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 14px;
+    font-weight: 400;
     line-height: 1.4;
     /* Ensure text doesn't overflow on small screens */
     overflow: hidden;
@@ -488,9 +505,12 @@ body {
 
 #battleResults h2 {
     margin-bottom: 30px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 36px;
+    font-weight: 600;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     transition: color 0.3s ease;
+    letter-spacing: 0.05em;
 }
 
 #battleStats {
@@ -509,7 +529,9 @@ body {
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 18px;
+    font-weight: 500;
 }
 
 #battleStats p:last-child {
@@ -519,7 +541,8 @@ body {
 }
 
 #battleStats span {
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     color: var(--primary-blue);
 }
 
@@ -572,9 +595,12 @@ body {
 
 #settingsScreen h2 {
     margin-bottom: 30px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 36px;
+    font-weight: 600;
     color: var(--primary-blue);
     text-align: center;
+    letter-spacing: 0.05em;
 }
 
 #settingsContent {
@@ -596,7 +622,10 @@ body {
 .info-section h3 {
     color: var(--primary-blue);
     margin-bottom: 15px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
 }
 
 .info-section p {

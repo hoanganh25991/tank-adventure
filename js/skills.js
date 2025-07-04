@@ -324,7 +324,17 @@ class SkillManager {
 
     addSkill(skillId) {
         const skillTemplate = this.availableSkills.find(s => s.id === skillId);
-        if (!skillTemplate) return false;
+        if (!skillTemplate) {
+            console.error(`Skill template not found for ID: ${skillId}`);
+            return false;
+        }
+        
+        // Check if skill already exists (for upgrading)
+        const existingSkill = this.findSkill(skillId);
+        if (existingSkill) {
+            console.log(`Upgrading existing skill: ${skillId}`);
+            return existingSkill.upgrade();
+        }
         
         // Create a copy of the skill
         const newSkill = new Skill(
@@ -481,7 +491,8 @@ class SkillManager {
                 level: skill.level,
                 cooldownPercent: skill.getCooldownPercent(),
                 isReady: skill.isReady(),
-                isActive: skill.isActive
+                isActive: skill.isActive,
+                emoji: skill.emoji
             })),
             passive: this.passiveSkills.map(skill => ({
                 id: skill.id,
