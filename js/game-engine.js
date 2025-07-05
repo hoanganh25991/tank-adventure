@@ -2213,21 +2213,22 @@ window.addEventListener('load', () => {
     // We'll add a click event listener to the document to request fullscreen on first interaction
     let isFullscreenRequested = false;
     
-    const requestFullscreenOnInteraction = () => {
-        // Only request fullscreen if not already in fullscreen mode and not already requested
-        if (!Utils.isFullscreen() && !isFullscreenRequested) {
-            isFullscreenRequested = true;
-            Utils.requestFullscreen().catch(err => {
-                console.warn('Error attempting to enable fullscreen:', err);
-                isFullscreenRequested = false; // Reset on failure
-            });
-        }
-        // Remove the event listener after first interaction
-        document.removeEventListener('click', requestFullscreenOnInteraction);
-    };
+    // Removed automatic fullscreen request on interaction
+    // const requestFullscreenOnInteraction = () => {
+    //     // Only request fullscreen if not already in fullscreen mode and not already requested
+    //     if (!Utils.isFullscreen() && !isFullscreenRequested) {
+    //         isFullscreenRequested = true;
+    //         Utils.requestFullscreen().catch(err => {
+    //             console.warn('Error attempting to enable fullscreen:', err);
+    //             isFullscreenRequested = false; // Reset on failure
+    //         });
+    //     }
+    //     // Remove the event listener after first interaction
+    //     document.removeEventListener('click', requestFullscreenOnInteraction);
+    // };
     
-    // Add event listener for the first user interaction
-    document.addEventListener('click', requestFullscreenOnInteraction);
+    // // Add event listener for the first user interaction
+    // document.addEventListener('click', requestFullscreenOnInteraction);
     
     // Execute notification as requested
     if (typeof notifyMessage === 'function') {

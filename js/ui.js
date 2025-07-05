@@ -372,7 +372,7 @@ class GameUI {
         // Add handler for the new Battle button in base screen
         if (this.elements.startBattleFromBaseBtn) {
             this.setupMobileButton(this.elements.startBattleFromBaseBtn, () => {
-                this.requestFullscreenAndShowBattleType();
+                this.showBattleTypeSelection();
             });
         }
         
@@ -440,18 +440,8 @@ class GameUI {
                     // Hide the modal
                     modal.classList.add('hidden');
                     
-                    // Request fullscreen and start battle
-                    Utils.requestFullscreen(document.documentElement)
-                        .then(() => {
-                            console.log('Fullscreen mode activated');
-                            // Start the battle after fullscreen is activated
-                            this.gameEngine.startBattle(battleType);
-                        })
-                        .catch((error) => {
-                            console.warn('Fullscreen request failed:', error);
-                            // Start the battle even if fullscreen fails
-                            this.gameEngine.startBattle(battleType);
-                        });
+                    // Start the battle directly without fullscreen request
+                    this.gameEngine.startBattle(battleType);
                 }, 150);
             };
             
@@ -496,74 +486,12 @@ class GameUI {
     }
 
     handleStartBattle() {
-        // Request fullscreen first, then show battle type selection
-        this.requestFullscreenAndShowBattleType();
+        // Show battle type selection directly without requesting fullscreen
+        this.showBattleTypeSelection();
     }
     
-    requestFullscreenAndShowBattleType() {
-        // Check if already in fullscreen mode
-        if (Utils.isFullscreen()) {
-            // Already in fullscreen, show battle type selection immediately
-            this.showBattleTypeSelection();
-            return;
-        }
-        
-        // Show loading indicator
-        this.showLoadingMessage('Requesting fullscreen...');
-        
-        // Request fullscreen and wait for success
-        Utils.requestFullscreen(document.documentElement)
-            .then(() => {
-                console.log('Fullscreen activated, showing battle type selection');
-                // Hide loading indicator
-                this.hideLoadingMessage();
-                // Wait a small delay to ensure fullscreen is fully activated
-                setTimeout(() => {
-                    this.showBattleTypeSelection();
-                }, 100);
-            })
-            .catch((error) => {
-                console.warn('Fullscreen request failed:', error);
-                // Hide loading indicator
-                this.hideLoadingMessage();
-                // Show battle type selection even if fullscreen fails
-                this.showBattleTypeSelection();
-            });
-    }
-    
-    showLoadingMessage(message) {
-        // Create or update loading overlay
-        let loadingOverlay = document.getElementById('fullscreen-loading');
-        if (!loadingOverlay) {
-            loadingOverlay = document.createElement('div');
-            loadingOverlay.id = 'fullscreen-loading';
-            loadingOverlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-                color: white;
-                font-size: 18px;
-                font-family: Arial, sans-serif;
-            `;
-            document.body.appendChild(loadingOverlay);
-        }
-        loadingOverlay.textContent = message;
-        loadingOverlay.style.display = 'flex';
-    }
-    
-    hideLoadingMessage() {
-        const loadingOverlay = document.getElementById('fullscreen-loading');
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'none';
-        }
-    }
+    // Removed unused fullscreen request functions
+    // requestFullscreenAndShowBattleType(), showLoadingMessage(), hideLoadingMessage()
     
     showBattleTypeSelection() {
         // Use the existing modal element
