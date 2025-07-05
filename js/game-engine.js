@@ -519,7 +519,7 @@ class GameEngine {
     }
 
     handleInput() {
-        if (this.currentScene !== 'battle' || !this.player || !this.ui) return;
+        if (this.currentScene !== 'battle' || !this.player || !this.ui || this.gamePaused) return;
         
         // Get joystick input
         const joystick = this.ui.getJoystickInput();
