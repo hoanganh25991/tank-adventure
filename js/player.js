@@ -445,17 +445,45 @@ class Player {
         }
     }
     
+    generateFormationPositions(count) {
+        // Generate formation positions dynamically based on number of mini tanks
+        const positions = [];
+        
+        if (count <= 5) {
+            // Use the original fixed positions for the first 5 tanks
+            const fixedPositions = [
+                { x: -60, y: -60 }, // Top-left
+                { x: 60, y: -60 },  // Top-right  
+                { x: -60, y: 60 },  // Bottom-left
+                { x: 60, y: 60 },   // Bottom-right
+                { x: 0, y: -80 }    // Top-center
+            ];
+            return fixedPositions.slice(0, count);
+        } else {
+            // For more than 5 tanks, use a circular formation
+            const baseRadius = 70;
+            const radiusIncrement = 25;
+            
+            for (let i = 0; i < count; i++) {
+                const layer = Math.floor(i / 8); // 8 tanks per layer
+                const positionInLayer = i % 8;
+                const radius = baseRadius + (layer * radiusIncrement);
+                const angle = (positionInLayer * Math.PI * 2) / 8;
+                
+                positions.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                });
+            }
+            return positions;
+        }
+    }
+
     updateMiniTankFormation() {
         const mainTank = this.mainTank;
         
-        // Fixed formation positions (relative to main tank when facing right at angle 0)
-        const basePositions = [
-            { x: -60, y: -60 }, // Top-left
-            { x: 60, y: -60 },  // Top-right  
-            { x: -60, y: 60 },  // Bottom-left
-            { x: 60, y: 60 },   // Bottom-right
-            { x: 0, y: -80 }    // Top-center
-        ];
+        // Generate formation positions dynamically based on number of mini tanks
+        const basePositions = this.generateFormationPositions(this.miniTanks.length);
         
         // Only calculate movement direction if we're actually moving
         if (this.moveIntensity > 0.1) {
@@ -479,6 +507,12 @@ class Player {
             // Process each mini tank
             for (let i = 0; i < this.miniTanks.length; i++) {
                 const miniTank = this.miniTanks[i];
+                
+                // Safety check for base position
+                if (!basePositions[i]) {
+                    console.warn(`Missing base position for mini tank ${i}/${this.miniTanks.length}`);
+                    continue;
+                }
                 
                 // Calculate target position based on movement direction
                 let targetPos;
@@ -516,6 +550,13 @@ class Player {
             // When not moving, maintain standard formation
             for (let i = 0; i < this.miniTanks.length; i++) {
                 const miniTank = this.miniTanks[i];
+                
+                // Safety check for base position
+                if (!basePositions[i]) {
+                    console.warn(`Missing base position for mini tank ${i}/${this.miniTanks.length}`);
+                    continue;
+                }
+                
                 const targetPos = this.calculateFormationPosition(basePositions[i], mainTank);
                 
                 // Apply smooth movement with distance-based adjustment
@@ -546,6 +587,12 @@ class Player {
     }
     
     rotateFormationPosition(position, angle) {
+        // Defensive check for undefined position
+        if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') {
+            console.warn('Invalid position passed to rotateFormationPosition:', position);
+            return { x: 0, y: 0 };
+        }
+        
         // Rotate formation position around main tank based on main tank's direction
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
