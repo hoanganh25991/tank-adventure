@@ -2,17 +2,26 @@
 
 A complete 2D tank battle game designed for mobile and tablet devices with touch controls.
 
-![tank-adventure](screenshots/tank-adventure-pwabuilder-score.png)
+<iframe 
+  width="100%" 
+  style="aspect-ratio: 560/315;"
+  src="https://www.youtube.com/embed/W1IO_qIPe9g?si=uZzgJ328NkpJ76j_" 
+  title="YouTube video player" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
 
+## Screenshots
+
+![tank-adventure](screenshots/tank-adventure-pwabuilder-score.png)
 ![tank-adventure](screenshots/tank-adventure--200218-20250704.jpg)
 ![tank-adventure](screenshots/tank-adventure-200106-20250704.png)
 ![tank-adventure](screenshots/tank-adventure-127-0-0-1-9003-iphone-14-pro-max-5.png)
 ![tank-adventure](screenshots/tank-adventure-127-0-0-1-9003-iphone-14-pro-max.png)
 ![tank-adventure](screenshots/tank-adventure-upgrade-200330-20250704.jpeg)
 
-## Demo
- 
-[![Tank Adventure Game Demo](https://img.youtube.com/vi/W1IO_qIPe9g/maxresdefault.jpg)](https://www.youtube.com/watch?v=W1IO_qIPe9g)
 
 ## Features
 
