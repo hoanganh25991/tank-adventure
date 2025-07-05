@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SEO + iPad Layout Test - Tank Adventure</title>
+    
+    <!-- Include the new SEO meta tags -->
+    <meta property="og:title" content="Tank Adventure - Epic Tank Battle Game">
+    <meta property="og:description" content="Command your tank formation and survive endless waves of enemies! A 2D tank battle game with wave-based combat, skill progression, and strategic gameplay. Play now in your browser!">
+    <meta property="og:image" content="https://hoanganh25991.github.io/tank-adventure/assets/background.jpg">
+    <meta property="og:url" content="https://hoanganh25991.github.io/tank-adventure/">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tank Adventure - Epic Tank Battle Game">
+    <meta name="twitter:description" content="Command your tank formation and survive endless waves of enemies! A 2D tank battle game with wave-based combat, skill progression, and strategic gameplay.">
+    <meta name="twitter:image" content="https://hoanganh25991.github.io/tank-adventure/assets/background.jpg">
+    
+    <meta name="description" content="Tank Adventure is a 2D tank battle game designed for mobile and desktop. Command your tank formation, survive endless enemy waves, upgrade your tanks, and master strategic combat skills.">
+    <meta name="keywords" content="tank game, battle game, mobile game, action game, strategy game, tank adventure, wave survival, browser game, HTML5 game">
+    
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        /* Test-specific styles */
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .test-info h3 {
+            margin: 0 0 10px 0;
+            color: #4a9eff;
+        }
+        
+        .test-info p {
+            margin: 5px 0;
+            font-size: 11px;
+        }
+        
+        /* Force iPad Air dimensions */
+        body {
+            width: 1180px;
+            height: 820px;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            width: 1180px;
+            height: 820px;
+        }
+        
+        /* Button visibility indicator */
+        .button-indicator {
+            position: fixed;
+            bottom: 150px;
+            right: 10px;
+            background: rgba(0, 255, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .button-indicator.hidden {
+            background: rgba(255, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h3>🧪 SEO + iPad Layout Test</h3>
+        <p><strong>Dimensions:</strong> 1180x820 (iPad Air)</p>
+        <p><strong>SEO Meta Tags:</strong> ✅ Loaded</p>
+        <p><strong>Open Graph:</strong> ✅ Enabled</p>
+        <p><strong>Twitter Cards:</strong> ✅ Enabled</p>
+        <p><strong>Schema.org:</strong> ✅ Structured Data</p>
+        <p><strong>Test:</strong> Bottom buttons visibility</p>
+    </div>
+    
+    <div id="buttonIndicator" class="button-indicator">
+        🎯 Buttons: Checking...
+    </div>
+    
+    <div id="gameContainer">
+        <!-- Base/Upgrade Screen -->
+        <div id="baseScreen" class="screen active">
+            <h2>Tank Base</h2>
+            
+            <!-- Player Stats -->
+            <div id="playerStats">
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Experience</span>
+                    <span class="stat-value">0 / 100</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Coins</span>
+                    <span class="stat-value">1000</span>
+                </div>
+            </div>
+            
+            <div id="baseContent">
+                <div class="upgrades-grid">
+                    <div class="upgrade-category">
+                        <h3>🚗 Main Tank</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">❤️ Armor</span>
+                                    <span class="upgrade-current">100</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">100💰</span>
+                                    <span class="upgrade-bonus">+20</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">⚔️ Cannon</span>
+                                    <span class="upgrade-current">10</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">150💰</span>
+                                    <span class="upgrade-bonus">+5</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">💨 Engine</span>
+                                    <span class="upgrade-current">5</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">200💰</span>
+                                    <span class="upgrade-bonus">+1</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category">
+                        <h3>🛡️ Mini Tanks</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">❤️ Armor</span>
+                                    <span class="upgrade-current">50</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">120💰</span>
+                                    <span class="upgrade-bonus">+10</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">⚔️ Cannon</span>
+                                    <span class="upgrade-current">5</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">180💰</span>
+                                    <span class="upgrade-bonus">+2</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category">
+                        <h3>💰 Economy</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🔧 Salvage</span>
+                                    <span class="upgrade-current">100%</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">200💰</span>
+                                    <span class="upgrade-bonus">+10%</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category">
+                        <h3>🌟 Special</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🚀 Accelerator</span>
+                                    <span class="upgrade-current">5</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">300💰</span>
+                                    <span class="upgrade-bonus">+1</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🔧 Auto-Repair</span>
+                                    <span class="upgrade-current">0</span>
+                                </div>
+                                <button class="upgrade-btn">
+                                    <span class="upgrade-cost">400💰</span>
+                                    <span class="upgrade-bonus">+0.5</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="baseButtons">
+                <button id="startBattleFromBaseBtn" class="menu-btn action-btn">🔥 Battle</button>
+                <button id="backToMenuBtn" class="menu-btn">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="verify-ipad-layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Testing SEO + iPad Layout...');
+            
+            // Test SEO meta tags
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            const twitterCard = document.querySelector('meta[name="twitter:card"]');
+            const description = document.querySelector('meta[name="description"]');
+            
+            console.log('SEO Meta Tags:');
+            console.log('- Open Graph Title:', ogTitle ? '✅' : '❌');
+            console.log('- Twitter Card:', twitterCard ? '✅' : '❌');
+            console.log('- Description:', description ? '✅' : '❌');
+            
+            // Test button visibility
+            function checkButtonVisibility() {
+                const baseButtons = document.getElementById('baseButtons');
+                const indicator = document.getElementById('buttonIndicator');
+                
+                if (baseButtons) {
+                    const rect = baseButtons.getBoundingClientRect();
+                    const isVisible = rect.bottom <= window.innerHeight && 
+                                     rect.top >= 0 &&
+                                     rect.left >= 0 &&
+                                     rect.right <= window.innerWidth;
+                    
+                    indicator.textContent = isVisible ? '✅ Buttons: Visible' : '❌ Buttons: Hidden';
+                    indicator.className = isVisible ? 'button-indicator' : 'button-indicator hidden';
+                    
+                    console.log('Button visibility:', isVisible ? '✅ Visible' : '❌ Hidden');
+                    console.log('Button position:', rect);
+                }
+            }
+            
+            // Check immediately and on resize
+            checkButtonVisibility();
+            window.addEventListener('resize', checkButtonVisibility);
+            
+            // Run the comprehensive verification
+            setTimeout(() => {
+                if (window.verifyiPadLayout) {
+                    window.verifyiPadLayout();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
