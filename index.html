@@ -129,9 +129,6 @@
 </head>
 <body>
     <div id="gameContainer">
-        <!-- Install PWA Button -->
-        <button id="installPWABtn" class="menu-btn install-btn">📱 Install App</button>
-        
         <!-- Main Canvas -->
         <canvas id="gameCanvas"></canvas>
         
@@ -672,57 +669,6 @@
                     console.error('Service Worker registration failed:', error);
                 }
             });
-        }
-        
-        // PWA Install Prompt
-        let deferredPrompt;
-        let installButton;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('PWA install prompt available');
-            e.preventDefault();
-            deferredPrompt = e;
-            showInstallButton();
-        });
-        
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed');
-            hideInstallButton();
-            deferredPrompt = null;
-        });
-        
-        function showInstallButton() {
-            // Use existing HTML button instead of creating a new one
-            if (!installButton) {
-                installButton = document.getElementById('installPWABtn');
-                if (installButton) {
-                    installButton.addEventListener('click', installPWA);
-                }
-            }
-            if (installButton) {
-                installButton.style.display = 'block';
-            }
-        }
-        
-        function hideInstallButton() {
-            if (installButton) {
-                installButton.style.display = 'none';
-            }
-        }
-        
-        async function installPWA() {
-            if (!deferredPrompt) return;
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            console.log(`PWA install outcome: ${outcome}`);
-            
-            if (outcome === 'accepted') {
-                hideInstallButton();
-            }
-            
-            deferredPrompt = null;
         }
         
         function showUpdateAvailable() {
