@@ -1571,12 +1571,6 @@ button {
         width: 35px;
         height: 35px;
         font-size: 14px;
-        transform: translateY(-50%);
-    }
-    
-    .modal-close-btn:hover,
-    .modal-close-btn:active {
-        transform: translateY(-50%) scale(1.1);
     }
 }
 
@@ -1590,18 +1584,6 @@ button {
 
 .iphone14-landscape .modal-header h2 {
     font-size: 18px;
-}
-
-.iphone14-landscape .modal-close-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-    transform: translateY(-50%);
-}
-
-.iphone14-landscape .modal-close-btn:hover,
-.iphone14-landscape .modal-close-btn:active {
-    transform: translateY(-50%) scale(1.1);
 }
 
 /* Custom Confirm Dialog Styles */
