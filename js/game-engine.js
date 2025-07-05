@@ -54,9 +54,9 @@ class GameEngine {
         this.damageNumbers = []; // Floating damage numbers
         this.particles = [];
         
-        // Debug flags
-        this.debugMode = false; // Set to true to see test objects at fixed coordinates
-        this.debugEnvironment = false; // Set to true to enable environment debug logging
+        // Debug flags - disabled for production
+        this.debugMode = false; 
+        this.debugEnvironment = false; 
         this.showCollisionBoxes = false;
         
         // Camera system for endless movement
@@ -1948,16 +1948,7 @@ class GameEngine {
         return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
     }
 
-    // Debug methods
-    toggleDebug() {
-        this.debugMode = !this.debugMode;
-        console.log('Debug mode:', this.debugMode);
-    }
-    
-    toggleCollisionBoxes() {
-        this.showCollisionBoxes = !this.showCollisionBoxes;
-        console.log('Collision boxes:', this.showCollisionBoxes);
-    }
+    // Debug methods removed for production
 
     setupKeyboardControls() {
         // Setup keydown events
@@ -1989,35 +1980,6 @@ class GameEngine {
                         break;
                 }
             }
-            
-            // Handle debug keys (only during battle)
-            if (this.currentScene === 'battle') {
-                switch (key) {
-                    case 'c':
-                        this.toggleCollisionBoxes();
-                        break;
-                    case 'r':
-                        // Reset tank rendering log
-                        this.hasLoggedTankRender = false;
-                        console.log('Tank rendering log reset');
-                        break;
-                    case 'z':
-                        // Zoom out
-                        this.camera.targetZoom = Math.max(0.3, this.camera.targetZoom - 0.1);
-                        console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
-                        break;
-                    case 'x':
-                        // Zoom in
-                        this.camera.targetZoom = Math.min(1.5, this.camera.targetZoom + 0.1);
-                        console.log(`Zoom level: ${this.camera.targetZoom.toFixed(1)}`);
-                        break;
-                    case 'e':
-                        // Toggle environment debug
-                        this.debugEnvironment = !this.debugEnvironment;
-                        console.log(`Environment debug: ${this.debugEnvironment ? 'ON' : 'OFF'}`);
-                        break;
-                }
-            }
         });
         
         // Setup keyup events for movement keys
@@ -2046,7 +2008,6 @@ class GameEngine {
         console.log('Keyboard controls setup:');
         console.log('Movement: WASD keys');
         console.log('Shooting: Spacebar');
-        console.log('Debug keys: C = Collision Boxes, E = Environment Debug, R = Reset Tank Log, Z = Zoom Out, X = Zoom In');
     }
 
     setupFullscreenHandlers() {
