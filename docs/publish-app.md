@@ -20,36 +20,76 @@ Tank Adventure v1.0.0 - Mobile Launch
 ### 2. Release Notes
 
 #### **English (Primary)**
+
+What's new (400 length)
+
 ```
 🎮 Tank Adventure - Mobile Launch! 🎮
 
-Command your tank formation in this action-packed 2D battle game!
+Command your tank formation in action-packed 2D battles!
 
 ✨ NEW FEATURES:
-• Control a main tank with 5 mini tanks in synchronized formation
-• Wave-based combat with increasingly challenging enemies
-• 8 Active Skills: Emergency Repair, Combat Overdrive, Energy Shield & more
-• 5 Passive Skills for permanent tank improvements
-• Complete upgrade system for tanks, weapons, and formation
-• Mobile-optimized touch controls with virtual joystick
-• Auto-combat system - mini tanks fight while you focus on strategy
+• Control main tank + 5 mini tanks in formation
+• Wave-based combat vs challenging enemies
+• 8 Active & 5 Passive Skills
+• Complete upgrade system
+• Mobile touch controls with virtual joystick
+• Auto-combat - mini tanks fight automatically
 
-🎯 GAME HIGHLIGHTS:
-• Progressive difficulty with 5 enemy types including bosses
-• Coin-based economy system for upgrades
-• Experience levels and skill tree progression
-• Landscape-optimized gameplay for tablets and phones
-• Offline play - no internet required after download
+🎯 HIGHLIGHTS:
+• 5 enemy types including bosses
+• Coin-based upgrades & skill progression
+• 60 FPS gameplay optimized for mobile
+• Offline play - no internet required
 
-🎨 TECHNICAL:
-• Smooth 60 FPS gameplay
-• Responsive design for all screen sizes
-• Touch-friendly interface designed for mobile
-• Local progress saving
+Perfect for strategy & action fans! Download and lead your formation to victory! 🏆
+```
 
-Perfect for strategy and action game fans who love tank battles!
+## About this game
 
-Download now and lead your tank formation to victory! 🏆
+Full description (4000 length)
+
+```
+🎮 Tank Adventure - Mobile Launch! 🎮
+
+Command your tank formation in action-packed 2D battles! Take control of a main tank with 5 mini tanks in synchronized formation as you face increasingly difficult enemy waves.
+
+✨ CORE GAMEPLAY:
+• Player Tank Formation: Control a main tank with 5 mini tanks in synchronized formation
+• Wave-Based Combat: Battle against increasingly difficult enemy waves with strategic positioning
+• Skill System: Choose from 8 active and 5 passive skills between waves to customize your playstyle
+• Auto-Combat: Mini tanks automatically engage enemies while you focus on movement and tactics
+• Progressive Difficulty: Enemies become stronger and more diverse with each wave you survive
+
+🎯 KEY FEATURES:
+• 5 unique enemy types including challenging bosses
+• Complete upgrade system with coin-based progression
+• 13 total skills (8 active + 5 passive) for deep customization
+• Mobile touch controls with responsive virtual joystick
+• 60 FPS gameplay optimized specifically for mobile devices
+• Offline play - no internet connection required
+• Local game progress saves automatically
+
+🚀 MOBILE OPTIMIZED:
+• Intuitive touch controls designed for smartphones and tablets
+• Smooth virtual joystick for precise movement
+• Action buttons optimized for thumb gameplay
+• Battery-efficient rendering system
+• Supports both portrait and landscape orientations
+
+🏆 STRATEGY MEETS ACTION:
+Perfect blend of real-time action and tactical decision-making. Your mini tanks fight automatically, allowing you to focus on positioning, timing, and strategic skill usage. Each wave presents new challenges that require both quick reflexes and smart planning.
+
+🎪 PROGRESSION SYSTEM:
+• Earn coins by defeating enemies and completing waves
+• Upgrade your tank's health, damage, and special abilities
+• Unlock new skills to create powerful combinations
+• Expand your formation with stronger mini tanks
+• Master different strategies for different enemy types
+
+Whether you're a strategy enthusiast or action game fan, Tank Adventure delivers engaging gameplay that's easy to learn but challenging to master. Download now and lead your formation to victory!
+
+Perfect for quick gaming sessions or extended play. No ads, no in-app purchases - just pure gaming fun!
 ```
 
 ---
