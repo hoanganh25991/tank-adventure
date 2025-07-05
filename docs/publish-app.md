@@ -26,23 +26,47 @@ What's new (400 length)
 ```
 🎮 Tank Adventure - Mobile Launch! 🎮
 
-Command your tank formation in action-packed 2D battles!
+Command your tank formation in epic 2D battles! ⚔️
 
-✨ NEW FEATURES:
-• Control main tank + 5 mini tanks in formation
-• Wave-based combat vs challenging enemies
-• 8 Active & 5 Passive Skills
-• Complete upgrade system
-• Mobile touch controls with virtual joystick
-• Auto-combat - mini tanks fight automatically
+✨ FEATURES:
+• 🚗 Control main tank + 5 mini tanks
+• 🌊 Wave-based combat vs enemies  
+• ⬆️ Upgrade & skill progression
 
 🎯 HIGHLIGHTS:
-• 5 enemy types including bosses
-• Coin-based upgrades & skill progression
-• 60 FPS gameplay optimized for mobile
-• Offline play - no internet required
+• 👹 5 enemy types + epic bosses
+• 🪙 Coin upgrades & abilities
+• ⚡ 60 FPS mobile-optimized
+• 📱 Offline play ready
 
-Perfect for strategy & action fans! Download and lead your formation to victory! 🏆
+🔥 Master strategic combos for victory! 🧠
+
+Perfect for strategy & action fans! 🎲⚔️ Lead to victory! 🏆✨
+```
+
+#### **Vietnamese (vn-VN)**
+
+What's new (400 length)
+
+```
+🎮 Tank Adventure - Ra Mắt Mobile! 🎮
+
+Chỉ huy đội hình xe tăng trong trận chiến 2D hoành tráng! ⚔️
+
+✨ TÍNH NĂNG:
+• 🚗 Điều khiển xe tăng chính + 5 xe tăng mini
+• 🌊 Chiến đấu theo sóng với kẻ thù
+• ⬆️ Nâng cấp & phát triển kỹ năng
+
+🎯 ĐIỂM NỔI BẬT:
+• 👹 5 loại kẻ thù + boss khổng lồ
+• 🪙 Nâng cấp xu & khả năng đặc biệt
+• ⚡ 60 FPS tối ưu cho mobile
+• 📱 Chơi offline sẵn sàng
+
+🔥 Làm chủ combo chiến thuật để chiến thắng! 🧠
+
+Hoàn hảo cho fan chiến thuật & hành động! 🎲⚔️ Dẫn dắt đến chiến thắng! 🏆✨
 ```
 
 ## About this game

@@ -799,6 +799,19 @@ class SkillEffects {
         this.activeEffects = [];
         this.screenEffects = [];
     }
+
+    clearAllEffects() {
+        // Clear all active effects
+        this.activeEffects = [];
+        
+        // Clear screen effects
+        this.screenEffects = [];
+        
+        // Clear shake effects
+        this.shakeEffects = [];
+        
+        console.log('All skill effects cleared');
+    }
 }
 
 // Export for use in other modules

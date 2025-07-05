@@ -974,21 +974,13 @@ class GameEngine {
     }
 
     exitToMenu() {
-        this.gamePaused = false;
-        this.currentScene = 'menu';
-        this.gameRunning = false;
+        console.log('Exiting to menu - reloading application to ensure clean state');
         
-        // Hide pause modal
-        if (this.ui) {
-            this.ui.hidePauseModal();
-            this.ui.showScreen('mainMenu');
-        }
+        // Save current progress before reload
+        this.saveGame();
         
-        // Reset battle state
-        this.waveManager.endWave();
-        this.resetBattleState();
-        
-        console.log('Exited to main menu');
+        // Reload the entire application to avoid complex state management issues
+        window.location.reload();
     }
 
     resetBattleState() {
