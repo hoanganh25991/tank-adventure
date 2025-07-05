@@ -240,32 +240,42 @@
                             <div class="upgrade-section">
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">❤️ Health</span>
+                                        <span class="upgrade-name">❤️ Armor</span>
                                         <span class="upgrade-current" id="tankHealth">100</span>
                                     </div>
-                                    <button class="upgrade-btn" data-upgrade="health">
+                                    <button class="upgrade-btn" data-upgrade="mainHealth">
                                         <span class="upgrade-cost">100💰</span>
                                         <span class="upgrade-bonus">+20</span>
                                     </button>
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">⚔️ Damage</span>
+                                        <span class="upgrade-name">⚔️ Cannon</span>
                                         <span class="upgrade-current" id="tankDamage">10</span>
                                     </div>
-                                    <button class="upgrade-btn" data-upgrade="damage">
+                                    <button class="upgrade-btn" data-upgrade="mainDamage">
                                         <span class="upgrade-cost">150💰</span>
                                         <span class="upgrade-bonus">+5</span>
                                     </button>
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">💨 Speed</span>
+                                        <span class="upgrade-name">💨 Engine</span>
                                         <span class="upgrade-current" id="tankSpeed">5</span>
                                     </div>
-                                    <button class="upgrade-btn" data-upgrade="speed">
+                                    <button class="upgrade-btn" data-upgrade="mainSpeed">
                                         <span class="upgrade-cost">200💰</span>
-                                        <span class="upgrade-bonus">+1</span>
+                                        <span class="upgrade-bonus">+0.3</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🔥 Auto-loader</span>
+                                        <span class="upgrade-current" id="tankFireRate">100%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="mainFireRate">
+                                        <span class="upgrade-cost">250💰</span>
+                                        <span class="upgrade-bonus">-10%</span>
                                     </button>
                                 </div>
                             </div>
@@ -276,7 +286,7 @@
                             <div class="upgrade-section">
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">❤️ Health</span>
+                                        <span class="upgrade-name">❤️ Armor</span>
                                         <span class="upgrade-current" id="miniHealth">50</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="miniHealth">
@@ -286,12 +296,130 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">⚔️ Damage</span>
+                                        <span class="upgrade-name">⚔️ Weapons</span>
                                         <span class="upgrade-current" id="miniDamage">5</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="miniDamage">
                                         <span class="upgrade-cost">120💰</span>
                                         <span class="upgrade-bonus">+2</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">💨 Mobility</span>
+                                        <span class="upgrade-current" id="miniSpeed">3</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="miniSpeed">
+                                        <span class="upgrade-cost">150💰</span>
+                                        <span class="upgrade-bonus">+0.2</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🎯 Coordination</span>
+                                        <span class="upgrade-current" id="miniFireRate">100%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="miniFireRate">
+                                        <span class="upgrade-cost">180💰</span>
+                                        <span class="upgrade-bonus">-10%</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="formationUpgrades" class="upgrade-category">
+                            <h3>⚡ Formation</h3>
+                            <div class="upgrade-section">
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🚁 Tactics</span>
+                                        <span class="upgrade-current" id="formation">5</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="formation">
+                                        <span class="upgrade-cost">500💰</span>
+                                        <span class="upgrade-bonus">+1</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🎯 Coordination</span>
+                                        <span class="upgrade-current" id="coordination">100%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="coordination">
+                                        <span class="upgrade-cost">300💰</span>
+                                        <span class="upgrade-bonus">+10%</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="economyUpgrades" class="upgrade-category">
+                            <h3>💰 Economy</h3>
+                            <div class="upgrade-section">
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🔧 Salvage</span>
+                                        <span class="upgrade-current" id="coinBonus">100%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="coinBonus">
+                                        <span class="upgrade-cost">200💰</span>
+                                        <span class="upgrade-bonus">+10%</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">📚 Experience</span>
+                                        <span class="upgrade-current" id="expBonus">100%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="expBonus">
+                                        <span class="upgrade-cost">250💰</span>
+                                        <span class="upgrade-bonus">+10%</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="specialUpgrades" class="upgrade-category">
+                            <h3>🌟 Special</h3>
+                            <div class="upgrade-section">
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🚀 Accelerator</span>
+                                        <span class="upgrade-current" id="bulletSpeed">5</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="bulletSpeed">
+                                        <span class="upgrade-cost">300💰</span>
+                                        <span class="upgrade-bonus">+1</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🔧 Auto-Repair</span>
+                                        <span class="upgrade-current" id="autoRepair">0</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="autoRepair">
+                                        <span class="upgrade-cost">400💰</span>
+                                        <span class="upgrade-bonus">+0.5</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">🛡️ Shield</span>
+                                        <span class="upgrade-current" id="shield">0</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="shield">
+                                        <span class="upgrade-cost">600💰</span>
+                                        <span class="upgrade-bonus">+15</span>
+                                    </button>
+                                </div>
+                                <div class="upgrade-item">
+                                    <div class="upgrade-info">
+                                        <span class="upgrade-name">💥 Multi-Shot</span>
+                                        <span class="upgrade-current" id="multiShot">0%</span>
+                                    </div>
+                                    <button class="upgrade-btn" data-upgrade="multiShot">
+                                        <span class="upgrade-cost">800💰</span>
+                                        <span class="upgrade-bonus">+10%</span>
                                     </button>
                                 </div>
                             </div>

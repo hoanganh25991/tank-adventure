@@ -460,27 +460,9 @@ class GameUI {
     }
 
     handleUpgrade(upgradeType) {
-        if (!this.gameEngine.player) return;
+        if (!this.gameEngine.player || !this.gameEngine.upgradeManager) return;
         
-        const costs = {
-            health: 100,
-            damage: 150,
-            speed: 200,
-            miniHealth: 80,
-            miniDamage: 120
-        };
-        
-        const cost = costs[upgradeType];
-        if (!cost) return;
-        
-        let success = false;
-        
-        if (['health', 'damage', 'speed'].includes(upgradeType)) {
-            success = this.gameEngine.player.upgradeMainTank(upgradeType, cost);
-        } else if (['miniHealth', 'miniDamage'].includes(upgradeType)) {
-            const stat = upgradeType.replace('mini', '').toLowerCase();
-            success = this.gameEngine.player.upgradeMiniTanks(stat, cost);
-        }
+        const success = this.gameEngine.upgradeManager.upgradeItem(upgradeType, this.gameEngine.player);
         
         if (success) {
             this.updateBaseScreen();
@@ -808,9 +790,10 @@ class GameUI {
     }
 
     updateBaseScreen() {
-        if (!this.gameEngine.player) return;
+        if (!this.gameEngine.player || !this.gameEngine.upgradeManager) return;
         
         const player = this.gameEngine.player;
+        const upgradeManager = this.gameEngine.upgradeManager;
         
         // Update tank stats
         this.elements.tankHealth.textContent = player.mainTank.maxHealth;
@@ -819,21 +802,102 @@ class GameUI {
         this.elements.miniHealth.textContent = player.miniTanks[0]?.maxHealth || 0;
         this.elements.miniDamage.textContent = (player.miniTanks[0]?.damage || 0).toFixed(0);
         
+        // Update additional stats
+        const miniSpeedElement = document.getElementById('miniSpeed');
+        if (miniSpeedElement) {
+            miniSpeedElement.textContent = (player.miniTanks[0]?.speed || 0).toFixed(1);
+        }
+        
+        const tankFireRateElement = document.getElementById('tankFireRate');
+        if (tankFireRateElement) {
+            const fireRateUpgrade = upgradeManager.getUpgrade('mainFireRate');
+            const reduction = fireRateUpgrade ? Math.round((1 - Math.pow(0.9, fireRateUpgrade.level)) * 100) : 0;
+            tankFireRateElement.textContent = `${100 - reduction}%`;
+        }
+        
+        const miniFireRateElement = document.getElementById('miniFireRate');
+        if (miniFireRateElement) {
+            const fireRateUpgrade = upgradeManager.getUpgrade('miniFireRate');
+            const reduction = fireRateUpgrade ? Math.round((1 - Math.pow(0.9, fireRateUpgrade.level)) * 100) : 0;
+            miniFireRateElement.textContent = `${100 - reduction}%`;
+        }
+        
+        // Update formation stats
+        const formationElement = document.getElementById('formation');
+        if (formationElement) {
+            formationElement.textContent = player.miniTanks.length;
+        }
+        
+        const coordinationElement = document.getElementById('coordination');
+        if (coordinationElement) {
+            const coordBonus = Math.round((player.coordinationBonus || 0) * 100);
+            coordinationElement.textContent = `${100 + coordBonus}%`;
+        }
+        
+        // Update economy stats
+        const coinBonusElement = document.getElementById('coinBonus');
+        if (coinBonusElement) {
+            const coinBonus = Math.round(((player.coinMultiplier || 1) - 1) * 100);
+            coinBonusElement.textContent = `${100 + coinBonus}%`;
+        }
+        
+        const expBonusElement = document.getElementById('expBonus');
+        if (expBonusElement) {
+            const expBonus = Math.round(((player.expMultiplier || 1) - 1) * 100);
+            expBonusElement.textContent = `${100 + expBonus}%`;
+        }
+        
+        // Update special stats
+        const bulletSpeedElement = document.getElementById('bulletSpeed');
+        if (bulletSpeedElement) {
+            const bulletUpgrade = upgradeManager.getUpgrade('bulletSpeed');
+            bulletSpeedElement.textContent = 5 + (bulletUpgrade ? bulletUpgrade.level : 0);
+        }
+        
+        const autoRepairElement = document.getElementById('autoRepair');
+        if (autoRepairElement) {
+            autoRepairElement.textContent = (player.autoRepairRate || 0).toFixed(1);
+        }
+        
+        const shieldElement = document.getElementById('shield');
+        if (shieldElement) {
+            shieldElement.textContent = player.maxShieldPoints || 0;
+        }
+        
+        const multiShotElement = document.getElementById('multiShot');
+        if (multiShotElement) {
+            const multiShotBonus = Math.round((player.multiShotChance || 0) * 100);
+            multiShotElement.textContent = `${multiShotBonus}%`;
+        }
+        
         // Update player stats
         this.elements.playerLevel.textContent = player.level;
         this.elements.playerExp.textContent = player.experience;
         this.elements.playerExpNext.textContent = player.experienceToNext;
         this.elements.playerCoins.textContent = Utils.formatNumber(player.coins);
         
-        // Update upgrade button states
+        // Update upgrade button states and costs
         document.querySelectorAll('.upgrade-btn').forEach(btn => {
             const upgradeType = btn.getAttribute('data-upgrade');
-            const costs = {
-                health: 100, damage: 150, speed: 200,
-                miniHealth: 80, miniDamage: 120
-            };
-            const cost = costs[upgradeType];
-            btn.disabled = player.coins < cost;
+            const upgrade = upgradeManager.getUpgrade(upgradeType);
+            
+            if (upgrade) {
+                const canUpgrade = upgrade.canUpgrade(player.coins);
+                btn.disabled = !canUpgrade;
+                
+                // Update cost display
+                const costElement = btn.querySelector('.upgrade-cost');
+                if (costElement) {
+                    costElement.textContent = `${upgrade.getCurrentCost()}💰`;
+                }
+                
+                // Update bonus display
+                const bonusElement = btn.querySelector('.upgrade-bonus');
+                if (bonusElement) {
+                    const effect = upgradeManager.getUpgradeEffect(upgradeType, 1);
+                    bonusElement.textContent = effect || `+${upgrade.baseValue}`;
+                }
+            }
         });
     }
 
