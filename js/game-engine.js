@@ -136,6 +136,11 @@ class GameEngine {
             // Adjust canvas size
             this.ui.adjustCanvasSize();
             
+            // Initialize localization after UI is ready
+            if (window.Localization) {
+                window.Localization.updateAllText();
+            }
+            
             // Load saved progress
             this.loadGame();
             

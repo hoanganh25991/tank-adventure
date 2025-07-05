@@ -512,6 +512,41 @@ button {
     transform: translateY(0);
 }
 
+/* Language Selector */
+.language-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.language-btn {
+    padding: 8px 16px;
+    margin: 0;
+    min-width: 100px;
+    font-size: 14px;
+    border: 2px solid var(--primary-blue);
+    background: rgba(74, 158, 255, 0.1);
+    color: var(--primary-blue);
+    transition: all 0.3s ease;
+}
+
+.language-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.language-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    font-weight: 600;
+}
+
+.language-btn.active:hover {
+    background: var(--secondary-blue);
+}
+
 /* Additional touch support for settings button specifically */
 #settingsBtn {
     /* Ensure button is always touchable */

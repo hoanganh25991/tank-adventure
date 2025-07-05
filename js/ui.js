@@ -161,9 +161,13 @@ class GameUI {
         
         this.damageTexts = [];
         this.skillSelectionInProgress = false;
+        this.localization = window.Localization;
         
         this.setupEventListeners();
         this.updateInterval = setInterval(() => this.updateHUD(), 100);
+        
+        // Initialize localization
+        this.initializeLocalization();
     }
 
     initializeElements() {
@@ -254,6 +258,57 @@ class GameUI {
         console.log('Guide screen found:', elements.screens.settingsScreen ? 'YES' : 'NO');
         
         return elements;
+    }
+
+    initializeLocalization() {
+        if (!this.localization) {
+            console.error('Localization not available');
+            return;
+        }
+        
+        // Setup language button event listeners
+        const englishBtn = document.getElementById('englishBtn');
+        const vietnameseBtn = document.getElementById('vietnameseBtn');
+        
+        if (englishBtn) {
+            englishBtn.addEventListener('click', () => {
+                this.localization.setLanguage('en');
+                this.updateLanguageButtons();
+                this.updateDynamicText();
+            });
+        }
+        
+        if (vietnameseBtn) {
+            vietnameseBtn.addEventListener('click', () => {
+                this.localization.setLanguage('vi');
+                this.updateLanguageButtons();
+                this.updateDynamicText();
+            });
+        }
+        
+        // Initialize UI with current language
+        this.localization.updateAllText();
+        this.updateLanguageButtons();
+    }
+
+    updateLanguageButtons() {
+        const englishBtn = document.getElementById('englishBtn');
+        const vietnameseBtn = document.getElementById('vietnameseBtn');
+        
+        if (englishBtn && vietnameseBtn) {
+            const currentLang = this.localization.getCurrentLanguage();
+            
+            englishBtn.classList.toggle('active', currentLang === 'en');
+            vietnameseBtn.classList.toggle('active', currentLang === 'vi');
+        }
+    }
+
+    updateDynamicText() {
+        // Update any dynamic text that's not covered by data-translate attributes
+        // This will be called when language changes
+        if (this.gameEngine && this.gameEngine.player) {
+            this.updateHUD();
+        }
     }
 
     setupEventListeners() {
@@ -646,11 +701,11 @@ class GameUI {
         this.elements.healthText.textContent = `${player.mainTank.health}/${player.mainTank.maxHealth}`;
         
         // Update wave info
-        this.elements.waveText.textContent = `Wave ${waveManager.currentWave}`;
-        this.elements.enemiesLeft.textContent = `Enemies: ${waveManager.getEnemiesRemaining()}`;
+        this.elements.waveText.textContent = `${this.localization.t('wave')} ${waveManager.currentWave}`;
+        this.elements.enemiesLeft.textContent = `${this.localization.t('enemies')}: ${waveManager.getEnemiesRemaining()}`;
         
         // Update score
-        this.elements.scoreText.textContent = `Score: ${Utils.formatNumber(player.score)}`;
+        this.elements.scoreText.textContent = `${this.localization.t('score')}: ${Utils.formatNumber(player.score)}`;
         
         // Update skill buttons
         const skillInfo = this.gameEngine.skillManager.getSkillInfo();
@@ -659,8 +714,9 @@ class GameUI {
         skillButtons.forEach((btn, index) => {
             const skill = skillInfo.active[index];
             if (skill) {
-                // Use shortName for better button display
-                btn.textContent = `${skill.emoji || '⚡'} ${skill.shortName || skill.name || 'NO NAME'}`;
+                // Use localized skill name
+                const skillName = skill.getLocalizedName ? skill.getLocalizedName() : skill.name;
+                btn.textContent = `${skill.emoji || '⚡'} ${skillName || 'NO NAME'}`;
                 btn.disabled = !skill.isReady;
                 btn.style.opacity = skill.isReady ? '1' : '0.5';
                 
@@ -714,10 +770,12 @@ class GameUI {
             const skillDiv = document.createElement('div');
             skillDiv.className = 'skill-option';
             skillDiv.setAttribute('data-skill-id', skill.id);
+            const skillName = skill.getLocalizedName ? skill.getLocalizedName() : skill.name;
+            const skillDesc = skill.getLocalizedDescription ? skill.getLocalizedDescription() : skill.description;
             skillDiv.innerHTML = `
                 <div class="skill-emoji">${skill.emoji}</div>
-                <h3>${skill.name}</h3>
-                <p>${skill.description}</p>
+                <h3>${skillName}</h3>
+                <p>${skillDesc}</p>
                 <p><strong>Type:</strong> ${skill.type}</p>
             `;
             
@@ -804,14 +862,14 @@ class GameUI {
         if (battleResultTitle) {
             if (results.victory) {
                 if (results.isFinalWave) {
-                    battleResultTitle.textContent = '🏆 Complete Victory!';
+                    battleResultTitle.textContent = this.localization.t('complete_victory');
                     battleResultTitle.style.color = '#ffdd44'; // Gold color for final victory
                 } else {
-                    battleResultTitle.textContent = '🎖️ Battle Victory!';
+                    battleResultTitle.textContent = this.localization.t('battle_victory');
                     battleResultTitle.style.color = '#44ff44'; // Success green
                 }
             } else {
-                battleResultTitle.textContent = '☠️ Battle Defeat';
+                battleResultTitle.textContent = this.localization.t('battle_defeat');
                 battleResultTitle.style.color = '#ff4444'; // Danger red
             }
         }

@@ -18,6 +18,14 @@ class Skill {
         this.maxLevel = 5;
     }
 
+    getLocalizedName() {
+        return window.Localization ? window.Localization.getSkillTranslation(this.id, 'name') || this.name : this.name;
+    }
+
+    getLocalizedDescription() {
+        return window.Localization ? window.Localization.getSkillTranslation(this.id, 'desc') || this.description : this.description;
+    }
+
     activate(player, enemies, effectsManager = null) {
         if (this.type === 'passive') return; // Passive skills are always active
         if (this.remainingCooldown > 0) return; // On cooldown

@@ -161,20 +161,20 @@
                 
                 <!-- Action Buttons -->
                 <div id="actionButtons">
-                    <button id="skill1Btn" class="action-btn skill" data-skill="1">SKILL 1</button>
-                    <button id="skill2Btn" class="action-btn skill" data-skill="2">SKILL 2</button>
-                    <button id="skill3Btn" class="action-btn skill" data-skill="3">SKILL 3</button>
-                    <button id="primaryShootBtn" class="action-btn primary">SHOOT</button>
+                    <button id="skill1Btn" class="action-btn skill" data-skill="1" data-translate="skill_1">SKILL 1</button>
+                    <button id="skill2Btn" class="action-btn skill" data-skill="2" data-translate="skill_2">SKILL 2</button>
+                    <button id="skill3Btn" class="action-btn skill" data-skill="3" data-translate="skill_3">SKILL 3</button>
+                    <button id="primaryShootBtn" class="action-btn primary" data-translate="shoot">SHOOT</button>
                 </div>
             </div>
             
             <!-- Pause Modal -->
             <div id="pauseModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <h2>Game Paused</h2>
+                    <h2 data-translate="game_paused">Game Paused</h2>
                     <div class="modal-buttons">
-                        <button id="resumeBtn" class="menu-btn">▶️ Resume</button>
-                        <button id="exitBattleBtn" class="menu-btn">🏠 Exit to Menu</button>
+                        <button id="resumeBtn" class="menu-btn" data-translate="resume">▶️ Resume</button>
+                        <button id="exitBattleBtn" class="menu-btn" data-translate="exit_to_menu">🏠 Exit to Menu</button>
                     </div>
                 </div>
             </div>
@@ -200,20 +200,20 @@
                             <rect x="75" y="15" width="60" height="30" rx="2" fill="#9acd32" opacity="0.3"/>
                         </svg>
                     </div>
-                    <h2>Rotate Your Device</h2>
-                    <p>Please rotate your device to landscape mode for the best gaming experience.</p>
+                    <h2 data-translate="rotate_device">Rotate Your Device</h2>
+                    <p data-translate="rotate_desc">Please rotate your device to landscape mode for the best gaming experience.</p>
                     <div class="orientation-tip">
-                        <p>🎮 Tank Adventure works best in landscape orientation</p>
+                        <p data-translate="rotate_tip">🎮 Tank Adventure works best in landscape orientation</p>
                     </div>
                 </div>
             </div>
             
             <!-- Main Menu -->
             <div id="mainMenu" class="screen">
-                <h1>Tank Adventure</h1>
-                <button id="startGameBtn" class="menu-btn">🔥 Battle</button>
-                <button id="upgradesBtn" class="menu-btn">🏠 Base & Upgrades</button>
-                <button id="settingsBtn" class="menu-btn">📖 Guide</button>
+                <h1 data-translate="game_title">Tank Adventure</h1>
+                <button id="startGameBtn" class="menu-btn" data-translate="menu_battle">🔥 Battle</button>
+                <button id="upgradesBtn" class="menu-btn" data-translate="menu_base">🏠 Base & Upgrades</button>
+                <button id="settingsBtn" class="menu-btn" data-translate="menu_guide">📖 Guide</button>
             </div>
             
             <!-- Battle Screen (Canvas + UI) -->
@@ -223,7 +223,7 @@
             
             <!-- Skill Selection -->
             <div id="skillSelection" class="screen">
-                <h2>Choose Your Enhancement</h2>
+                <h2 data-translate="choose_enhancement">Choose Your Enhancement</h2>
                 <div id="skillOptions">
                     <!-- Skill options will be dynamically populated -->
                 </div>
@@ -231,135 +231,147 @@
             
             <!-- Battle Results -->
             <div id="battleResults" class="screen">
-                <h2 id="battleResultTitle">Battle Complete!</h2>
+                <h2 id="battleResultTitle" data-translate="battle_complete">Battle Complete!</h2>
                 <div id="resultsContent">
                     <div id="battleStats">
-                        <p>Wave Reached: <span id="waveCompleted">1</span></p>
-                        <p>Enemies Defeated: <span id="enemiesDefeated">0</span></p>
-                        <p>Score Earned: <span id="scoreEarned">0</span></p>
-                        <p>Experience Gained: <span id="expGained">0</span></p>
+                        <p><span data-translate="wave_reached">Wave Reached</span>: <span id="waveCompleted">1</span></p>
+                        <p><span data-translate="enemies_defeated">Enemies Defeated</span>: <span id="enemiesDefeated">0</span></p>
+                        <p><span data-translate="score_earned">Score Earned</span>: <span id="scoreEarned">0</span></p>
+                        <p><span data-translate="experience_gained">Experience Gained</span>: <span id="expGained">0</span></p>
                     </div>
                 </div>
                 <div id="resultsButtons">
-                    <button id="continueBtn" class="menu-btn">Continue</button>
-                    <button id="backToBaseBtn" class="menu-btn">🏠 Back to Base</button>
+                    <button id="continueBtn" class="menu-btn" data-translate="continue">Continue</button>
+                    <button id="backToBaseBtn" class="menu-btn" data-translate="back_to_base">🏠 Back to Base</button>
                 </div>
             </div>
             
             <!-- Settings/Introduction Screen -->
             <div id="settingsScreen" class="screen">
-                <h2>Tank Guide</h2>
+                <h2 data-translate="tank_guide">Tank Guide</h2>
                 <div id="settingsContent">
                     <div class="info-section">
-                        <h3>🎮 Welcome to Tank Adventure!</h3>
-                        <p>Command your tank formation and survive endless waves of enemies. Master your skills and upgrade your tanks to become the ultimate commander!</p>
+                        <h3 data-translate="language">🌐 Language</h3>
+                        <div class="language-selector">
+                            <button id="englishBtn" class="menu-btn language-btn" data-lang="en">
+                                <span data-translate="english">English</span>
+                            </button>
+                            <button id="vietnameseBtn" class="menu-btn language-btn" data-lang="vi">
+                                <span data-translate="vietnamese">Tiếng Việt</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="info-section">
-                        <h3>🕹️ How to Play</h3>
+                        <h3 data-translate="welcome_title">🎮 Welcome to Tank Adventure!</h3>
+                        <p data-translate="welcome_desc">Command your tank formation and survive endless waves of enemies. Master your skills and upgrade your tanks to become the ultimate commander!</p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3 data-translate="how_to_play">🕹️ How to Play</h3>
                         <div class="control-guide">
                             <div class="control-item">
                                 <span class="control-icon">📱</span>
                                 <div class="control-text">
-                                    <strong>Movement:</strong> Use the virtual joystick to move your tank formation around the battlefield.
+                                    <strong data-translate="movement">Movement:</strong> <span data-translate="movement_desc">Use the virtual joystick to move your tank formation around the battlefield.</span>
                                 </div>
                             </div>
                             <div class="control-item">
                                 <span class="control-icon">🎯</span>
                                 <div class="control-text">
-                                    <strong>Shooting:</strong> Tap the SHOOT button to fire at enemies. Your tank will auto-aim at the nearest threat!
+                                    <strong data-translate="shooting">Shooting:</strong> <span data-translate="shooting_desc">Tap the SHOOT button to fire at enemies. Your tank will auto-aim at the nearest threat!</span>
                                 </div>
                             </div>
                             <div class="control-item">
                                 <span class="control-icon">⚡</span>
                                 <div class="control-text">
-                                    <strong>Skills:</strong> Use SKILL buttons to activate powerful abilities during battle.
+                                    <strong data-translate="skills">Skills:</strong> <span data-translate="skills_desc">Use SKILL buttons to activate powerful abilities during battle.</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="info-section">
-                        <h3>⌨️ Desktop Controls</h3>
+                        <h3 data-translate="desktop_controls">⌨️ Desktop Controls</h3>
                         <div class="control-guide">
                             <div class="control-item">
                                 <span class="control-icon">🎮</span>
                                 <div class="control-text">
-                                    <strong>Movement:</strong> Use WASD keys (W=Up, A=Left, S=Down, D=Right) to move your tank formation.
+                                    <strong data-translate="movement">Movement:</strong> <span data-translate="desktop_movement">Use WASD keys (W=Up, A=Left, S=Down, D=Right) to move your tank formation.</span>
                                 </div>
                             </div>
                             <div class="control-item">
                                 <span class="control-icon">🔥</span>
                                 <div class="control-text">
-                                    <strong>Shooting:</strong> Press and hold <strong>SPACEBAR</strong> to continuously fire at enemies.
+                                    <strong data-translate="shooting">Shooting:</strong> <span data-translate-html="desktop_shooting">Press and hold <strong>SPACEBAR</strong> to continuously fire at enemies.</span>
                                 </div>
                             </div>
                             <div class="control-item">
                                 <span class="control-icon">⚙️</span>
                                 <div class="control-text">
-                                    <strong>Game Controls:</strong> Press <strong>ESC</strong> to exit fullscreen mode when playing.
+                                    <strong>Game Controls:</strong> <span data-translate-html="desktop_game_controls">Press <strong>ESC</strong> to exit fullscreen mode when playing.</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="info-section">
-                        <h3>🏗️ Game Features</h3>
+                        <h3 data-translate="game_features">🏗️ Game Features</h3>
                         <ul class="feature-list">
-                            <li><strong>Formation Combat:</strong> Control a main tank with mini-tank escorts</li>
-                            <li><strong>Wave Survival:</strong> Face increasingly difficult enemy waves</li>
-                            <li><strong>Skill System:</strong> Choose powerful enhancements between waves</li>
-                            <li><strong>Upgrades:</strong> Improve your tanks at the base between battles</li>
-                            <li><strong>Mobile Optimized:</strong> Designed for touch screen gaming</li>
+                            <li data-translate="feature_formation"><strong>Formation Combat:</strong> Control a main tank with mini-tank escorts</li>
+                            <li data-translate="feature_waves"><strong>Wave Survival:</strong> Face increasingly difficult enemy waves</li>
+                            <li data-translate="feature_skills"><strong>Skill System:</strong> Choose powerful enhancements between waves</li>
+                            <li data-translate="feature_upgrades"><strong>Upgrades:</strong> Improve your tanks at the base between battles</li>
+                            <li data-translate="feature_mobile"><strong>Mobile Optimized:</strong> Designed for touch screen gaming</li>
                         </ul>
                     </div>
                     
                     <div class="info-section">
-                        <h3>💡 Tips for Success</h3>
+                        <h3 data-translate="tips_success">💡 Tips for Success</h3>
                         <ul class="tips-list">
-                            <li>Keep moving to avoid enemy fire</li>
-                            <li>Use skills strategically during tough moments</li>
-                            <li>Upgrade your tanks regularly at the base</li>
-                            <li>Choose skills that complement your playstyle</li>
-                            <li>Position your formation to maximize firepower</li>
+                            <li data-translate="tip_movement">Keep moving to avoid enemy fire</li>
+                            <li data-translate="tip_skills">Use skills strategically during tough moments</li>
+                            <li data-translate="tip_upgrades">Upgrade your tanks regularly at the base</li>
+                            <li data-translate="tip_choose_skills">Choose skills that complement your playstyle</li>
+                            <li data-translate="tip_formation">Position your formation to maximize firepower</li>
                         </ul>
                     </div>
                     
                     <div class="info-section">
-                        <h3>📱 Best Experience</h3>
-                        <p class="landscape-note">
+                        <h3 data-translate="best_experience">📱 Best Experience</h3>
+                        <p class="landscape-note" data-translate-html="landscape_note">
                             For the best gaming experience, rotate your device to <strong>landscape mode</strong> and play in <strong>fullscreen</strong>.
                         </p>
-                        <button id="fullscreenBtn" class="menu-btn">📺 Fullscreen</button>
+                        <button id="fullscreenBtn" class="menu-btn" data-translate="fullscreen">📺 Fullscreen</button>
                     </div>
                     
                     <div class="info-section">
-                        <h3>🔄 Game Reset</h3>
-                        <p class="reset-warning">
+                        <h3 data-translate="game_reset">🔄 Game Reset</h3>
+                        <p class="reset-warning" data-translate="reset_warning">
                             Use this button to reset all progress and start from the beginning. This action cannot be undone!
                         </p>
-                        <button id="resetGameBtn" class="menu-btn reset-btn">Reset Game</button>
+                        <button id="resetGameBtn" class="menu-btn reset-btn" data-translate="reset_game">Reset Game</button>
                     </div>
                 </div>
-                <button id="backToMenuFromSettingsBtn" class="menu-btn">Back to Menu</button>
+                <button id="backToMenuFromSettingsBtn" class="menu-btn" data-translate="back_to_menu">Back to Menu</button>
             </div>
             
             <!-- Base/Upgrade Screen -->
             <div id="baseScreen" class="screen">
-                <h2>Tank Base</h2>
+                <h2 data-translate="tank_base">Tank Base</h2>
                 
                 <!-- Player Stats - Horizontal Layout at Top -->
                 <div id="playerStats">
                     <div class="stat-item">
-                        <span class="stat-label">Level</span>
+                        <span class="stat-label" data-translate="level">Level</span>
                         <span class="stat-value" id="playerLevel">1</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Experience</span>
+                        <span class="stat-label" data-translate="experience">Experience</span>
                         <span class="stat-value"><span id="playerExp">0</span> / <span id="playerExpNext">100</span></span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Coins</span>
+                        <span class="stat-label" data-translate="coins">Coins</span>
                         <span class="stat-value" id="playerCoins">0</span>
                     </div>
                 </div>
@@ -367,11 +379,11 @@
                 <div id="baseContent">
                     <div class="upgrades-grid">
                         <div id="tankUpgrades" class="upgrade-category">
-                            <h3>🚗 Main Tank</h3>
+                            <h3 data-translate="main_tank">🚗 Main Tank</h3>
                             <div class="upgrade-section">
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">❤️ Armor</span>
+                                        <span class="upgrade-name" data-translate="armor">❤️ Armor</span>
                                         <span class="upgrade-current" id="tankHealth">100</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="mainHealth">
@@ -381,7 +393,7 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">⚔️ Cannon</span>
+                                        <span class="upgrade-name" data-translate="cannon">⚔️ Cannon</span>
                                         <span class="upgrade-current" id="tankDamage">10</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="mainDamage">
@@ -391,7 +403,7 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">💨 Engine</span>
+                                        <span class="upgrade-name" data-translate="engine">💨 Engine</span>
                                         <span class="upgrade-current" id="tankSpeed">5</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="mainSpeed">
@@ -401,7 +413,7 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">🔥 Auto-loader</span>
+                                        <span class="upgrade-name" data-translate="auto_loader">🔥 Auto-loader</span>
                                         <span class="upgrade-current" id="tankFireRate">100%</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="mainFireRate">
@@ -413,11 +425,11 @@
                         </div>
                         
                         <div id="miniTankUpgrades" class="upgrade-category">
-                            <h3>🚙 Mini Tanks</h3>
+                            <h3 data-translate="mini_tanks">🚙 Mini Tanks</h3>
                             <div class="upgrade-section">
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">❤️ Armor</span>
+                                        <span class="upgrade-name" data-translate="armor">❤️ Armor</span>
                                         <span class="upgrade-current" id="miniHealth">50</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="miniHealth">
@@ -427,7 +439,7 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">⚔️ Weapons</span>
+                                        <span class="upgrade-name" data-translate="weapons">⚔️ Weapons</span>
                                         <span class="upgrade-current" id="miniDamage">5</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="miniDamage">
@@ -437,7 +449,7 @@
                                 </div>
                                 <div class="upgrade-item">
                                     <div class="upgrade-info">
-                                        <span class="upgrade-name">💨 Mobility</span>
+                                        <span class="upgrade-name" data-translate="mobility">💨 Mobility</span>
                                         <span class="upgrade-current" id="miniSpeed">3</span>
                                     </div>
                                     <button class="upgrade-btn" data-upgrade="miniSpeed">
@@ -649,6 +661,7 @@
     <script src="js/fullscreen.js"></script>
     <script src="js/orientation.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/localization.js"></script>
     <script src="js/player.js"></script>
     <script src="js/enemy.js"></script>
     <script src="js/skills.js"></script>
