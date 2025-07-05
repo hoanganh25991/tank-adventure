@@ -13,12 +13,14 @@ Tank Adventure has been successfully converted into a Progressive Web App (PWA) 
 - **Automatic Updates**: Handles service worker updates gracefully
 
 ### 2. Web App Manifest (`manifest.json`)
-- **App Identity**: Proper name, description, and branding
+- **App Identity**: Proper name, description, and branding with unique App ID
 - **Display Mode**: Standalone app experience
 - **Orientation**: Locked to landscape for optimal gaming
-- **Icons**: Complete icon set for all platforms (16x16 to 512x512)
+- **Icons**: Complete icon set for all platforms (16x16 to 512x512) with maskable support
 - **Shortcuts**: Quick access to Battle and Base screens
 - **Theme Colors**: Consistent with game design
+- **IARC Rating**: Age-appropriate content rating for app stores
+- **Scope Extensions**: Cross-origin support for GitHub Pages deployment
 
 ### 3. Installation Features
 - **Install Prompt**: Custom install button appears when PWA is installable
@@ -55,6 +57,60 @@ All paths configured for GitHub Pages deployment at `/tank-adventure/`:
 - Service worker scope: `/tank-adventure/`
 - Manifest start_url: `/tank-adventure/`
 - All asset paths properly prefixed
+
+## Enhanced Manifest Fields
+
+### App ID
+```json
+"id": "/tank-adventure/"
+```
+- **Purpose**: Unique identifier for the PWA across installations
+- **Benefit**: Prevents duplicate installations and enables proper app management
+- **Standard**: Latest PWA specification requirement
+
+### Icons Field Enhancement
+```json
+"icons": [
+  {
+    "src": "assets/favicon/android-chrome-192x192.png",
+    "sizes": "192x192",
+    "type": "image/png",
+    "purpose": "any"
+  },
+  {
+    "src": "assets/favicon/android-chrome-192x192.png",
+    "sizes": "192x192", 
+    "type": "image/png",
+    "purpose": "maskable"
+  }
+]
+```
+- **Multiple Purposes**: Separate entries for `any` and `maskable` purposes
+- **Complete Size Range**: 16x16 to 512x512 for all platforms
+- **Maskable Icons**: Adaptive icons that work with different device themes
+- **Platform Optimization**: Proper icons for Android, iOS, and desktop
+
+### IARC Rating ID
+```json
+"iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+```
+- **Purpose**: International Age Rating Coalition content rating
+- **Benefit**: Enables app store distribution with proper age classification
+- **Rating**: Suitable for all ages (casual action game)
+- **Compliance**: Required for many app stores and PWA directories
+
+### Scope Extensions
+```json
+"scope_extensions": [
+  {
+    "origin": "https://hoanganh25991.github.io"
+  }
+]
+```
+- **Purpose**: Extends PWA scope to include GitHub Pages domain
+- **Benefit**: Allows PWA to handle navigation across the entire GitHub Pages site
+- **Cross-Origin Support**: Enables seamless integration with GitHub Pages hosting
+- **Future-Proof**: Supports potential subdomain or path changes
 
 ## User Experience Features
 

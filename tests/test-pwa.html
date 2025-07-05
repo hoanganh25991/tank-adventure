@@ -130,6 +130,26 @@
         </div>
         
         <div class="test-section">
+            <h3>📋 Manifest Compliance</h3>
+            <div class="test-item">
+                <span>Manifest has App ID</span>
+                <span id="manifest-id" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Manifest has Icons</span>
+                <span id="manifest-icons" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Manifest has IARC Rating</span>
+                <span id="manifest-iarc" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Manifest has Scope Extensions</span>
+                <span id="manifest-scope" class="status pending">Testing...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
             <h3>💾 Caching & Offline</h3>
             <div class="test-item">
                 <span>Cache API Support</span>
@@ -232,12 +252,81 @@
                     log(`   App Name: ${manifest.name}`);
                     log(`   Start URL: ${manifest.start_url}`);
                     log(`   Display: ${manifest.display}`);
+                    
+                    // Test Manifest App ID
+                    if (manifest.id) {
+                        setStatus('manifest-id', 'pass');
+                        log(`✅ Manifest has App ID: ${manifest.id}`);
+                    } else {
+                        setStatus('manifest-id', 'fail');
+                        log('❌ Manifest missing App ID field');
+                    }
+                    
+                    // Test Manifest Icons
+                    if (manifest.icons && manifest.icons.length > 0) {
+                        setStatus('manifest-icons', 'pass');
+                        log(`✅ Manifest has ${manifest.icons.length} icons`);
+                        
+                        // Check for required icon sizes
+                        const iconSizes = manifest.icons.map(icon => icon.sizes);
+                        const hasRequiredSizes = iconSizes.some(size => size.includes('192x192')) && 
+                                                iconSizes.some(size => size.includes('512x512'));
+                        
+                        if (hasRequiredSizes) {
+                            log('   ✅ Required icon sizes (192x192, 512x512) present');
+                        } else {
+                            log('   ⚠️ Missing recommended icon sizes (192x192, 512x512)');
+                        }
+                        
+                        // Check for maskable icons
+                        const hasMaskable = manifest.icons.some(icon => 
+                            icon.purpose && icon.purpose.includes('maskable')
+                        );
+                        if (hasMaskable) {
+                            log('   ✅ Maskable icons present');
+                        } else {
+                            log('   ⚠️ No maskable icons found');
+                        }
+                    } else {
+                        setStatus('manifest-icons', 'fail');
+                        log('❌ Manifest missing icons field or has no icons');
+                    }
+                    
+                    // Test IARC Rating ID
+                    if (manifest.iarc_rating_id !== undefined && manifest.iarc_rating_id !== '') {
+                        setStatus('manifest-iarc', 'pass');
+                        log(`✅ Manifest has IARC Rating ID: ${manifest.iarc_rating_id}`);
+                    } else {
+                        setStatus('manifest-iarc', 'fail');
+                        log('❌ Manifest missing or empty iarc_rating_id field');
+                    }
+                    
+                    // Test Scope Extensions
+                    if (manifest.scope_extensions && manifest.scope_extensions.length > 0) {
+                        setStatus('manifest-scope', 'pass');
+                        log(`✅ Manifest has ${manifest.scope_extensions.length} scope extensions`);
+                        manifest.scope_extensions.forEach((ext, index) => {
+                            log(`   Extension ${index + 1}: ${ext.origin || 'No origin specified'}`);
+                        });
+                    } else {
+                        setStatus('manifest-scope', 'fail');
+                        log('❌ Manifest missing scope_extensions field');
+                    }
+                    
                 } else {
                     setStatus('manifest', 'fail');
+                    setStatus('manifest-id', 'fail');
+                    setStatus('manifest-icons', 'fail');
+                    setStatus('manifest-iarc', 'fail');
+                    setStatus('manifest-scope', 'fail');
                     log('❌ Manifest file not accessible');
                 }
             } catch (error) {
                 setStatus('manifest', 'fail');
+                setStatus('manifest-id', 'fail');
+                setStatus('manifest-icons', 'fail');
+                setStatus('manifest-iarc', 'fail');
+                setStatus('manifest-scope', 'fail');
                 log(`❌ Manifest error: ${error.message}`);
             }
             

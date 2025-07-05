@@ -1,4 +1,5 @@
 {
+  "id": "/tank-adventure/",
   "name": "Tank Adventure",
   "short_name": "Tank Adventure",
   "description": "A 2D tank battle game with wave-based combat and skill progression. Command your tank formation and survive endless waves of enemies!",
@@ -8,6 +9,11 @@
   "theme_color": "#4a90e2",
   "orientation": "landscape-primary",
   "scope": "/tank-adventure/",
+  "scope_extensions": [
+    {
+      "origin": "https://hoanganh25991.github.io"
+    }
+  ],
   "lang": "en",
   "dir": "ltr",
   "prefer_related_applications": false,
@@ -32,17 +38,20 @@
     {
       "src": "assets/favicon/favicon-16x16.png",
       "sizes": "16x16",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/favicon/favicon-32x32.png",
       "sizes": "32x32",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/favicon/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
     },
     {
       "src": "assets/favicon/apple-touch-icon.png",
@@ -54,13 +63,25 @@
       "src": "assets/favicon/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/favicon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "assets/favicon/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/favicon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -92,7 +113,7 @@
     }
   ],
   "related_applications": [],
-  "iarc_rating_id": "",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "edge_side_panel": {
     "preferred_width": 400
   },
