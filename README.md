@@ -150,7 +150,11 @@ Open browser console and use:
 - `debugGame()` - Toggle debug mode
 - `resetGame()` - Reset all progress
 
-## Credits
+## Sentry - Error Log Tracking
+
+[**Issues Page**](https://sereneai.sentry.io/issues/6728315935/?project=4509615414640640)
+
+[**Insights Page**](https://sereneai.sentry.io/issues/6728315935/?project=4509615414640640)
 
 Developed as a complete mobile tank battle game implementing modern game development patterns and mobile-first design principles.
 

@@ -176,6 +176,7 @@ class GameUI {
             waveText: document.getElementById('waveText'),
             enemiesLeft: document.getElementById('enemiesLeft'),
             scoreText: document.getElementById('scoreText'),
+            pauseBtn: document.getElementById('pauseBtn'),
             
             // Mobile Controls
             joystickBase: document.getElementById('joystickBase'),
@@ -239,11 +240,17 @@ class GameUI {
             confirmTitle: document.getElementById('confirmTitle'),
             confirmMessage: document.getElementById('confirmMessage'),
             confirmBullets: document.getElementById('confirmBullets'),
-            confirmWarning: document.getElementById('confirmWarning')
+            confirmWarning: document.getElementById('confirmWarning'),
+            
+            // Pause Modal
+            pauseModal: document.getElementById('pauseModal'),
+            resumeBtn: document.getElementById('resumeBtn'),
+            exitBattleBtn: document.getElementById('exitBattleBtn')
         };
         
         // Debug: Check if critical elements exist
         console.log('Settings button found:', elements.settingsBtn ? 'YES' : 'NO');
+        console.log('Pause button found:', elements.pauseBtn ? 'YES' : 'NO');
         console.log('Settings screen found:', elements.screens.settingsScreen ? 'YES' : 'NO');
         
         return elements;
@@ -289,7 +296,15 @@ class GameUI {
         
         this.setupMobileButton(this.elements.settingsBtn, () => {
             console.log('Settings button callback triggered');
-            this.showScreen('settingsScreen');
+            
+            // If we're in battle, pause the game
+            if (this.gameEngine.currentScene === 'battle') {
+                console.log('Pausing game from settings button');
+                this.gameEngine.pauseGame();
+            } else {
+                // Otherwise show settings screen
+                this.showScreen('settingsScreen');
+            }
         });
         
         // Emergency fallback for settings button - direct event listeners
@@ -298,7 +313,15 @@ class GameUI {
                 console.log('Emergency settings button handler triggered');
                 e.preventDefault();
                 e.stopPropagation();
-                this.showScreen('settingsScreen');
+                
+                // If we're in battle, pause the game
+                if (this.gameEngine.currentScene === 'battle') {
+                    console.log('Emergency pause game from settings button');
+                    this.gameEngine.pauseGame();
+                } else {
+                    // Otherwise show settings screen
+                    this.showScreen('settingsScreen');
+                }
             };
             
             // Add multiple event types to ensure it works
@@ -307,6 +330,14 @@ class GameUI {
             this.elements.settingsBtn.addEventListener('pointerdown', emergencyClickHandler, { passive: false });
             
             console.log('Emergency settings button handlers added');
+        }
+        
+        // Pause button (the gear icon in HUD)
+        if (this.elements.pauseBtn) {
+            this.setupMobileButton(this.elements.pauseBtn, () => {
+                console.log('Pause button clicked');
+                this.gameEngine.pauseGame();
+            });
         }
         
         // Fullscreen button
@@ -369,6 +400,25 @@ class GameUI {
         
         // Setup battle type modal event listeners
         this.setupBattleTypeModal();
+        
+        // Setup pause modal event listeners
+        this.setupPauseModal();
+    }
+
+    setupPauseModal() {
+        // Resume button
+        if (this.elements.resumeBtn) {
+            this.setupMobileButton(this.elements.resumeBtn, () => {
+                this.gameEngine.resumeGame();
+            });
+        }
+        
+        // Exit to menu button
+        if (this.elements.exitBattleBtn) {
+            this.setupMobileButton(this.elements.exitBattleBtn, () => {
+                this.gameEngine.exitToMenu();
+            });
+        }
     }
 
     setupBattleTypeModal() {
@@ -1176,6 +1226,20 @@ class GameUI {
         }, { passive: false, capture: true });
         
         console.log('Mobile button setup complete for:', button.id);
+    }
+
+    showPauseModal() {
+        console.log('Showing pause modal');
+        if (this.elements.pauseModal) {
+            this.elements.pauseModal.style.display = 'flex';
+        }
+    }
+
+    hidePauseModal() {
+        console.log('Hiding pause modal');
+        if (this.elements.pauseModal) {
+            this.elements.pauseModal.style.display = 'none';
+        }
     }
 
     destroy() {
