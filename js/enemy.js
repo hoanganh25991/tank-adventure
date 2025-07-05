@@ -89,7 +89,7 @@ class Enemy {
                 this.size = 22;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(800 - wave * 15, 400);
-                this.range = 130;
+                this.range = 195;
                 this.color = '#ff4444'; // Deep red
                 this.secondaryColor = '#aa2222'; // Darker red
                 this.value = Math.floor(15 * valueScaling);
@@ -105,7 +105,7 @@ class Enemy {
                 this.size = 35;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(1200 - wave * 25, 600);
-                this.range = 160;
+                this.range = 240;
                 this.color = '#8B4513'; // Brown/bronze
                 this.secondaryColor = '#654321';
                 this.value = Math.floor(40 * valueScaling);
@@ -126,7 +126,7 @@ class Enemy {
                 this.size = 18;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(400 - wave * 10, 200);
-                this.range = 110;
+                this.range = 165;
                 this.color = '#FF6600'; // Orange
                 this.secondaryColor = '#CC4400';
                 this.value = Math.floor(25 * valueScaling);
@@ -142,7 +142,7 @@ class Enemy {
                 this.size = 20;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(1800 - wave * 30, 900);
-                this.range = 250;
+                this.range = 375;
                 this.color = '#9966FF'; // Purple
                 this.secondaryColor = '#6633CC';
                 this.value = Math.floor(35 * valueScaling);
@@ -159,7 +159,7 @@ class Enemy {
                 this.size = 28;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(1000 - wave * 20, 500);
-                this.range = 180;
+                this.range = 270;
                 this.color = '#00FFFF'; // Cyan
                 this.secondaryColor = '#0099CC';
                 this.value = Math.floor(50 * valueScaling);
@@ -181,7 +181,7 @@ class Enemy {
                 this.size = 24;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(600 - wave * 15, 300);
-                this.range = 120;
+                this.range = 180;
                 this.color = '#FF0066'; // Hot pink/red
                 this.secondaryColor = '#CC0044';
                 this.value = Math.floor(45 * valueScaling);
@@ -199,7 +199,7 @@ class Enemy {
                 this.size = 26;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(1400 - wave * 25, 700);
-                this.range = 200;
+                this.range = 300;
                 this.color = '#00FF00'; // Green
                 this.secondaryColor = '#00AA00';
                 this.value = Math.floor(60 * valueScaling);
@@ -219,7 +219,7 @@ class Enemy {
                 this.size = 50;
                 this.shootCooldown = 0;
                 this.maxShootCooldown = Math.max(600 - wave * 15, 300);
-                this.range = 200;
+                this.range = 300;
                 this.color = '#FF1493'; // Deep pink/magenta
                 this.secondaryColor = '#CC0066';
                 this.value = Math.floor(200 * valueScaling);
