@@ -1200,14 +1200,24 @@ button {
 
 /* Orientation Screen */
 #orientationScreen {
-    /* Use consistent background */
+    /* Use consistent background with blur backdrop */
     background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
+    /* Ensure orientation screen is above everything else */
+    z-index: 2000 !important;
+    /* Add backdrop blur to prevent interaction with elements below */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    /* Ensure it captures all pointer events */
+    pointer-events: all;
 }
 
 .orientation-content {
     text-align: center;
-    padding: 1rem;
+    padding: 2rem 1rem;
     max-width: 400px;
+    /* Ensure content is centered and visible */
+    position: relative;
+    z-index: 2001;
 }
 
 .orientation-content h2 {
@@ -1240,6 +1250,61 @@ button {
     color: var(--text-primary);
     font-size: 16px;
     margin: 0;
+}
+
+/* Mobile-specific orientation screen styling */
+@media (max-width: 768px) and (orientation: portrait) {
+    #orientationScreen {
+        /* Force full screen coverage on mobile portrait */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        /* Ensure maximum z-index */
+        z-index: 9999 !important;
+        /* Stronger background to ensure visibility */
+        background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid)) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+    }
+    
+    .orientation-content {
+        padding: 3rem 1.5rem;
+        max-width: 90%;
+        animation: orientationPulse 2s infinite ease-in-out;
+    }
+    
+    .orientation-content h2 {
+        font-size: 28px;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .orientation-content p {
+        font-size: 16px;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .orientation-icon {
+        margin-bottom: 2rem;
+        transform: scale(1.2);
+    }
+    
+    .orientation-tip {
+        padding: 20px;
+        font-size: 16px;
+        border-left: 5px solid var(--primary-blue);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+}
+
+/* Subtle animation for orientation screen */
+@keyframes orientationPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
 }
 
 /* Essential Mobile Optimizations - Minimal media queries */

@@ -621,6 +621,10 @@
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
+                if (window.location.protocol == "http:") {
+                    console.log("Ignore service-worker on http.")
+                    return;
+                }
                 try {
                     const registration = await navigator.serviceWorker.register('/tank-adventure/sw.js', {
                         scope: '/tank-adventure/'
