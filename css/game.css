@@ -276,24 +276,28 @@ button {
 }
 
 .action-btn {
-    padding: 12px 16px;
+    padding: 8px 12px;
     border: none;
     border-radius: 8px;
     font-family: 'Comfortaa', 'Arial', sans-serif;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     min-width: 70px;
-    /* Make all buttons equal width */
-    width: 80px;
+    /* Make buttons wider for better text display */
+    width: 90px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
+    /* Improve text wrapping for longer skill names */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Special styling for the main menu buttons */
@@ -331,6 +335,35 @@ button {
 .action-btn.skill {
     background: linear-gradient(45deg, var(--primary-blue), var(--accent-blue));
     color: var(--text-primary);
+    /* Further optimization for skill buttons */
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    /* More compact layout for skill buttons */
+    padding: 6px 8px;
+    width: 85px;
+    line-height: 1;
+    /* Enhanced visual feedback */
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.action-btn.skill:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(74, 158, 255, 0.4);
+    border-color: var(--accent-blue);
+}
+
+.action-btn.skill:disabled {
+    background: linear-gradient(45deg, #444444, #666666);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.action-btn.skill.btn-pulse {
+    border-color: var(--color-success);
+    box-shadow: 0 0 15px rgba(68, 255, 68, 0.5);
 }
 
 .action-btn:disabled {

@@ -4,7 +4,8 @@
   "short_name": "Tank Adventure",
   "description": "A 2D tank battle game with wave-based combat and skill progression. Command your tank formation and survive endless waves of enemies!",
   "start_url": "/tank-adventure/",
-  "display": "standalone",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "background_color": "#1a1a1a",
   "theme_color": "#4a90e2",
   "orientation": "landscape-primary",
@@ -120,6 +121,7 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
+  "display_mode": "fullscreen",
   "handle_links": "preferred",
   "protocol_handlers": [],
   "file_handlers": []

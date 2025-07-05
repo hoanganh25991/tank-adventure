@@ -659,7 +659,8 @@ class GameUI {
         skillButtons.forEach((btn, index) => {
             const skill = skillInfo.active[index];
             if (skill) {
-                btn.textContent = `${skill.emoji || '⚡'} ${skill.name || 'NO NAME'}`;
+                // Use shortName for better button display
+                btn.textContent = `${skill.emoji || '⚡'} ${skill.shortName || skill.name || 'NO NAME'}`;
                 btn.disabled = !skill.isReady;
                 btn.style.opacity = skill.isReady ? '1' : '0.5';
                 

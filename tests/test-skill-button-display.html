@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Button Display Test</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-section);
+            border-radius: 10px;
+            border: 1px solid var(--border-primary);
+        }
+        
+        .test-title {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .skill-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .comparison-table th {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        .old-style {
+            background: var(--color-warning);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 80px;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .new-style {
+            background: linear-gradient(45deg, var(--primary-blue), var(--accent-blue));
+            color: var(--text-primary);
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            width: 85px;
+            text-align: center;
+            display: inline-block;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h2 class="test-title">🎯 Enhanced Skill Button Display Test</h2>
+        <p>Testing the new short names for skill buttons to prevent text overflow.</p>
+    </div>
+
+    <div class="test-section">
+        <h3 class="test-title">Before vs After Comparison</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Skill</th>
+                    <th>Full Name (Before)</th>
+                    <th>Short Name (After)</th>
+                    <th>Visual Comparison</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>🔧 Repair</td>
+                    <td>Emergency Repair</td>
+                    <td>REPAIR</td>
+                    <td>
+                        <div class="old-style">🔧 Emergency Repair</div>
+                        <div class="new-style">🔧 REPAIR</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>💥 Power</td>
+                    <td>Combat Overdrive</td>
+                    <td>POWER</td>
+                    <td>
+                        <div class="old-style">💥 Combat Overdrive</div>
+                        <div class="new-style">💥 POWER</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>🚀 Speed</td>
+                    <td>Nitro Boost</td>
+                    <td>SPEED</td>
+                    <td>
+                        <div class="old-style">🚀 Nitro Boost</div>
+                        <div class="new-style">🚀 SPEED</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>🛡️ Shield</td>
+                    <td>Energy Shield</td>
+                    <td>SHIELD</td>
+                    <td>
+                        <div class="old-style">🛡️ Energy Shield</div>
+                        <div class="new-style">🛡️ SHIELD</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>💣 Boom</td>
+                    <td>Explosive Rounds</td>
+                    <td>BOOM</td>
+                    <td>
+                        <div class="old-style">💣 Explosive Rounds</div>
+                        <div class="new-style">💣 BOOM</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>🔫 Multi</td>
+                    <td>Multi-Cannon</td>
+                    <td>MULTI</td>
+                    <td>
+                        <div class="old-style">🔫 Multi-Cannon</div>
+                        <div class="new-style">🔫 MULTI</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>⏰ Slow</td>
+                    <td>Temporal Field</td>
+                    <td>SLOW</td>
+                    <td>
+                        <div class="old-style">⏰ Temporal Field</div>
+                        <div class="new-style">⏰ SLOW</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>🔄 Regen</td>
+                    <td>Auto-Repair System</td>
+                    <td>REGEN</td>
+                    <td>
+                        <div class="old-style">🔄 Auto-Repair System</div>
+                        <div class="new-style">🔄 REGEN</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h3 class="test-title">Skill Button Examples</h3>
+        <p>Examples of how the new skill buttons will look in the game:</p>
+        
+        <div class="button-container">
+            <button class="action-btn skill" id="skillBtn1">🔧 REPAIR</button>
+            <button class="action-btn skill" id="skillBtn2">💥 POWER</button>
+            <button class="action-btn skill" id="skillBtn3">🚀 SPEED</button>
+        </div>
+        
+        <div class="skill-info">
+            <strong>Button States:</strong>
+            <ul>
+                <li>Ready: Full opacity, clickable</li>
+                <li>Cooldown: 50% opacity, disabled</li>
+                <li>Active: Pulsing animation</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3 class="test-title">Interactive Test</h3>
+        <p>Click buttons to test different states:</p>
+        
+        <div class="button-container">
+            <button class="action-btn skill" onclick="toggleCooldown(this)">🛡️ SHIELD</button>
+            <button class="action-btn skill btn-pulse" onclick="togglePulse(this)">💣 BOOM</button>
+            <button class="action-btn skill" onclick="toggleActive(this)" disabled>⏰ SLOW</button>
+        </div>
+        
+        <div class="skill-info">
+            <p>Try clicking the buttons to see different states in action!</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleCooldown(btn) {
+            if (btn.disabled) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.textContent = btn.textContent.replace('(Ready)', '');
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.textContent += ' (Cooldown)';
+            }
+        }
+
+        function togglePulse(btn) {
+            if (btn.classList.contains('btn-pulse')) {
+                btn.classList.remove('btn-pulse');
+                btn.textContent = btn.textContent.replace('(Active)', '');
+            } else {
+                btn.classList.add('btn-pulse');
+                btn.textContent += ' (Active)';
+            }
+        }
+
+        function toggleActive(btn) {
+            if (btn.disabled) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.classList.add('btn-pulse');
+                btn.textContent = btn.textContent.replace('(Cooldown)', '(Active)');
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.classList.remove('btn-pulse');
+                btn.textContent = btn.textContent.replace('(Active)', '(Cooldown)');
+            }
+        }
+
+        // Add some interactive feedback
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('mousedown', function() {
+                if (!this.disabled) {
+                    this.style.transform = 'scale(0.95)';
+                }
+            });
+            
+            btn.addEventListener('mouseup', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
