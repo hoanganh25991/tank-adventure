@@ -189,55 +189,75 @@ class Skill {
     }
 
     applyFormationExpand(player) {
+        console.log('Applying formation expand skill...');
+        
         // Add a new mini tank to the formation if under the limit
-        if (player.miniTanks.length < 8) {
-            try {
-                const mainTank = player.mainTank;
-                const existingCount = player.miniTanks.length;
+        if (player.miniTanks.length >= 8) {
+            console.log('Formation already at maximum capacity (8 mini tanks)');
+            return;
+        }
+        
+        try {
+            const mainTank = player.mainTank;
+            if (!mainTank) {
+                console.error('No main tank found');
+                return;
+            }
+            
+            const existingCount = player.miniTanks.length;
+            console.log(`Current mini tanks: ${existingCount}, adding one more`);
+            
+            // Calculate position for new mini tank
+            const angle = (existingCount * Math.PI * 2) / Math.max(8, existingCount + 1);
+            const distance = 80;
+            const x = mainTank.x + Math.cos(angle) * distance;
+            const y = mainTank.y + Math.sin(angle) * distance;
+            
+            // Check if Tank class is available
+            if (typeof Tank === 'undefined') {
+                console.error('Tank class is not available. Cannot create new mini tank.');
+                return;
+            }
+            
+            console.log(`Creating new mini tank at position (${x}, ${y})`);
+            const newMiniTank = new Tank(x, y, 'mini');
+            
+            // Apply any existing passive upgrades to the new mini tank
+            // This should be handled by the upgrade system if it exists
+            if (window.gameEngine && window.gameEngine.upgradeManager) {
+                const upgrades = window.gameEngine.upgradeManager.upgrades;
                 
-                // Calculate position for new mini tank
-                const angle = (existingCount * Math.PI * 2) / Math.max(8, existingCount + 1);
-                const distance = 80;
-                const x = mainTank.x + Math.cos(angle) * distance;
-                const y = mainTank.y + Math.sin(angle) * distance;
-                
-                // Check if Tank class is available
-                if (typeof Tank === 'undefined') {
-                    console.error('Tank class is not available. Cannot create new mini tank.');
-                    return;
+                // Apply mini tank health upgrades
+                if (upgrades.miniHealth && upgrades.miniHealth.level > 0) {
+                    const healthBonus = upgrades.miniHealth.getCurrentValue() - upgrades.miniHealth.baseValue;
+                    newMiniTank.maxHealth += healthBonus;
+                    newMiniTank.health = newMiniTank.maxHealth;
+                    console.log(`Applied health upgrade: +${healthBonus}`);
                 }
                 
-                const newMiniTank = new Tank(x, y, 'mini');
-                
-                // Apply any existing passive upgrades to the new mini tank
-                // This should be handled by the upgrade system if it exists
-                if (window.gameEngine && window.gameEngine.upgradeManager) {
-                    const upgrades = window.gameEngine.upgradeManager.upgrades;
-                    
-                    // Apply mini tank health upgrades
-                    if (upgrades.miniHealth && upgrades.miniHealth.level > 0) {
-                        const healthBonus = upgrades.miniHealth.getCurrentValue() - upgrades.miniHealth.baseValue;
-                        newMiniTank.maxHealth += healthBonus;
-                        newMiniTank.health = newMiniTank.maxHealth;
-                    }
-                    
-                    // Apply mini tank damage upgrades
-                    if (upgrades.miniDamage && upgrades.miniDamage.level > 0) {
-                        const damageBonus = upgrades.miniDamage.getCurrentValue() - upgrades.miniDamage.baseValue;
-                        newMiniTank.damage += damageBonus;
-                    }
-                    
-                    // Apply mini tank speed upgrades
-                    if (upgrades.miniSpeed && upgrades.miniSpeed.level > 0) {
-                        const speedBonus = upgrades.miniSpeed.getCurrentValue() - upgrades.miniSpeed.baseValue;
-                        newMiniTank.speed += speedBonus;
-                    }
+                // Apply mini tank damage upgrades
+                if (upgrades.miniDamage && upgrades.miniDamage.level > 0) {
+                    const damageBonus = upgrades.miniDamage.getCurrentValue() - upgrades.miniDamage.baseValue;
+                    newMiniTank.damage += damageBonus;
+                    console.log(`Applied damage upgrade: +${damageBonus}`);
                 }
                 
-                player.miniTanks.push(newMiniTank);
-                console.log(`Added mini tank! Formation now has ${player.miniTanks.length} mini tanks.`);
-            } catch (error) {
-                console.error('Error adding mini tank:', error);
+                // Apply mini tank speed upgrades
+                if (upgrades.miniSpeed && upgrades.miniSpeed.level > 0) {
+                    const speedBonus = upgrades.miniSpeed.getCurrentValue() - upgrades.miniSpeed.baseValue;
+                    newMiniTank.speed += speedBonus;
+                    console.log(`Applied speed upgrade: +${speedBonus}`);
+                }
+            }
+            
+            player.miniTanks.push(newMiniTank);
+            console.log(`Successfully added mini tank! Formation now has ${player.miniTanks.length} mini tanks.`);
+            
+        } catch (error) {
+            console.error('Error adding mini tank:', error);
+            // Report error to Sentry if available
+            if (window.Sentry) {
+                window.Sentry.captureException(error);
             }
         }
     }
@@ -384,51 +404,73 @@ class SkillManager {
     }
 
     addSkill(skillId) {
-        const skillTemplate = this.availableSkills.find(s => s.id === skillId);
-        if (!skillTemplate) {
-            console.error(`Skill template not found for ID: ${skillId}`);
-            return false;
-        }
+        console.log(`Adding skill: ${skillId}`);
         
-        // Check if skill already exists (for upgrading)
-        const existingSkill = this.findSkill(skillId);
-        if (existingSkill) {
-            console.log(`Upgrading existing skill: ${skillId}`);
-            return existingSkill.upgrade();
-        }
-        
-        // Create a copy of the skill
-        const newSkill = new Skill(
-            skillTemplate.id,
-            skillTemplate.name,
-            skillTemplate.description,
-            skillTemplate.type,
-            skillTemplate.effect,
-            skillTemplate.duration,
-            skillTemplate.cooldown,
-            skillTemplate.emoji
-        );
-        
-        if (newSkill.type === 'active') {
-            // Add to active skills if there's a slot
-            if (this.activeSkills.length < 3) {
-                this.activeSkills.push(newSkill);
-                this.skillSlots[this.activeSkills.length - 1] = newSkill;
+        try {
+            const skillTemplate = this.availableSkills.find(s => s.id === skillId);
+            if (!skillTemplate) {
+                console.error(`Skill template not found for ID: ${skillId}`);
+                return false;
+            }
+            
+            console.log(`Found skill template: ${skillTemplate.name} (${skillTemplate.type})`);
+            
+            // Check if skill already exists (for upgrading)
+            const existingSkill = this.findSkill(skillId);
+            if (existingSkill) {
+                console.log(`Upgrading existing skill: ${skillId}`);
+                return existingSkill.upgrade();
+            }
+            
+            // Create a copy of the skill
+            const newSkill = new Skill(
+                skillTemplate.id,
+                skillTemplate.name,
+                skillTemplate.description,
+                skillTemplate.type,
+                skillTemplate.effect,
+                skillTemplate.duration,
+                skillTemplate.cooldown,
+                skillTemplate.emoji
+            );
+            
+            console.log(`Created new skill instance: ${newSkill.name}`);
+            
+            if (newSkill.type === 'active') {
+                // Add to active skills if there's a slot
+                if (this.activeSkills.length < 3) {
+                    this.activeSkills.push(newSkill);
+                    this.skillSlots[this.activeSkills.length - 1] = newSkill;
+                    console.log(`Added active skill to slot ${this.activeSkills.length - 1}`);
+                    return true;
+                }
+            } else {
+                // Add passive skill and apply immediately
+                this.passiveSkills.push(newSkill);
+                console.log(`Added passive skill to collection`);
+                
+                // Apply passive effect immediately
+                if (window.gameEngine && window.gameEngine.player) {
+                    console.log(`Applying passive skill effect for: ${skillId}`);
+                    newSkill.applyEffect(window.gameEngine.player, window.gameEngine.enemies);
+                    console.log(`Successfully applied passive skill effect`);
+                } else {
+                    console.warn('Game engine or player not available for passive skill application');
+                }
+                
                 return true;
             }
-        } else {
-            // Add passive skill and apply immediately
-            this.passiveSkills.push(newSkill);
             
-            // Apply passive effect immediately
-            if (window.gameEngine && window.gameEngine.player) {
-                newSkill.applyEffect(window.gameEngine.player, window.gameEngine.enemies);
+            return false;
+            
+        } catch (error) {
+            console.error('Error in addSkill:', error);
+            // Report error to Sentry if available
+            if (window.Sentry) {
+                window.Sentry.captureException(error);
             }
-            
-            return true;
+            return false;
         }
-        
-        return false;
     }
 
     removeSkill(skillId) {

@@ -2158,19 +2158,35 @@ class GameEngine {
         
         console.log('Regenerating health for all tanks to 100%');
         
-        // Regenerate main tank health to 100%
-        this.player.mainTank.health = this.player.mainTank.maxHealth;
-        this.player.mainTank.isAlive = true;
-        
-        // Regenerate all mini tanks health to 100%
-        for (const miniTank of this.player.miniTanks) {
-            miniTank.health = miniTank.maxHealth;
-            miniTank.isAlive = true;
-        }
-        
-        // Show a visual notification to the player
-        if (this.ui) {
-            this.ui.showNotification('💚 All Tanks Fully Healed!', 'success');
+        try {
+            // Regenerate main tank health to 100%
+            if (this.player.mainTank) {
+                this.player.mainTank.health = this.player.mainTank.maxHealth;
+                this.player.mainTank.isAlive = true;
+            }
+            
+            // Regenerate all mini tanks health to 100%
+            // Use a copy of the array to avoid issues if the array is modified during iteration
+            const miniTanks = [...this.player.miniTanks];
+            for (const miniTank of miniTanks) {
+                if (miniTank) {
+                    miniTank.health = miniTank.maxHealth;
+                    miniTank.isAlive = true;
+                }
+            }
+            
+            console.log(`Regenerated health for ${miniTanks.length} mini tanks`);
+            
+            // Show a visual notification to the player
+            if (this.ui) {
+                this.ui.showNotification('💚 All Tanks Fully Healed!', 'success');
+            }
+        } catch (error) {
+            console.error('Error in regenerateAllTanksHealth:', error);
+            // Report error to Sentry if available
+            if (window.Sentry) {
+                window.Sentry.captureException(error);
+            }
         }
     }
 

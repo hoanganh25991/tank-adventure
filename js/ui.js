@@ -744,29 +744,58 @@ class GameUI {
     selectSkill(skillId) {
         // Prevent multiple selections
         if (this.gameEngine.currentScene !== 'skillSelection' || this.skillSelectionInProgress) {
+            console.log('Skill selection blocked - already in progress or wrong scene');
             return;
         }
         
         console.log('Skill selected:', skillId);
         this.skillSelectionInProgress = true;
         
-        // Enhanced visual feedback for mobile
-        document.querySelectorAll('.skill-option').forEach(option => {
-            option.style.pointerEvents = 'none';
-            option.style.opacity = '0.6';
-            option.style.transform = 'scale(0.95)';
-        });
-        
-        // Add selection animation
-        if (this.selectedSkillElement) {
-            this.selectedSkillElement.style.opacity = '1';
-            this.selectedSkillElement.style.transform = 'scale(1.05)';
-            this.selectedSkillElement.style.borderColor = '#00ff00';
-            this.selectedSkillElement.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+        try {
+            // Enhanced visual feedback for mobile
+            document.querySelectorAll('.skill-option').forEach(option => {
+                option.style.pointerEvents = 'none';
+                option.style.opacity = '0.6';
+                option.style.transform = 'scale(0.95)';
+            });
+            
+            // Add selection animation
+            if (this.selectedSkillElement) {
+                this.selectedSkillElement.style.opacity = '1';
+                this.selectedSkillElement.style.transform = 'scale(1.05)';
+                this.selectedSkillElement.style.borderColor = '#00ff00';
+                this.selectedSkillElement.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+            }
+            
+            console.log('About to add skill to skill manager...');
+            const addSkillResult = this.gameEngine.skillManager.addSkill(skillId);
+            
+            if (addSkillResult) {
+                console.log('Skill successfully added, resuming battle...');
+                
+                // Add a small delay to ensure any passive effects are fully applied
+                setTimeout(() => {
+                    this.gameEngine.resumeBattle();
+                }, 100);
+            } else {
+                console.error('Failed to add skill');
+                this.skillSelectionInProgress = false;
+                // Reset visual feedback
+                document.querySelectorAll('.skill-option').forEach(option => {
+                    option.style.pointerEvents = 'auto';
+                    option.style.opacity = '1';
+                    option.style.transform = 'scale(1)';
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error in selectSkill:', error);
+            this.skillSelectionInProgress = false;
+            // Report error to Sentry if available
+            if (window.Sentry) {
+                window.Sentry.captureException(error);
+            }
         }
-        
-        this.gameEngine.skillManager.addSkill(skillId);
-        this.gameEngine.resumeBattle();
     }
 
     showBattleResults(results) {
