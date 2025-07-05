@@ -530,6 +530,10 @@ button {
     background: rgba(74, 158, 255, 0.1);
     color: var(--primary-blue);
     transition: all 0.3s ease;
+    /* Ensure touch events work properly */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(74, 158, 255, 0.3);
+    cursor: pointer;
 }
 
 .language-btn:hover {
@@ -545,6 +549,17 @@ button {
 
 .language-btn.active:hover {
     background: var(--secondary-blue);
+}
+
+/* Touch-specific styles for mobile devices */
+.language-btn:active {
+    background: rgba(74, 158, 255, 0.3);
+    transform: translateY(0);
+}
+
+.language-btn.active:active {
+    background: var(--secondary-blue);
+    transform: translateY(0);
 }
 
 /* Additional touch support for settings button specifically */

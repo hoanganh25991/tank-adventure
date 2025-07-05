@@ -271,18 +271,54 @@ class GameUI {
         const vietnameseBtn = document.getElementById('vietnameseBtn');
         
         if (englishBtn) {
-            englishBtn.addEventListener('click', () => {
+            // Add comprehensive touch and click event listeners for mobile compatibility
+            const englishHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Reset visual feedback
+                englishBtn.style.transform = '';
                 this.localization.setLanguage('en');
                 this.updateLanguageButtons();
                 this.updateDynamicText();
+            };
+            
+            // Add all necessary event listeners
+            englishBtn.addEventListener('click', englishHandler);
+            englishBtn.addEventListener('touchend', englishHandler, { passive: false });
+            englishBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                // Add visual feedback for touch
+                englishBtn.style.transform = 'translateY(1px)';
+            }, { passive: false });
+            englishBtn.addEventListener('touchcancel', () => {
+                // Reset visual feedback
+                englishBtn.style.transform = '';
             });
         }
         
         if (vietnameseBtn) {
-            vietnameseBtn.addEventListener('click', () => {
+            // Add comprehensive touch and click event listeners for mobile compatibility
+            const vietnameseHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Reset visual feedback
+                vietnameseBtn.style.transform = '';
                 this.localization.setLanguage('vi');
                 this.updateLanguageButtons();
                 this.updateDynamicText();
+            };
+            
+            // Add all necessary event listeners
+            vietnameseBtn.addEventListener('click', vietnameseHandler);
+            vietnameseBtn.addEventListener('touchend', vietnameseHandler, { passive: false });
+            vietnameseBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                // Add visual feedback for touch
+                vietnameseBtn.style.transform = 'translateY(1px)';
+            }, { passive: false });
+            vietnameseBtn.addEventListener('touchcancel', () => {
+                // Reset visual feedback
+                vietnameseBtn.style.transform = '';
             });
         }
         
