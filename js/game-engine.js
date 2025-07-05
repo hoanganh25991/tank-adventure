@@ -16,6 +16,7 @@ class GameEngine {
         // Game state
         this.currentScene = 'menu'; // 'menu', 'battle', 'skillSelection', 'results', 'base'
         this.gameRunning = false;
+        this.gamePaused = false;
         this.lastTime = 0;
         this.deltaTime = 0;
         
@@ -211,7 +212,9 @@ class GameEngine {
     update(deltaTime) {
         switch (this.currentScene) {
             case 'battle':
-                this.updateBattle(deltaTime);
+                if (!this.gamePaused) {
+                    this.updateBattle(deltaTime);
+                }
                 break;
             case 'menu':
             case 'skillSelection':
@@ -221,9 +224,11 @@ class GameEngine {
                 break;
         }
         
-        // Update effects regardless of scene
-        this.updateEffects(deltaTime);
-        this.updateDamageNumbers(deltaTime);
+        // Update effects regardless of scene (only if not paused)
+        if (!this.gamePaused || this.currentScene !== 'battle') {
+            this.updateEffects(deltaTime);
+            this.updateDamageNumbers(deltaTime);
+        }
         
         // Handle input
         this.handleInput();
@@ -937,6 +942,69 @@ class GameEngine {
         this.waveManager.startWave(this.currentWave);
         
         this.ui.showScreen('battleScreen');
+    }
+
+    pauseGame() {
+        if (this.currentScene === 'battle') {
+            this.gamePaused = true;
+            console.log('Game paused');
+            
+            // Show pause modal
+            if (this.ui) {
+                this.ui.showPauseModal();
+            }
+        }
+    }
+
+    resumeGame() {
+        if (this.currentScene === 'battle') {
+            this.gamePaused = false;
+            console.log('Game resumed');
+            
+            // Hide pause modal
+            if (this.ui) {
+                this.ui.hidePauseModal();
+            }
+        }
+    }
+
+    exitToMenu() {
+        this.gamePaused = false;
+        this.currentScene = 'menu';
+        this.gameRunning = false;
+        
+        // Hide pause modal
+        if (this.ui) {
+            this.ui.hidePauseModal();
+            this.ui.showScreen('mainMenu');
+        }
+        
+        // Reset battle state
+        this.waveManager.endWave();
+        this.resetBattleState();
+        
+        console.log('Exited to main menu');
+    }
+
+    resetBattleState() {
+        this.currentWave = 1;
+        this.battleStats = {
+            enemiesDefeated: 0,
+            scoreEarned: 0,
+            expGained: 0
+        };
+        this.waveCompleted = false;
+        
+        // Clear any existing enemies
+        if (this.waveManager) {
+            this.waveManager.enemies = [];
+        }
+        
+        // Reset player position to center
+        if (this.player) {
+            this.player.x = 0;
+            this.player.y = 0;
+        }
     }
 
     render() {

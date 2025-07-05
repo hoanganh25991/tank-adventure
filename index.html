@@ -107,6 +107,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/game.css">
+
+    <!-- Sentry - Installation -->
+    <script src="https://js.sentry-cdn.com/1a40dc41bd2fd09765554e8de7e0264c.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="gameContainer">
@@ -128,6 +131,7 @@
                 <div id="scoreInfo">
                     <span id="scoreText">Score: 0</span>
                 </div>
+                <button id="pauseBtn" class="hud-btn">⚙️</button>
             </div>
             
             <!-- Mobile Controls -->
@@ -145,6 +149,17 @@
                     <button id="skill2Btn" class="action-btn skill" data-skill="2">SKILL 2</button>
                     <button id="skill3Btn" class="action-btn skill" data-skill="3">SKILL 3</button>
                     <button id="primaryShootBtn" class="action-btn primary">SHOOT</button>
+                </div>
+            </div>
+            
+            <!-- Pause Modal -->
+            <div id="pauseModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <h2>Game Paused</h2>
+                    <div class="modal-buttons">
+                        <button id="resumeBtn" class="menu-btn">▶️ Resume</button>
+                        <button id="exitBattleBtn" class="menu-btn">🏠 Exit to Menu</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -574,7 +589,10 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Sentry - Error Log Tracking -->
+    <script>Sentry.onLoad(function() {Sentry.init({});});</script>
+
     <!-- Scripts -->
     <script src="js/orientation.js"></script>
     <script src="js/utils.js"></script>
@@ -611,6 +629,10 @@
                     });
                     
                 } catch (error) {
+                    if (window.location.hostname == "localhost") {
+                        console.log("Ignore subpath 'tank-adventure' on localhost")
+                        return;
+                    }
                     console.error('Service Worker registration failed:', error);
                 }
             });

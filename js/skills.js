@@ -93,6 +93,9 @@ class Skill {
             case 'auto_repair':
                 this.applyAutoRepair(player);
                 break;
+            case 'formation_expand':
+                this.applyFormationExpand(player);
+                break;
         }
     }
 
@@ -185,6 +188,60 @@ class Skill {
         // Continuous effect handled in applyContinuousEffect
     }
 
+    applyFormationExpand(player) {
+        // Add a new mini tank to the formation if under the limit
+        if (player.miniTanks.length < 8) {
+            try {
+                const mainTank = player.mainTank;
+                const existingCount = player.miniTanks.length;
+                
+                // Calculate position for new mini tank
+                const angle = (existingCount * Math.PI * 2) / Math.max(8, existingCount + 1);
+                const distance = 80;
+                const x = mainTank.x + Math.cos(angle) * distance;
+                const y = mainTank.y + Math.sin(angle) * distance;
+                
+                // Check if Tank class is available
+                if (typeof Tank === 'undefined') {
+                    console.error('Tank class is not available. Cannot create new mini tank.');
+                    return;
+                }
+                
+                const newMiniTank = new Tank(x, y, 'mini');
+                
+                // Apply any existing passive upgrades to the new mini tank
+                // This should be handled by the upgrade system if it exists
+                if (window.gameEngine && window.gameEngine.upgradeManager) {
+                    const upgrades = window.gameEngine.upgradeManager.upgrades;
+                    
+                    // Apply mini tank health upgrades
+                    if (upgrades.miniHealth && upgrades.miniHealth.level > 0) {
+                        const healthBonus = upgrades.miniHealth.getCurrentValue() - upgrades.miniHealth.baseValue;
+                        newMiniTank.maxHealth += healthBonus;
+                        newMiniTank.health = newMiniTank.maxHealth;
+                    }
+                    
+                    // Apply mini tank damage upgrades
+                    if (upgrades.miniDamage && upgrades.miniDamage.level > 0) {
+                        const damageBonus = upgrades.miniDamage.getCurrentValue() - upgrades.miniDamage.baseValue;
+                        newMiniTank.damage += damageBonus;
+                    }
+                    
+                    // Apply mini tank speed upgrades
+                    if (upgrades.miniSpeed && upgrades.miniSpeed.level > 0) {
+                        const speedBonus = upgrades.miniSpeed.getCurrentValue() - upgrades.miniSpeed.baseValue;
+                        newMiniTank.speed += speedBonus;
+                    }
+                }
+                
+                player.miniTanks.push(newMiniTank);
+                console.log(`Added mini tank! Formation now has ${player.miniTanks.length} mini tanks.`);
+            } catch (error) {
+                console.error('Error adding mini tank:', error);
+            }
+        }
+    }
+
     upgrade() {
         if (this.level < this.maxLevel) {
             this.level++;
@@ -261,6 +318,10 @@ class SkillManager {
             
             new Skill('targeting_system', 'Advanced Targeting', 'Increases bullet speed and accuracy', 'passive',
                 { type: 'accuracy_boost', value: 1.5 }, 0, 0, '🎯'),
+            
+            // Formation Skills
+            new Skill('formation_expand', 'Formation Expansion', 'Add +1 mini tank to formation', 'passive',
+                { type: 'formation_expand', value: 1 }, 0, 0, '🚗'),
         ];
     }
 
@@ -358,6 +419,12 @@ class SkillManager {
         } else {
             // Add passive skill and apply immediately
             this.passiveSkills.push(newSkill);
+            
+            // Apply passive effect immediately
+            if (window.gameEngine && window.gameEngine.player) {
+                newSkill.applyEffect(window.gameEngine.player, window.gameEngine.enemies);
+            }
+            
             return true;
         }
         
