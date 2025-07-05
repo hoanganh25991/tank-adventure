@@ -164,7 +164,7 @@ Open browser console and use:
 
 [**Issues Page**](https://sereneai.sentry.io/issues/6728315935/?project=4509615414640640)
 
-[**Insights Page**](https://sereneai.sentry.io/issues/6728315935/?project=4509615414640640)
+[**Insights Page**](https://sereneai.sentry.io/insights/projects/tank-adventure/?project=4509615414640640)
 
 Developed as a complete mobile tank battle game implementing modern game development patterns and mobile-first design principles.
 
