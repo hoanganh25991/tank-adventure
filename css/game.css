@@ -376,13 +376,6 @@ button {
 .reset-btn {
     background: linear-gradient(45deg, #dc2626, #ef4444) !important;
     color: white !important;
-    border: 2px solid #991b1b;
-}
-
-.reset-btn:hover {
-    background: linear-gradient(45deg, #b91c1c, #dc2626) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
 }
 
 .reset-btn:active {
@@ -717,7 +710,7 @@ button {
 }
 
 #baseScreen h2 {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 32px;
     font-weight: 600;
@@ -1047,7 +1040,7 @@ button {
     background: var(--bg-section);
     border-radius: 12px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     border-left: 4px solid var(--primary-blue);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
