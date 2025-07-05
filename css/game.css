@@ -1522,6 +1522,9 @@ button {
 }
 
 .modal-close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0rem;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
@@ -1540,6 +1543,7 @@ button {
     line-height: 1;
     padding: 0;
     margin: 0;
+    z-index: 1001;
 }
 
 .modal-close-btn:hover,
@@ -1574,18 +1578,6 @@ button {
     }
 }
 
-/* Direct class for iPhone 14 Pro Max landscape mode */
-.iphone14-landscape .modal-content {
-    padding: 10px;
-    max-height: 380px;
-    transform: scale(0.95);
-    transform-origin: center;
-}
-
-.iphone14-landscape .modal-header h2 {
-    font-size: 18px;
-}
-
 /* Custom Confirm Dialog Styles */
 .confirm-dialog {
     border: 3px solid var(--danger-color, #ff4d4d);
@@ -1611,7 +1603,7 @@ button {
 .confirm-dialog .modal-close-btn {
     position: absolute;
     top: 1rem;
-    right: 0px;
+    right: 0rem;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
@@ -1765,7 +1757,6 @@ button {
     background: linear-gradient(to bottom, #ff7e5f, #feb47b);
     color: #fff;
     font-weight: bold;
-    border: 2px solid #ff7e5f;
     padding: 12px 25px;
     font-size: 18px;
 }
