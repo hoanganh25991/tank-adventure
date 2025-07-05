@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Skill Button Localization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+        .skill-button {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background: linear-gradient(45deg, #4a9eff, #6bb6ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 90px;
+        }
+        .language-btn {
+            margin: 5px;
+            padding: 8px 16px;
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .language-btn.active {
+            background: #4a9eff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Skill Button Localization Test</h1>
+    
+    <div class="test-section">
+        <h2>Language Selection</h2>
+        <button class="language-btn" onclick="setLanguage('en')">English</button>
+        <button class="language-btn" onclick="setLanguage('vi')">Vietnamese</button>
+        <p>Current Language: <span id="currentLang">en</span></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Skill Short Names Test</h2>
+        <div id="skillButtons"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script src="../js/localization.js"></script>
+    <script src="../js/skills.js"></script>
+    <script>
+        // Test skill short name localization
+        function testSkillLocalization() {
+            const results = [];
+            const skillManager = new SkillManager();
+            
+            // Test a few key skills
+            const testSkills = ['heal', 'damage_boost', 'speed_boost', 'shield', 'explosive_shot'];
+            
+            testSkills.forEach(skillId => {
+                const skill = skillManager.availableSkills.find(s => s.id === skillId);
+                if (skill) {
+                    const originalShort = skill.shortName;
+                    const localizedShort = skill.getLocalizedShortName();
+                    
+                    results.push({
+                        id: skillId,
+                        original: originalShort,
+                        localized: localizedShort,
+                        emoji: skill.emoji
+                    });
+                }
+            });
+            
+            return results;
+        }
+
+        function updateDisplay() {
+            const currentLang = window.Localization.currentLanguage;
+            document.getElementById('currentLang').textContent = currentLang;
+            
+            // Update language button states
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[onclick="setLanguage('${currentLang}')"]`).classList.add('active');
+            
+            // Test and display results
+            const results = testSkillLocalization();
+            
+            // Update skill buttons
+            const buttonsHtml = results.map(result => 
+                `<div class="skill-button">${result.emoji} ${result.localized}</div>`
+            ).join('');
+            document.getElementById('skillButtons').innerHTML = buttonsHtml;
+            
+            // Update test results
+            const resultsHtml = results.map(result => 
+                `<div>
+                    <strong>${result.id}:</strong> 
+                    Original: "${result.original}" → 
+                    Localized: "${result.localized}"
+                    ${result.original !== result.localized ? ' ✅' : ' ⚠️'}
+                </div>`
+            ).join('');
+            document.getElementById('testResults').innerHTML = resultsHtml;
+        }
+
+        function setLanguage(lang) {
+            window.Localization.setLanguage(lang);
+            updateDisplay();
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

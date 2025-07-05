@@ -210,6 +210,30 @@ class Localization {
                 'magnetic_pull_desc': 'Attracts and redirects enemy bullets',
                 'quantum_strike_desc': 'Teleports and deals massive damage',
                 
+                // Skill Short Names for Button Display
+                'heal_short': 'REPAIR',
+                'damage_boost_short': 'POWER',
+                'speed_boost_short': 'SPEED',
+                'shield_short': 'SHIELD',
+                'explosive_shot_short': 'BOOM',
+                'multi_shot_short': 'MULTI',
+                'time_slow_short': 'SLOW',
+                'auto_repair_short': 'REGEN',
+                'freeze_blast_short': 'FREEZE',
+                'lightning_storm_short': 'BOLT',
+                'fire_nova_short': 'NOVA',
+                'vortex_field_short': 'VORTEX',
+                'plasma_burst_short': 'PLASMA',
+                'ice_barrier_short': 'WALL',
+                'magnetic_pull_short': 'MAGNET',
+                'quantum_strike_short': 'QUANTUM',
+                'armor_upgrade_short': 'ARMOR',
+                'weapon_upgrade_short': 'WEAPON',
+                'engine_upgrade_short': 'ENGINE',
+                'rapid_fire_short': 'RAPID',
+                'targeting_system_short': 'TARGET',
+                'formation_expand_short': 'EXPAND',
+                
                 // Battle Type Modal
                 'select_battle_type': 'Select Battle Type',
                 'quick_battle': 'Quick Battle',
@@ -426,6 +450,30 @@ class Localization {
                 'magnetic_pull_desc': 'Hút và chuyển hướng đạn kẻ thù',
                 'quantum_strike_desc': 'Dịch chuyển và gây sát thương khủng khiếp',
                 
+                // Skill Short Names for Button Display - Vietnamese
+                'heal_short': 'SỬA',
+                'damage_boost_short': 'SỨC MẠNH',
+                'speed_boost_short': 'TỐC ĐỘ',
+                'shield_short': 'KHIÊN',
+                'explosive_shot_short': 'NỔ',
+                'multi_shot_short': 'ĐA PHÁO',
+                'time_slow_short': 'CHẬM',
+                'auto_repair_short': 'TỰ SỬA',
+                'freeze_blast_short': 'ĐÓNG BĂNG',
+                'lightning_storm_short': 'SÉT',
+                'fire_nova_short': 'LỬA',
+                'vortex_field_short': 'XOÁY',
+                'plasma_burst_short': 'PLASMA',
+                'ice_barrier_short': 'TƯỜNG',
+                'magnetic_pull_short': 'TỪ TÍNH',
+                'quantum_strike_short': 'LƯỢNG TỬ',
+                'armor_upgrade_short': 'GIÁP',
+                'weapon_upgrade_short': 'VŨ KHÍ',
+                'engine_upgrade_short': 'ĐỘNG CƠ',
+                'rapid_fire_short': 'BẮN NHANH',
+                'targeting_system_short': 'NGẮM',
+                'formation_expand_short': 'MỞ RỘNG',
+                
                 // Battle Type Modal
                 'select_battle_type': 'Chọn Loại Trận Đấu',
                 'quick_battle': 'Trận Nhanh',
@@ -538,6 +586,12 @@ class Localization {
     // Helper method to get skill translation
     getSkillTranslation(skillId, type = 'name') {
         const key = type === 'name' ? skillId : `${skillId}_desc`;
+        return this.t(key);
+    }
+
+    // Helper method to get skill short name translation
+    getSkillShortName(skillId) {
+        const key = `${skillId}_short`;
         return this.t(key);
     }
 }

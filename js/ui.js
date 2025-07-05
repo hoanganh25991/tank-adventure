@@ -750,9 +750,9 @@ class GameUI {
         skillButtons.forEach((btn, index) => {
             const skill = skillInfo.active[index];
             if (skill) {
-                // Use localized skill name
-                const skillName = skill.getLocalizedName ? skill.getLocalizedName() : skill.name;
-                btn.textContent = `${skill.emoji || '⚡'} ${skillName || 'NO NAME'}`;
+                // Use localized skill short name for button display
+                const skillShortName = skill.getLocalizedShortName ? skill.getLocalizedShortName() : skill.shortName || skill.name;
+                btn.textContent = `${skill.emoji || '⚡'} ${skillShortName || 'NO NAME'}`;
                 btn.disabled = !skill.isReady;
                 btn.style.opacity = skill.isReady ? '1' : '0.5';
                 

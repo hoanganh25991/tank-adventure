@@ -19,11 +19,21 @@ class Skill {
     }
 
     getLocalizedName() {
-        return window.Localization ? window.Localization.getSkillTranslation(this.id, 'name') || this.name : this.name;
+        // Use baseId for localization lookup if available (for stacked skills)
+        const lookupId = this.baseId || this.id;
+        return window.Localization ? window.Localization.getSkillTranslation(lookupId, 'name') || this.name : this.name;
     }
 
     getLocalizedDescription() {
-        return window.Localization ? window.Localization.getSkillTranslation(this.id, 'desc') || this.description : this.description;
+        // Use baseId for localization lookup if available (for stacked skills)
+        const lookupId = this.baseId || this.id;
+        return window.Localization ? window.Localization.getSkillTranslation(lookupId, 'desc') || this.description : this.description;
+    }
+
+    getLocalizedShortName() {
+        // Use baseId for localization lookup if available (for stacked skills)
+        const lookupId = this.baseId || this.id;
+        return window.Localization ? window.Localization.getSkillShortName(lookupId) || this.shortName : this.shortName;
     }
 
     activate(player, enemies, effectsManager = null) {
@@ -1079,13 +1089,15 @@ class SkillManager {
                 cooldownPercent: skill.getCooldownPercent(),
                 isReady: skill.isReady(),
                 isActive: skill.isActive,
-                emoji: skill.emoji
+                emoji: skill.emoji,
+                getLocalizedShortName: () => skill.getLocalizedShortName()
             })),
             passive: this.passiveSkills.map(skill => ({
                 id: skill.id,
                 name: skill.name,
                 shortName: skill.shortName,
-                level: skill.level
+                level: skill.level,
+                getLocalizedShortName: () => skill.getLocalizedShortName()
             }))
         };
     }
