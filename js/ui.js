@@ -167,7 +167,9 @@ class GameUI {
     }
 
     initializeElements() {
-        return {
+        console.log('Initializing UI elements...');
+        
+        const elements = {
             // HUD Elements
             healthFill: document.getElementById('healthFill'),
             healthText: document.getElementById('healthText'),
@@ -239,6 +241,12 @@ class GameUI {
             confirmBullets: document.getElementById('confirmBullets'),
             confirmWarning: document.getElementById('confirmWarning')
         };
+        
+        // Debug: Check if critical elements exist
+        console.log('Settings button found:', elements.settingsBtn ? 'YES' : 'NO');
+        console.log('Settings screen found:', elements.screens.settingsScreen ? 'YES' : 'NO');
+        
+        return elements;
     }
 
     setupEventListeners() {
@@ -272,9 +280,34 @@ class GameUI {
             this.showScreen('baseScreen');
         });
         
+        // Debug: Check if settingsBtn exists
+        if (!this.elements.settingsBtn) {
+            console.error('Settings button not found in DOM!');
+        } else {
+            console.log('Settings button found:', this.elements.settingsBtn);
+        }
+        
         this.setupMobileButton(this.elements.settingsBtn, () => {
+            console.log('Settings button callback triggered');
             this.showScreen('settingsScreen');
         });
+        
+        // Emergency fallback for settings button - direct event listeners
+        if (this.elements.settingsBtn) {
+            const emergencyClickHandler = (e) => {
+                console.log('Emergency settings button handler triggered');
+                e.preventDefault();
+                e.stopPropagation();
+                this.showScreen('settingsScreen');
+            };
+            
+            // Add multiple event types to ensure it works
+            this.elements.settingsBtn.addEventListener('click', emergencyClickHandler, { passive: false });
+            this.elements.settingsBtn.addEventListener('touchstart', emergencyClickHandler, { passive: false });
+            this.elements.settingsBtn.addEventListener('pointerdown', emergencyClickHandler, { passive: false });
+            
+            console.log('Emergency settings button handlers added');
+        }
         
         // Fullscreen button
         if (this.elements.fullscreenBtn) {
@@ -605,6 +638,8 @@ class GameUI {
     }
 
     showScreen(screenName) {
+        console.log('Showing screen:', screenName);
+        
         // Hide all screens
         Object.values(this.elements.screens).forEach(screen => {
             screen.classList.remove('active');
@@ -613,12 +648,16 @@ class GameUI {
         // Show target screen
         const targetScreen = this.elements.screens[screenName];
         if (targetScreen) {
+            console.log('Target screen found:', targetScreen.id);
             targetScreen.classList.add('active');
             
             // Update screen content
             if (screenName === 'baseScreen') {
                 this.updateBaseScreen();
             }
+        } else {
+            console.error('Target screen not found:', screenName);
+            console.log('Available screens:', Object.keys(this.elements.screens));
         }
     }
 
@@ -1042,13 +1081,19 @@ class GameUI {
     }
 
     setupMobileButton(button, callback) {
-        if (!button) return;
+        if (!button) {
+            console.warn('setupMobileButton called with null/undefined button');
+            return;
+        }
+        
+        console.log('Setting up mobile button:', button.id || 'unnamed button');
         
         let touchStarted = false;
         let touchMoved = false;
         
         // Enhanced touch support for iPhone Safari
         const handleTouchStart = (e) => {
+            console.log('Touch start on button:', button.id);
             e.preventDefault();
             touchStarted = true;
             touchMoved = false;
@@ -1060,11 +1105,13 @@ class GameUI {
         
         const handleTouchMove = (e) => {
             if (touchStarted) {
+                console.log('Touch move on button:', button.id);
                 touchMoved = true;
             }
         };
         
         const handleTouchEnd = (e) => {
+            console.log('Touch end on button:', button.id, 'touchStarted:', touchStarted, 'touchMoved:', touchMoved);
             e.preventDefault();
             
             // Reset visual feedback
@@ -1073,7 +1120,7 @@ class GameUI {
             
             // Only trigger callback if touch didn't move (actual tap)
             if (touchStarted && !touchMoved) {
-                console.log('Button touched:', button.id);
+                console.log('Button touched successfully:', button.id);
                 callback();
             }
             
@@ -1082,8 +1129,8 @@ class GameUI {
         };
         
         const handleClick = (e) => {
-            e.preventDefault();
             console.log('Button clicked:', button.id);
+            e.preventDefault();
             callback();
         };
         
@@ -1099,11 +1146,36 @@ class GameUI {
         // Prevent default behaviors that might interfere
         button.addEventListener('contextmenu', (e) => e.preventDefault());
         
+        // Debug: Check button's computed style
+        const computedStyle = window.getComputedStyle(button);
+        console.log('Button styles for', button.id, ':', {
+            pointerEvents: computedStyle.pointerEvents,
+            zIndex: computedStyle.zIndex,
+            position: computedStyle.position,
+            display: computedStyle.display,
+            visibility: computedStyle.visibility,
+            opacity: computedStyle.opacity
+        });
+        
         // Make sure button is touchable
         button.style.touchAction = 'manipulation';
         button.style.userSelect = 'none';
         button.style.webkitUserSelect = 'none';
         button.style.webkitTouchCallout = 'none';
+        button.style.webkitTapHighlightColor = 'transparent';
+        
+        // Additional debugging for iOS/Safari issues
+        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+            console.log('iOS device detected, applying additional touch fixes for button:', button.id);
+            button.style.cursor = 'pointer';
+        }
+        
+        // Test direct touch on button element
+        button.addEventListener('touchstart', (e) => {
+            console.log('Direct touchstart event on button:', button.id);
+        }, { passive: false, capture: true });
+        
+        console.log('Mobile button setup complete for:', button.id);
     }
 
     destroy() {
