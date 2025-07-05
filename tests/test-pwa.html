@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Adventure PWA Test</title>
+    <style>
+        body {
+            font-family: 'Comfortaa', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        
+        .status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .status.pass {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.fail {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #ffc107;
+            color: black;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .log {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .actions {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Tank Adventure PWA Test Suite</h1>
+        
+        <div class="test-section">
+            <h3>📱 PWA Core Features</h3>
+            <div class="test-item">
+                <span>Service Worker Support</span>
+                <span id="sw-support" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Service Worker Registration</span>
+                <span id="sw-registration" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Manifest File</span>
+                <span id="manifest" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>HTTPS/Secure Context</span>
+                <span id="https" class="status pending">Testing...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>💾 Caching & Offline</h3>
+            <div class="test-item">
+                <span>Cache API Support</span>
+                <span id="cache-support" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Static Assets Cached</span>
+                <span id="static-cache" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Game Files Accessible</span>
+                <span id="game-files" class="status pending">Testing...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 Installation</h3>
+            <div class="test-item">
+                <span>Install Prompt Available</span>
+                <span id="install-prompt" class="status pending">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Standalone Display Mode</span>
+                <span id="standalone" class="status pending">Testing...</span>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="runAllTests()">🧪 Run All Tests</button>
+            <button onclick="testOfflineMode()">📡 Test Offline Mode</button>
+            <button onclick="clearCaches()">🗑️ Clear Caches</button>
+            <button onclick="checkCacheContents()">📋 Check Cache Contents</button>
+        </div>
+        
+        <div class="log" id="testLog"></div>
+    </div>
+
+    <script>
+        let testLog = document.getElementById('testLog');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            testLog.innerHTML += `[${timestamp}] ${message}\n`;
+            testLog.scrollTop = testLog.scrollHeight;
+            console.log(message);
+        }
+        
+        function setStatus(elementId, status, message = '') {
+            const element = document.getElementById(elementId);
+            element.className = `status ${status}`;
+            element.textContent = status.toUpperCase() + (message ? ` - ${message}` : '');
+        }
+        
+        async function runAllTests() {
+            log('🚀 Starting PWA Test Suite...');
+            testLog.innerHTML = '';
+            
+            // Test Service Worker Support
+            if ('serviceWorker' in navigator) {
+                setStatus('sw-support', 'pass');
+                log('✅ Service Worker API supported');
+            } else {
+                setStatus('sw-support', 'fail');
+                log('❌ Service Worker API not supported');
+            }
+            
+            // Test HTTPS
+            if (location.protocol === 'https:' || location.hostname === 'localhost') {
+                setStatus('https', 'pass');
+                log('✅ Secure context (HTTPS)');
+            } else {
+                setStatus('https', 'fail');
+                log('❌ Not a secure context - PWA requires HTTPS');
+            }
+            
+            // Test Service Worker Registration
+            try {
+                const registration = await navigator.serviceWorker.getRegistration('/tank-adventure/');
+                if (registration) {
+                    setStatus('sw-registration', 'pass');
+                    log('✅ Service Worker registered successfully');
+                    log(`   Scope: ${registration.scope}`);
+                    log(`   State: ${registration.active ? registration.active.state : 'No active worker'}`);
+                } else {
+                    setStatus('sw-registration', 'fail');
+                    log('❌ Service Worker not registered');
+                }
+            } catch (error) {
+                setStatus('sw-registration', 'fail');
+                log(`❌ Service Worker registration error: ${error.message}`);
+            }
+            
+            // Test Manifest
+            try {
+                const response = await fetch('/tank-adventure/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    setStatus('manifest', 'pass');
+                    log('✅ Manifest file accessible');
+                    log(`   App Name: ${manifest.name}`);
+                    log(`   Start URL: ${manifest.start_url}`);
+                    log(`   Display: ${manifest.display}`);
+                } else {
+                    setStatus('manifest', 'fail');
+                    log('❌ Manifest file not accessible');
+                }
+            } catch (error) {
+                setStatus('manifest', 'fail');
+                log(`❌ Manifest error: ${error.message}`);
+            }
+            
+            // Test Cache API
+            if ('caches' in window) {
+                setStatus('cache-support', 'pass');
+                log('✅ Cache API supported');
+            } else {
+                setStatus('cache-support', 'fail');
+                log('❌ Cache API not supported');
+            }
+            
+            // Test Static Cache
+            try {
+                const cacheNames = await caches.keys();
+                const staticCache = cacheNames.find(name => name.includes('static'));
+                if (staticCache) {
+                    setStatus('static-cache', 'pass');
+                    log(`✅ Static cache found: ${staticCache}`);
+                } else {
+                    setStatus('static-cache', 'fail');
+                    log('❌ Static cache not found');
+                }
+            } catch (error) {
+                setStatus('static-cache', 'fail');
+                log(`❌ Cache check error: ${error.message}`);
+            }
+            
+            // Test Game Files
+            try {
+                const gameFiles = [
+                    '/tank-adventure/js/game-engine.js',
+                    '/tank-adventure/css/game.css',
+                    '/tank-adventure/index.html'
+                ];
+                
+                let allFilesAccessible = true;
+                for (const file of gameFiles) {
+                    try {
+                        const response = await fetch(file);
+                        if (!response.ok) {
+                            allFilesAccessible = false;
+                            log(`❌ File not accessible: ${file}`);
+                        }
+                    } catch (error) {
+                        allFilesAccessible = false;
+                        log(`❌ File error ${file}: ${error.message}`);
+                    }
+                }
+                
+                if (allFilesAccessible) {
+                    setStatus('game-files', 'pass');
+                    log('✅ All game files accessible');
+                } else {
+                    setStatus('game-files', 'fail');
+                    log('❌ Some game files not accessible');
+                }
+            } catch (error) {
+                setStatus('game-files', 'fail');
+                log(`❌ Game files test error: ${error.message}`);
+            }
+            
+            // Test Install Prompt
+            if (window.deferredPrompt || window.matchMedia('(display-mode: standalone)').matches) {
+                setStatus('install-prompt', 'pass');
+                log('✅ Install prompt available or already installed');
+            } else {
+                setStatus('install-prompt', 'pending');
+                log('⏳ Install prompt not yet available (may appear later)');
+            }
+            
+            // Test Standalone Mode
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                setStatus('standalone', 'pass');
+                log('✅ Running in standalone mode');
+            } else {
+                setStatus('standalone', 'pending');
+                log('⏳ Not in standalone mode (install app to test)');
+            }
+            
+            log('🏁 PWA Test Suite completed!');
+        }
+        
+        async function testOfflineMode() {
+            log('🔌 Testing offline functionality...');
+            
+            // This would require manual testing by going offline
+            // For now, we'll check if cached resources are available
+            try {
+                const cacheNames = await caches.keys();
+                log(`📦 Found ${cacheNames.length} caches:`);
+                
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const keys = await cache.keys();
+                    log(`   ${cacheName}: ${keys.length} resources`);
+                }
+                
+                log('💡 To test offline mode:');
+                log('   1. Open DevTools → Network tab');
+                log('   2. Check "Offline" checkbox');
+                log('   3. Refresh the page');
+                log('   4. Game should still work!');
+                
+            } catch (error) {
+                log(`❌ Offline test error: ${error.message}`);
+            }
+        }
+        
+        async function clearCaches() {
+            log('🗑️ Clearing all caches...');
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                log(`✅ Cleared ${cacheNames.length} caches`);
+                log('💡 Refresh the page to rebuild caches');
+            } catch (error) {
+                log(`❌ Clear caches error: ${error.message}`);
+            }
+        }
+        
+        async function checkCacheContents() {
+            log('📋 Checking cache contents...');
+            try {
+                const cacheNames = await caches.keys();
+                
+                for (const cacheName of cacheNames) {
+                    log(`\n📦 Cache: ${cacheName}`);
+                    const cache = await caches.open(cacheName);
+                    const requests = await cache.keys();
+                    
+                    for (const request of requests) {
+                        log(`   📄 ${request.url}`);
+                    }
+                }
+                
+                if (cacheNames.length === 0) {
+                    log('📭 No caches found - service worker may not be active yet');
+                }
+                
+            } catch (error) {
+                log(`❌ Cache contents error: ${error.message}`);
+            }
+        }
+        
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000);
+        });
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            log('📱 Install prompt is available!');
+            setStatus('install-prompt', 'pass');
+        });
+        
+        // Listen for app installed
+        window.addEventListener('appinstalled', () => {
+            log('🎉 App has been installed!');
+            setStatus('standalone', 'pass');
+        });
+    </script>
+</body>
+</html>

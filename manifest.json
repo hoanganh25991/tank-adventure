@@ -1,33 +1,105 @@
 {
   "name": "Tank Adventure",
   "short_name": "Tank Adventure",
-  "description": "A 2D tank battle game with wave-based combat and skill progression",
-  "start_url": "tank-adventure",
+  "description": "A 2D tank battle game with wave-based combat and skill progression. Command your tank formation and survive endless waves of enemies!",
+  "start_url": "/tank-adventure/",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#4a90e2",
   "orientation": "landscape-primary",
+  "scope": "/tank-adventure/",
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "categories": ["games", "entertainment", "action"],
+  "screenshots": [
+    {
+      "src": "screenshots/gameplay-landscape.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Tank Adventure gameplay in landscape mode"
+    },
+    {
+      "src": "screenshots/menu-landscape.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Main menu and game interface"
+    }
+  ],
   "icons": [
+    {
+      "src": "assets/favicon/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicon/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
     {
       "src": "assets/favicon/favicon.ico",
       "sizes": "32x32",
       "type": "image/x-icon"
     },
     {
+      "src": "assets/favicon/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "assets/favicon/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/x-icon",
-      "purpose": "maskable"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "assets/favicon/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/x-icon",
-      "purpose": "maskable"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["games", "entertainment"],
-  "lang": "en",
-  "scope": "/",
-  "prefer_related_applications": false
+  "shortcuts": [
+    {
+      "name": "Quick Battle",
+      "short_name": "Battle",
+      "description": "Start a quick battle immediately",
+      "url": "/tank-adventure/?action=quick-battle",
+      "icons": [
+        {
+          "src": "assets/favicon/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Tank Base",
+      "short_name": "Base",
+      "description": "Go to tank base for upgrades",
+      "url": "/tank-adventure/?action=base",
+      "icons": [
+        {
+          "src": "assets/favicon/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "iarc_rating_id": "",
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [],
+  "file_handlers": []
 }

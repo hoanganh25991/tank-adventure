@@ -327,5 +327,198 @@
     <script src="js/ui.js"></script>
     <script src="js/upgrades.js"></script>
     <script src="js/game-engine.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/tank-adventure/sw.js', {
+                        scope: '/tank-adventure/'
+                    });
+                    
+                    console.log('Service Worker registered successfully:', registration);
+                    
+                    // Handle service worker updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New service worker is available
+                                showUpdateAvailable();
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        let installButton;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            hideInstallButton();
+            deferredPrompt = null;
+        });
+        
+        function showInstallButton() {
+            // Create install button if it doesn't exist
+            if (!installButton) {
+                installButton = document.createElement('button');
+                installButton.id = 'installPWABtn';
+                installButton.className = 'menu-btn install-btn';
+                installButton.innerHTML = '📱 Install App';
+                installButton.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    background: linear-gradient(135deg, #4a90e2, #357abd);
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+                    transition: all 0.3s ease;
+                `;
+                
+                installButton.addEventListener('click', installPWA);
+                installButton.addEventListener('mouseenter', () => {
+                    installButton.style.transform = 'translateY(-2px)';
+                    installButton.style.boxShadow = '0 6px 20px rgba(74, 144, 226, 0.4)';
+                });
+                installButton.addEventListener('mouseleave', () => {
+                    installButton.style.transform = 'translateY(0)';
+                    installButton.style.boxShadow = '0 4px 15px rgba(74, 144, 226, 0.3)';
+                });
+                
+                document.body.appendChild(installButton);
+            }
+            installButton.style.display = 'block';
+        }
+        
+        function hideInstallButton() {
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+        }
+        
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            console.log(`PWA install outcome: ${outcome}`);
+            
+            if (outcome === 'accepted') {
+                hideInstallButton();
+            }
+            
+            deferredPrompt = null;
+        }
+        
+        function showUpdateAvailable() {
+            // Create update notification
+            const updateNotification = document.createElement('div');
+            updateNotification.id = 'updateNotification';
+            updateNotification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #28a745, #20c997);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 25px;
+                    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                    z-index: 10001;
+                    font-size: 14px;
+                    font-weight: 600;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    🔄 New version available! Click to update
+                </div>
+            `;
+            
+            updateNotification.addEventListener('click', () => {
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+                    window.location.reload();
+                }
+            });
+            
+            document.body.appendChild(updateNotification);
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                if (updateNotification.parentNode) {
+                    updateNotification.parentNode.removeChild(updateNotification);
+                }
+            }, 10000);
+        }
+        
+        // Handle URL parameters for shortcuts
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            
+            if (action === 'quick-battle') {
+                // Auto-start battle if coming from shortcut
+                setTimeout(() => {
+                    const startBtn = document.getElementById('startGameBtn');
+                    if (startBtn) startBtn.click();
+                }, 1000);
+            } else if (action === 'base') {
+                // Go to base if coming from shortcut
+                setTimeout(() => {
+                    const baseBtn = document.getElementById('upgradesBtn');
+                    if (baseBtn) baseBtn.click();
+                }, 1000);
+            }
+        });
+        
+        // Cache game data periodically
+        function cacheGameData() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                try {
+                    const gameData = localStorage.getItem('tankAdventureGameData');
+                    if (gameData) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'CACHE_GAME_DATA',
+                            gameData: JSON.parse(gameData)
+                        });
+                    }
+                } catch (error) {
+                    console.error('Failed to cache game data:', error);
+                }
+            }
+        }
+        
+        // Cache game data every 30 seconds
+        setInterval(cacheGameData, 30000);
+        
+        // Cache game data when page is about to unload
+        window.addEventListener('beforeunload', cacheGameData);
+    </script>
 </body>
 </html>
