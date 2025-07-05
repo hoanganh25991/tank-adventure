@@ -2211,11 +2211,15 @@ window.addEventListener('load', () => {
     // Request fullscreen on page load
     // Note: Most browsers require a user interaction before allowing fullscreen
     // We'll add a click event listener to the document to request fullscreen on first interaction
+    let isFullscreenRequested = false;
+    
     const requestFullscreenOnInteraction = () => {
-        // Only request fullscreen if not already in fullscreen mode
-        if (!Utils.isFullscreen()) {
+        // Only request fullscreen if not already in fullscreen mode and not already requested
+        if (!Utils.isFullscreen() && !isFullscreenRequested) {
+            isFullscreenRequested = true;
             Utils.requestFullscreen().catch(err => {
                 console.warn('Error attempting to enable fullscreen:', err);
+                isFullscreenRequested = false; // Reset on failure
             });
         }
         // Remove the event listener after first interaction

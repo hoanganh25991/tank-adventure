@@ -183,17 +183,83 @@ class Utils {
         if (!element) return Promise.reject(new Error('Element not found'));
         if (window.location.hostname == "localhost") return Promise.resolve();
 
-        if (element.requestFullscreen) {
-            return element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) { // Safari
-            return element.webkitRequestFullscreen();
-        } else if (element.mozRequestFullScreen) { // Firefox
-            return element.mozRequestFullScreen();
-        } else if (element.msRequestFullscreen) { // IE/Edge
-            return element.msRequestFullscreen();
-        } else {
-            return Promise.reject(new Error('Fullscreen not supported'));
-        }
+        return new Promise((resolve, reject) => {
+            const onFullscreenChange = () => {
+                if (this.isFullscreen()) {
+                    resolve();
+                } else {
+                    reject(new Error('Fullscreen request was cancelled'));
+                }
+                // Clean up event listeners
+                document.removeEventListener('fullscreenchange', onFullscreenChange);
+                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
+                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
+                
+                // Also remove error listeners
+                document.removeEventListener('fullscreenerror', onFullscreenError);
+                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
+                document.removeEventListener('mozfullscreenerror', onFullscreenError);
+                document.removeEventListener('MSFullscreenError', onFullscreenError);
+            };
+            
+            const onFullscreenError = () => {
+                reject(new Error('Fullscreen request failed'));
+                // Clean up event listeners
+                document.removeEventListener('fullscreenchange', onFullscreenChange);
+                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
+                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
+                
+                document.removeEventListener('fullscreenerror', onFullscreenError);
+                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
+                document.removeEventListener('mozfullscreenerror', onFullscreenError);
+                document.removeEventListener('MSFullscreenError', onFullscreenError);
+            };
+            
+            // Add event listeners for fullscreen change and error
+            document.addEventListener('fullscreenchange', onFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+            document.addEventListener('mozfullscreenchange', onFullscreenChange);
+            document.addEventListener('MSFullscreenChange', onFullscreenChange);
+            
+            document.addEventListener('fullscreenerror', onFullscreenError);
+            document.addEventListener('webkitfullscreenerror', onFullscreenError);
+            document.addEventListener('mozfullscreenerror', onFullscreenError);
+            document.addEventListener('MSFullscreenError', onFullscreenError);
+            
+            // Set a timeout to reject if fullscreen doesn't activate within 5 seconds
+            setTimeout(() => {
+                reject(new Error('Fullscreen request timeout'));
+                // Clean up event listeners
+                document.removeEventListener('fullscreenchange', onFullscreenChange);
+                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
+                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
+                
+                document.removeEventListener('fullscreenerror', onFullscreenError);
+                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
+                document.removeEventListener('mozfullscreenerror', onFullscreenError);
+                document.removeEventListener('MSFullscreenError', onFullscreenError);
+            }, 5000);
+            
+            // Try to request fullscreen
+            try {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) { // Safari
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) { // Firefox
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) { // IE/Edge
+                    element.msRequestFullscreen();
+                } else {
+                    reject(new Error('Fullscreen not supported'));
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     static exitFullscreen() {
