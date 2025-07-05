@@ -373,7 +373,6 @@ class GameUI {
         modal.innerHTML = `
             <div class="modal-content">
                 <h2>Select Battle Type</h2>
-                <p class="modal-instruction">Click on a battle type to begin</p>
                 <div class="battle-type-options">
                     <button class="battle-type-btn" data-type="quick">
                         <span class="battle-icon">⚡</span>
