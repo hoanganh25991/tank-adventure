@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Skill Names</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .skill-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .skill-item {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+        .skill-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .skill-short {
+            font-size: 14px;
+            color: #88ff88;
+            margin-bottom: 5px;
+        }
+        .skill-type {
+            font-size: 12px;
+            color: #ffaa00;
+            text-transform: uppercase;
+        }
+        .missing-short {
+            border-color: #ff4444;
+        }
+        .missing-short .skill-short {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Skill Names Test</h1>
+    <p>Testing that all skills have proper short names...</p>
+    
+    <div id="results"></div>
+    <div id="skill-list" class="skill-list"></div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/skills.js"></script>
+    <script>
+        // Test all skills have proper short names
+        const skillManager = new SkillManager();
+        const skills = skillManager.availableSkills;
+        
+        let allGood = true;
+        let resultsHtml = '';
+        let skillsHtml = '';
+        
+        skills.forEach(skill => {
+            const hasShortName = skill.shortName && skill.shortName.length > 0;
+            const isProperShortName = hasShortName && skill.shortName !== skill.name;
+            
+            if (!hasShortName) {
+                allGood = false;
+                resultsHtml += `<p style="color: #ff4444;">❌ Skill "${skill.name}" has no short name</p>`;
+            } else if (!isProperShortName) {
+                resultsHtml += `<p style="color: #ffaa00;">⚠️ Skill "${skill.name}" uses full name as short name</p>`;
+            } else {
+                resultsHtml += `<p style="color: #88ff88;">✅ Skill "${skill.name}" has proper short name: "${skill.shortName}"</p>`;
+            }
+            
+            // Add to skill list
+            skillsHtml += `
+                <div class="skill-item ${!hasShortName ? 'missing-short' : ''}">
+                    <div class="skill-name">${skill.emoji} ${skill.name}</div>
+                    <div class="skill-short">Short: ${skill.shortName || 'MISSING'}</div>
+                    <div class="skill-type">${skill.type}</div>
+                </div>
+            `;
+        });
+        
+        // Display results
+        document.getElementById('results').innerHTML = resultsHtml;
+        document.getElementById('skill-list').innerHTML = skillsHtml;
+        
+        // Test skill stacking
+        console.log('\n=== Testing Skill Stacking ===');
+        
+        // Add a skill multiple times
+        const testSkillId = 'heal';
+        for (let i = 0; i < 3; i++) {
+            const result = skillManager.addSkill(testSkillId);
+            console.log(`Adding skill ${testSkillId} (attempt ${i + 1}): ${result}`);
+        }
+        
+        // Check skill info
+        const skillInfo = skillManager.getSkillInfo();
+        console.log('Active skills:', skillInfo.active);
+        console.log('Passive skills:', skillInfo.passive);
+        
+        // Display skill info
+        resultsHtml += '<h2>Skill Stacking Test</h2>';
+        resultsHtml += `<p>Added skill "${testSkillId}" 3 times:</p>`;
+        skillInfo.active.forEach((skill, index) => {
+            resultsHtml += `<p>Slot ${index + 1}: ${skill.name} (${skill.shortName})</p>`;
+        });
+        
+        document.getElementById('results').innerHTML = resultsHtml;
+    </script>
+</body>
+</html>

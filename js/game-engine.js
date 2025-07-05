@@ -879,8 +879,8 @@ class GameEngine {
                 this.battleTitle = '🔥 Standard Battle (5 Waves)';
         }
         
-        // Clear active skills for new battle session
-        this.skillManager.clearActiveSkills();
+        // Note: Skills should persist between waves within the same battle
+        // Only clear skills when starting a completely new battle type or resetting game
         
         // Reset battle stats
         this.battleStats = {

@@ -779,34 +779,85 @@ class SkillManager {
             
             console.log(`Found skill template: ${skillTemplate.name} (${skillTemplate.type})`);
             
-            // Check if skill already exists (for upgrading)
-            const existingSkill = this.findSkill(skillId);
+            // Check if skill already exists (for stacking/upgrading)
+            const existingSkill = this.findSkillByBaseId(skillId);
             if (existingSkill) {
-                console.log(`Upgrading existing skill: ${skillId}`);
-                return existingSkill.upgrade();
+                console.log(`Stacking existing skill: ${skillId}`);
+                // For active skills, allow stacking by creating a new instance
+                if (existingSkill.type === 'active') {
+                    // Create a new instance for stacking
+                    console.log('Creating new stack instance for active skill');
+                    // Continue to create new instance below
+                } else {
+                    // For passive skills, upgrade the existing one
+                    console.log('Upgrading existing passive skill');
+                    return existingSkill.upgrade();
+                }
             }
             
             // Create a copy of the skill
+            // For active skills, create a unique ID if stacking
+            let uniqueId = skillTemplate.id;
+            let displayName = skillTemplate.name;
+            let shortName = skillTemplate.shortName;
+            
+            if (skillTemplate.type === 'active' && existingSkill) {
+                // Count how many instances of this skill already exist
+                const stackCount = this.activeSkills.filter(s => (s.baseId || s.id) === skillTemplate.id).length;
+                uniqueId = `${skillTemplate.id}_stack_${stackCount + 1}`;
+                displayName = `${skillTemplate.name} (${stackCount + 1})`;
+                shortName = `${skillTemplate.shortName} ${stackCount + 1}`;
+                console.log(`Creating stacked skill with ID: ${uniqueId}`);
+            }
+            
             const newSkill = new Skill(
-                skillTemplate.id,
-                skillTemplate.name,
+                uniqueId,
+                displayName,
                 skillTemplate.description,
                 skillTemplate.type,
                 skillTemplate.effect,
                 skillTemplate.duration,
                 skillTemplate.cooldown,
                 skillTemplate.emoji,
-                skillTemplate.shortName
+                shortName
             );
+            
+            // Store the base skill ID for finding purposes
+            newSkill.baseId = skillTemplate.id;
             
             console.log(`Created new skill instance: ${newSkill.name}`);
             
             if (newSkill.type === 'active') {
-                // Add to active skills if there's a slot
-                if (this.activeSkills.length < 3) {
+                // For active skills, allow stacking by finding an empty slot or replacing the oldest
+                let slotIndex = -1;
+                
+                // First, try to find an empty slot
+                for (let i = 0; i < 3; i++) {
+                    if (!this.skillSlots[i]) {
+                        slotIndex = i;
+                        break;
+                    }
+                }
+                
+                // If no empty slot, replace the first slot (FIFO)
+                if (slotIndex === -1) {
+                    slotIndex = 0;
+                    console.log('No empty slots, replacing oldest skill');
+                }
+                
+                // Add to active skills and assign to slot
+                if (slotIndex < 3) {
+                    // If replacing, remove the old skill first
+                    if (this.skillSlots[slotIndex]) {
+                        const oldSkillIndex = this.activeSkills.findIndex(s => s === this.skillSlots[slotIndex]);
+                        if (oldSkillIndex !== -1) {
+                            this.activeSkills.splice(oldSkillIndex, 1);
+                        }
+                    }
+                    
                     this.activeSkills.push(newSkill);
-                    this.skillSlots[this.activeSkills.length - 1] = newSkill;
-                    console.log(`Added active skill to slot ${this.activeSkills.length - 1}`);
+                    this.skillSlots[slotIndex] = newSkill;
+                    console.log(`Added active skill to slot ${slotIndex}`);
                     return true;
                 }
             } else {
@@ -868,6 +919,10 @@ class SkillManager {
         return [...this.activeSkills, ...this.passiveSkills].find(s => s.id === skillId);
     }
 
+    findSkillByBaseId(baseId) {
+        return [...this.activeSkills, ...this.passiveSkills].find(s => (s.baseId || s.id) === baseId);
+    }
+
     manualCastSkill(slotIndex, player, enemies) {
         if (slotIndex < 0 || slotIndex >= this.skillSlots.length) return false;
         
@@ -880,11 +935,13 @@ class SkillManager {
 
     getRandomSkillChoices(count = 3, playerLevel = 1) {
         const available = this.availableSkills.filter(skill => {
-            // Don't offer skills already at max level
-            const existing = this.findSkill(skill.id);
-            if (existing && existing.level >= existing.maxLevel) {
+            // For passive skills, don't offer if already at max level
+            const existing = this.findSkillByBaseId(skill.id);
+            if (skill.type === 'passive' && existing && existing.level >= existing.maxLevel) {
                 return false;
             }
+            
+            // For active skills, allow stacking (always offer)
             
             // Check if player level meets skill requirements
             const requiredLevel = this.getSkillRequiredLevel(skill.id);
@@ -898,8 +955,14 @@ class SkillManager {
         // Randomly select skills with some bias towards skills player doesn't have
         const choices = [];
         const weights = available.map(skill => {
-            const existing = this.findSkill(skill.id);
-            return existing ? 1 : 3; // 3x more likely to offer new skills
+            const existing = this.findSkillByBaseId(skill.id);
+            if (skill.type === 'active') {
+                // For active skills, give equal weight to all (allow stacking)
+                return 2;
+            } else {
+                // For passive skills, prefer new skills
+                return existing ? 1 : 3;
+            }
         });
         
         for (let i = 0; i < count; i++) {
@@ -1026,10 +1089,15 @@ class SkillManager {
     }
 
     clearActiveSkills() {
-        // Clear active skills for new battle session
+        // Note: Active skills should persist between waves, only clear when starting new battle
+        console.log('Warning: clearActiveSkills called - skills should persist between waves');
+    }
+
+    clearActiveSkillsForNewBattle() {
+        // Clear active skills only when starting a completely new battle
         this.activeSkills = [];
         this.skillSlots = [null, null, null];
-        console.log('Active skills cleared for new battle');
+        console.log('Active skills cleared for new battle session');
     }
 
     saveSkills() {

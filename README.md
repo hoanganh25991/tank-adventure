@@ -2,16 +2,11 @@
 
 A complete 2D tank battle game designed for mobile and tablet devices with touch controls.
 
-<iframe 
-  width="100%" 
-  style="aspect-ratio: 560/315;"
-  src="https://www.youtube.com/embed/W1IO_qIPe9g?si=uZzgJ328NkpJ76j_" 
-  title="YouTube video player" 
-  frameborder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-  referrerpolicy="strict-origin-when-cross-origin" 
-  allowfullscreen>
-</iframe>
+## Video Demo
+
+[![Tank Adventure Gameplay](https://img.youtube.com/vi/W1IO_qIPe9g/maxresdefault.jpg)](https://www.youtube.com/watch?v=W1IO_qIPe9g)
+
+🎮 **[Watch Gameplay Video](https://www.youtube.com/watch?v=W1IO_qIPe9g)** - See the tank battle action in motion!
 
 ## Screenshots
 
