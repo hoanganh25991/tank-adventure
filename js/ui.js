@@ -230,7 +230,14 @@ class GameUI {
             loadingProgress: document.getElementById('loadingProgress'),
             
             // Battle Type Modal
-            battleTypeModal: document.getElementById('battleTypeModal')
+            battleTypeModal: document.getElementById('battleTypeModal'),
+            
+            // Confirm Dialog
+            confirmDialog: document.getElementById('confirmDialog'),
+            confirmTitle: document.getElementById('confirmTitle'),
+            confirmMessage: document.getElementById('confirmMessage'),
+            confirmBullets: document.getElementById('confirmBullets'),
+            confirmWarning: document.getElementById('confirmWarning')
         };
     }
 
@@ -468,9 +475,8 @@ class GameUI {
     }
     
     showConfirmDialog(title, message, bulletPoints = [], warningText = '', confirmCallback) {
-        // Create a modal dialog for confirmation
-        const modal = document.createElement('div');
-        modal.className = 'modal';
+        // Use the static modal from HTML
+        const modal = this.elements.confirmDialog;
         
         // Check if we're on a small screen in landscape mode
         const isLandscape = window.innerWidth > window.innerHeight;
@@ -480,63 +486,76 @@ class GameUI {
         // Add a class for iPhone 14 Pro Max
         if (isIPhone14ProMaxLandscape) {
             modal.classList.add('iphone14-landscape');
+        } else {
+            modal.classList.remove('iphone14-landscape');
         }
         
-        // Create bullet points HTML if provided
-        let bulletPointsHtml = '';
+        // Update the dynamic content
+        this.elements.confirmTitle.textContent = title;
+        this.elements.confirmMessage.textContent = message;
+        
+        // Handle bullet points
         if (bulletPoints.length > 0) {
-            bulletPointsHtml = '<ul class="confirm-bullets">';
-            bulletPoints.forEach(point => {
-                bulletPointsHtml += `<li>${point}</li>`;
-            });
-            bulletPointsHtml += '</ul>';
+            this.elements.confirmBullets.innerHTML = bulletPoints.map(point => `<li>${point}</li>`).join('');
+            this.elements.confirmBullets.style.display = 'block';
+        } else {
+            this.elements.confirmBullets.innerHTML = '';
+            this.elements.confirmBullets.style.display = 'none';
         }
         
-        // Create warning text HTML if provided
-        let warningHtml = '';
+        // Handle warning text
         if (warningText) {
-            warningHtml = `<p class="confirm-warning">${warningText}</p>`;
+            this.elements.confirmWarning.textContent = warningText;
+            this.elements.confirmWarning.style.display = 'block';
+        } else {
+            this.elements.confirmWarning.textContent = '';
+            this.elements.confirmWarning.style.display = 'none';
         }
         
-        modal.innerHTML = `
-            <div class="modal-content confirm-dialog">
-                <h2>${title}</h2>
-                <p class="confirm-message">${message}</p>
-                ${bulletPointsHtml}
-                ${warningHtml}
-                <div class="confirm-buttons">
-                    <button class="modal-close-btn cancel-btn">Cancel</button>
-                    <button class="confirm-btn">Confirm</button>
-                </div>
-            </div>
-        `;
+        // Show the modal
+        modal.classList.remove('hidden');
         
-        document.body.appendChild(modal);
+        // Clear any existing event listeners by cloning the button elements
+        const confirmBtn = modal.querySelector('.confirm-btn');
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        const closeBtn = modal.querySelector('.cancel-btn');
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
         
         // Add event listeners to buttons
-        const confirmBtn = modal.querySelector('.confirm-btn');
         const handleConfirm = (e) => {
             e.preventDefault();
-            if (modal.parentNode) {
-                document.body.removeChild(modal);
-            }
+            modal.classList.add('hidden');
             if (typeof confirmCallback === 'function') {
                 confirmCallback();
             }
         };
-        confirmBtn.addEventListener('click', handleConfirm);
-        confirmBtn.addEventListener('touchend', handleConfirm);
+        newConfirmBtn.addEventListener('click', handleConfirm);
+        newConfirmBtn.addEventListener('touchend', handleConfirm);
         
         // Close button
-        const closeBtn = modal.querySelector('.cancel-btn');
         const handleClose = (e) => {
             e.preventDefault();
-            if (modal.parentNode) {
-                document.body.removeChild(modal);
+            modal.classList.add('hidden');
+        };
+        newCloseBtn.addEventListener('click', handleClose);
+        newCloseBtn.addEventListener('touchend', handleClose);
+        
+        // Modal backdrop click to close
+        const handleBackdropClick = (e) => {
+            if (e.target === modal) {
+                handleClose(e);
             }
         };
-        closeBtn.addEventListener('click', handleClose);
-        closeBtn.addEventListener('touchend', handleClose);
+        modal.addEventListener('click', handleBackdropClick);
+        
+        // Prevent modal content clicks from closing the modal
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 
     updateHUD() {

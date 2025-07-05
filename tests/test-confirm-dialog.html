@@ -69,12 +69,14 @@
                 
                 modal.innerHTML = `
                     <div class="modal-content confirm-dialog">
-                        <h2>${title}</h2>
+                        <div class="modal-header">
+                            <h2>${title}</h2>
+                            <button class="modal-close-btn cancel-btn">✕</button>
+                        </div>
                         <p class="confirm-message">${message}</p>
                         ${bulletPointsHtml}
                         ${warningHtml}
                         <div class="confirm-buttons">
-                            <button class="modal-close-btn cancel-btn">Cancel</button>
                             <button class="confirm-btn">Confirm</button>
                         </div>
                     </div>
@@ -106,6 +108,19 @@
                 };
                 closeBtn.addEventListener('click', handleClose);
                 closeBtn.addEventListener('touchend', handleClose);
+                
+                // Modal backdrop click to close
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        handleClose(e);
+                    }
+                });
+                
+                // Prevent modal content clicks from closing the modal
+                const modalContent = modal.querySelector('.modal-content');
+                modalContent.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
             }
         }
         
