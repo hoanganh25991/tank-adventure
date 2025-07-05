@@ -227,7 +227,10 @@ class GameUI {
             
             // Loading
             loadingScreen: document.getElementById('loadingScreen'),
-            loadingProgress: document.getElementById('loadingProgress')
+            loadingProgress: document.getElementById('loadingProgress'),
+            
+            // Battle Type Modal
+            battleTypeModal: document.getElementById('battleTypeModal')
         };
     }
 
@@ -323,6 +326,59 @@ class GameUI {
                 e.preventDefault();
             }
         }, { passive: false });
+        
+        // Setup battle type modal event listeners
+        this.setupBattleTypeModal();
+    }
+
+    setupBattleTypeModal() {
+        const modal = this.elements.battleTypeModal;
+        
+        // Set up battle type button event listeners
+        const battleButtons = modal.querySelectorAll('.battle-type-btn');
+        battleButtons.forEach(btn => {
+            // Helper function to handle both touch and click
+            const handleBattleTypeSelection = (e) => {
+                e.preventDefault(); // Prevent default behavior
+                const battleType = btn.getAttribute('data-type');
+                
+                // Add visual feedback
+                btn.classList.add('active');
+                
+                // Small delay for visual feedback
+                setTimeout(() => {
+                    // Hide the modal
+                    modal.classList.add('hidden');
+                    
+                    // Request fullscreen and start battle
+                    Utils.requestFullscreen(document.documentElement)
+                        .then(() => {
+                            console.log('Fullscreen mode activated');
+                            // Start the battle after fullscreen is activated
+                            this.gameEngine.startBattle(battleType);
+                        })
+                        .catch((error) => {
+                            console.warn('Fullscreen request failed:', error);
+                            // Start the battle even if fullscreen fails
+                            this.gameEngine.startBattle(battleType);
+                        });
+                }, 150);
+            };
+            
+            // Add both touch and click event listeners
+            btn.addEventListener('touchstart', handleBattleTypeSelection, { passive: false });
+            btn.addEventListener('click', handleBattleTypeSelection);
+        });
+        
+        // Close button
+        const closeBtn = modal.querySelector('.modal-close-btn');
+        const handleClose = (e) => {
+            e.preventDefault();
+            modal.classList.add('hidden');
+        };
+        
+        closeBtn.addEventListener('touchstart', handleClose, { passive: false });
+        closeBtn.addEventListener('click', handleClose);
     }
 
     handleShoot() {
@@ -355,9 +411,8 @@ class GameUI {
     }
     
     showBattleTypeSelection() {
-        // Create a modal dialog for battle type selection
-        const modal = document.createElement('div');
-        modal.className = 'modal';
+        // Use the existing modal element
+        const modal = this.elements.battleTypeModal;
         
         // Check if we're on a small screen in landscape mode
         const isSmallLandscape = window.innerHeight <= 450 && window.innerWidth > window.innerHeight;
@@ -368,94 +423,12 @@ class GameUI {
         // Add a class for iPhone 14 Pro Max
         if (isIPhone14ProMaxLandscape) {
             modal.classList.add('iphone14-landscape');
+        } else {
+            modal.classList.remove('iphone14-landscape');
         }
         
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h2>Select Battle Type</h2>
-                <div class="battle-type-options">
-                    <button class="battle-type-btn" data-type="quick">
-                        <span class="battle-icon">⚡</span>
-                        <div class="battle-info">
-                            <span class="battle-name">Quick Battle</span>
-                            <span class="battle-desc">3 Waves</span>
-                            <span class="battle-reward">Reward: x1.0 (x1.3 bonus)</span>
-                        </div>
-                        <span class="battle-click-hint">▶</span>
-                    </button>
-                    <button class="battle-type-btn" data-type="standard">
-                        <span class="battle-icon">🔥</span>
-                        <div class="battle-info">
-                            <span class="battle-name">Standard Battle</span>
-                            <span class="battle-desc">5 Waves</span>
-                            <span class="battle-reward">Reward: x1.2 (x1.5 bonus)</span>
-                        </div>
-                        <span class="battle-click-hint">▶</span>
-                    </button>
-                    <button class="battle-type-btn" data-type="extended">
-                        <span class="battle-icon">💪</span>
-                        <div class="battle-info">
-                            <span class="battle-name">Extended Battle</span>
-                            <span class="battle-desc">10 Waves</span>
-                            <span class="battle-reward">Reward: x1.5 (x2.0 bonus)</span>
-                        </div>
-                        <span class="battle-click-hint">▶</span>
-                    </button>
-                </div>
-                <button class="modal-close-btn">Cancel</button>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Add event listeners to buttons
-        const battleButtons = modal.querySelectorAll('.battle-type-btn');
-        battleButtons.forEach(btn => {
-            // Helper function to handle both touch and click
-            const handleBattleTypeSelection = (e) => {
-                e.preventDefault(); // Prevent default behavior
-                const battleType = btn.getAttribute('data-type');
-                
-                // Add visual feedback
-                btn.classList.add('active');
-                
-                // Small delay for visual feedback
-                setTimeout(() => {
-                    if (modal.parentNode) {
-                        document.body.removeChild(modal);
-                    }
-                    
-                    // Request fullscreen and start battle
-                    Utils.requestFullscreen(document.documentElement)
-                        .then(() => {
-                            console.log('Fullscreen mode activated');
-                            // Start the battle after fullscreen is activated
-                            this.gameEngine.startBattle(battleType);
-                        })
-                        .catch((error) => {
-                            console.warn('Fullscreen request failed:', error);
-                            // Start the battle even if fullscreen fails
-                            this.gameEngine.startBattle(battleType);
-                        });
-                }, 150);
-            };
-            
-            // Add both touch and click event listeners
-            btn.addEventListener('touchstart', handleBattleTypeSelection, { passive: false });
-            btn.addEventListener('click', handleBattleTypeSelection);
-        });
-        
-        // Close button
-        const closeBtn = modal.querySelector('.modal-close-btn');
-        const handleClose = (e) => {
-            e.preventDefault();
-            if (modal.parentNode) {
-                document.body.removeChild(modal);
-            }
-        };
-        
-        closeBtn.addEventListener('touchstart', handleClose, { passive: false });
-        closeBtn.addEventListener('click', handleClose);
+        // Show the modal
+        modal.classList.remove('hidden');
     }
 
     handleUpgrade(upgradeType) {

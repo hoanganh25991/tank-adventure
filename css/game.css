@@ -1431,6 +1431,10 @@ button {
     z-index: 1000;
 }
 
+.modal.hidden {
+    display: none !important;
+}
+
 .modal-content {
     background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
     border-radius: 15px;
@@ -1442,17 +1446,26 @@ button {
     text-align: center;
 }
 
-.modal-content h2 {
-    color: var(--primary-blue);
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+    position: relative;
+}
+
+.modal-header h2 {
+    color: var(--primary-blue);
     font-size: 24px;
+    margin: 0;
+    flex: 1;
+    text-align: center;
 }
 
 .battle-type-options {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 20px;
 }
 
 .modal-instruction {
@@ -1558,23 +1571,32 @@ button {
 }
 
 .modal-close-btn {
-    background: var(--bg-section);
-    border: 2px solid var(--border-primary);
-    border-radius: 10px;
-    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     color: var(--text-secondary);
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: 0;
     -webkit-tap-highlight-color: transparent; /* Remove default mobile tap highlight */
+    font-weight: bold;
+    line-height: 1;
 }
 
 .modal-close-btn:hover,
 .modal-close-btn:active {
-    background: var(--bg-item);
-    color: var(--text-primary);
-    border-color: var(--border-accent);
+    background: rgba(255, 77, 77, 0.2);
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+    transform: scale(1.1);
 }
 
 /* Essential Modal/Popup height control - prevent modal cutoff */
@@ -1589,6 +1611,20 @@ button {
         overflow-y: auto;
         padding: 15px;
     }
+    
+    .modal-header {
+        margin-bottom: 15px;
+    }
+    
+    .modal-header h2 {
+        font-size: 20px;
+    }
+    
+    .modal-close-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
 }
 
 /* Direct class for iPhone 14 Pro Max landscape mode */
@@ -1597,6 +1633,20 @@ button {
     max-height: 380px;
     transform: scale(0.95);
     transform-origin: center;
+}
+
+.iphone14-landscape .modal-header {
+    margin-bottom: 10px;
+}
+
+.iphone14-landscape .modal-header h2 {
+    font-size: 18px;
+}
+
+.iphone14-landscape .modal-close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
 }
 
 /* Custom Confirm Dialog Styles */
