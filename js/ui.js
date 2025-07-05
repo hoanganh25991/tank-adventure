@@ -414,9 +414,6 @@ class GameUI {
         // Use the existing modal element
         const modal = this.elements.battleTypeModal;
         
-        // Check if we're on a small screen in landscape mode
-        const isSmallLandscape = window.innerHeight <= 450 && window.innerWidth > window.innerHeight;
-        
         // Check specifically for iPhone 14 Pro Max dimensions (or similar)
         const isIPhone14ProMaxLandscape = window.innerWidth >= 900 && window.innerHeight <= 430;
         
