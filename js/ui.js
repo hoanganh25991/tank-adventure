@@ -249,9 +249,9 @@ class GameUI {
         };
         
         // Debug: Check if critical elements exist
-        console.log('Settings button found:', elements.settingsBtn ? 'YES' : 'NO');
+        console.log('Guide button found:', elements.settingsBtn ? 'YES' : 'NO');
         console.log('Pause button found:', elements.pauseBtn ? 'YES' : 'NO');
-        console.log('Settings screen found:', elements.screens.settingsScreen ? 'YES' : 'NO');
+        console.log('Guide screen found:', elements.screens.settingsScreen ? 'YES' : 'NO');
         
         return elements;
     }
@@ -289,37 +289,37 @@ class GameUI {
         
         // Debug: Check if settingsBtn exists
         if (!this.elements.settingsBtn) {
-            console.error('Settings button not found in DOM!');
+            console.error('Guide button not found in DOM!');
         } else {
-            console.log('Settings button found:', this.elements.settingsBtn);
+            console.log('Guide button found:', this.elements.settingsBtn);
         }
         
         this.setupMobileButton(this.elements.settingsBtn, () => {
-            console.log('Settings button callback triggered');
+            console.log('Guide button callback triggered');
             
             // If we're in battle, pause the game
             if (this.gameEngine.currentScene === 'battle') {
-                console.log('Pausing game from settings button');
+                console.log('Pausing game from guide button');
                 this.gameEngine.pauseGame();
             } else {
-                // Otherwise show settings screen
+                // Otherwise show guide screen
                 this.showScreen('settingsScreen');
             }
         });
         
-        // Emergency fallback for settings button - direct event listeners
+        // Emergency fallback for guide button - direct event listeners
         if (this.elements.settingsBtn) {
             const emergencyClickHandler = (e) => {
-                console.log('Emergency settings button handler triggered');
+                console.log('Emergency guide button handler triggered');
                 e.preventDefault();
                 e.stopPropagation();
                 
                 // If we're in battle, pause the game
                 if (this.gameEngine.currentScene === 'battle') {
-                    console.log('Emergency pause game from settings button');
+                    console.log('Emergency pause game from guide button');
                     this.gameEngine.pauseGame();
                 } else {
-                    // Otherwise show settings screen
+                    // Otherwise show guide screen
                     this.showScreen('settingsScreen');
                 }
             };
