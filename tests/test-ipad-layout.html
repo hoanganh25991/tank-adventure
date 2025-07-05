@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>iPad Layout Test - Tank Adventure</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        /* Test-specific styles */
+        .screen-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .layout-debug {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        /* Force iPad Air dimensions */
+        body {
+            width: 1180px;
+            height: 820px;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            width: 1180px;
+            height: 820px;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-info">
+        iPad Air Test: 1180x820px
+    </div>
+    
+    <div class="layout-debug">
+        Bottom buttons should be visible here
+    </div>
+    
+    <div id="gameContainer">
+        <!-- Base/Upgrade Screen -->
+        <div id="baseScreen" class="screen active">
+            <h2>Tank Base</h2>
+            
+            <!-- Player Stats - Horizontal Layout at Top -->
+            <div id="playerStats">
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="playerLevel">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Experience</span>
+                    <span class="stat-value"><span id="playerExp">0</span> / <span id="playerExpNext">100</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Coins</span>
+                    <span class="stat-value" id="playerCoins">0</span>
+                </div>
+            </div>
+            
+            <div id="baseContent">
+                <div class="upgrades-grid">
+                    <div id="tankUpgrades" class="upgrade-category">
+                        <h3>🚗 Main Tank</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">❤️ Armor</span>
+                                    <span class="upgrade-current" id="tankHealth">100</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="mainHealth">
+                                    <span class="upgrade-cost">100💰</span>
+                                    <span class="upgrade-bonus">+20</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">⚔️ Cannon</span>
+                                    <span class="upgrade-current" id="tankDamage">10</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="mainDamage">
+                                    <span class="upgrade-cost">150💰</span>
+                                    <span class="upgrade-bonus">+5</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">💨 Engine</span>
+                                    <span class="upgrade-current" id="tankSpeed">5</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="mainSpeed">
+                                    <span class="upgrade-cost">200💰</span>
+                                    <span class="upgrade-bonus">+1</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="miniTankUpgrades" class="upgrade-category">
+                        <h3>🛡️ Mini Tanks</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">❤️ Armor</span>
+                                    <span class="upgrade-current" id="miniTankHealth">50</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="miniHealth">
+                                    <span class="upgrade-cost">120💰</span>
+                                    <span class="upgrade-bonus">+10</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">⚔️ Cannon</span>
+                                    <span class="upgrade-current" id="miniTankDamage">5</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="miniDamage">
+                                    <span class="upgrade-cost">180💰</span>
+                                    <span class="upgrade-bonus">+2</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🔄 Rate of Fire</span>
+                                    <span class="upgrade-current" id="miniFireRate">90%</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="miniFireRate">
+                                    <span class="upgrade-cost">250💰</span>
+                                    <span class="upgrade-bonus">+10%</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="economyUpgrades" class="upgrade-category">
+                        <h3>💰 Economy</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🔧 Salvage</span>
+                                    <span class="upgrade-current" id="coinBonus">100%</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="coinBonus">
+                                    <span class="upgrade-cost">200💰</span>
+                                    <span class="upgrade-bonus">+10%</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">📚 Experience</span>
+                                    <span class="upgrade-current" id="expBonus">100%</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="expBonus">
+                                    <span class="upgrade-cost">250💰</span>
+                                    <span class="upgrade-bonus">+10%</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="specialUpgrades" class="upgrade-category">
+                        <h3>🌟 Special</h3>
+                        <div class="upgrade-section">
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🚀 Accelerator</span>
+                                    <span class="upgrade-current" id="bulletSpeed">5</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="bulletSpeed">
+                                    <span class="upgrade-cost">300💰</span>
+                                    <span class="upgrade-bonus">+1</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🔧 Auto-Repair</span>
+                                    <span class="upgrade-current" id="autoRepair">0</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="autoRepair">
+                                    <span class="upgrade-cost">400💰</span>
+                                    <span class="upgrade-bonus">+0.5</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">🛡️ Shield</span>
+                                    <span class="upgrade-current" id="shield">0</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="shield">
+                                    <span class="upgrade-cost">600💰</span>
+                                    <span class="upgrade-bonus">+15</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-item">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-name">💥 Multi-Shot</span>
+                                    <span class="upgrade-current" id="multiShot">0%</span>
+                                </div>
+                                <button class="upgrade-btn" data-upgrade="multiShot">
+                                    <span class="upgrade-cost">800💰</span>
+                                    <span class="upgrade-bonus">+10%</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="baseButtons">
+                <button id="startBattleFromBaseBtn" class="menu-btn action-btn">🔥 Battle</button>
+                <button id="backToMenuBtn" class="menu-btn">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="verify-ipad-layout.js"></script>
+    <script>
+        // Debug info
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Window dimensions:', window.innerWidth, 'x', window.innerHeight);
+            console.log('Document dimensions:', document.documentElement.clientWidth, 'x', document.documentElement.clientHeight);
+            
+            const baseButtons = document.getElementById('baseButtons');
+            const rect = baseButtons.getBoundingClientRect();
+            console.log('Base buttons position:', rect);
+            console.log('Base buttons visible:', rect.bottom <= window.innerHeight);
+        });
+    </script>
+</body>
+</html>

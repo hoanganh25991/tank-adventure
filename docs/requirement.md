@@ -1,4 +1,6 @@
-**Core Business Logic**
+# Requirement
+
+## Core Business Logic
 
 - **Platform:** Mobile and tablet with touch screen.
 - **Player and Mini Tanks:**
@@ -25,7 +27,7 @@
 - **Skill Management:**
   - Active skills auto-cast; focus on movement control.
 
-**External Rendering Layer**
+## External Rendering Layer
 
 - **Rendering Requirements:**
   - 2D graphics using HTML and JavaScript.
