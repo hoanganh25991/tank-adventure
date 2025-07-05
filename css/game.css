@@ -678,7 +678,6 @@ button {
     /* Inherit the consistent screen background */
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 12px;
     
     /* Ensure proper scrolling on mobile */
     -webkit-overflow-scrolling: touch;
@@ -716,7 +715,7 @@ button {
 }
 
 #baseScreen h2 {
-    margin-bottom: 1rem;
+    padding: 1rem;
     font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 32px;
     font-weight: 600;
@@ -1181,15 +1180,7 @@ button {
 /* Mobile Landscape Optimizations for Base Screen */
 @media (max-height: 500px) and (min-width: 600px) {
     #baseContent {
-        max-height: calc(100vh - 11rem);
         padding-bottom: 80px; /* Increase padding for sticky buttons */
-    }
-    
-    #baseButtons {
-        padding: 10px 15px 15px 15px;
-        min-height: 50px;
-        /* Ensure buttons stay visible */
-        background: linear-gradient(to top, var(--bg-dark) 60%, transparent);
     }
     
     #baseButtons button {
@@ -1200,24 +1191,6 @@ button {
 
 /* Extra Short Mobile Landscape - Ensure buttons are always visible */
 @media (max-height: 400px) and (min-width: 600px) {
-    #baseContent {
-        max-height: calc(100vh - 100px);
-        padding-bottom: 70px;
-    }
-    
-    #baseButtons {
-        padding: 8px 10px 10px 10px;
-        min-height: 45px;
-        /* Stronger background to ensure visibility */
-        background: linear-gradient(to top, var(--bg-dark) 80%, transparent);
-        /* Use fixed positioning as fallback for very short screens */
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: 0;
-    }
-    
     #baseButtons button {
         padding: 6px 15px;
         font-size: 14px;
@@ -1798,17 +1771,12 @@ button {
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    padding: 15px 1rem 1rem 1rem;
     position: sticky;
     bottom: 0;
-    background: linear-gradient(to top, var(--bg-dark), transparent);
     z-index: 5;
-    /* Ensure buttons don't get cut off on mobile landscape */
-    min-height: 60px;
     width: 100%;
     box-sizing: border-box;
+    background: linear-gradient(to top, var(--bg-dark), transparent);
 }
 
 #startBattleFromBaseBtn {
