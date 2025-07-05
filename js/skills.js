@@ -97,6 +97,30 @@ class Skill {
             case 'formation_expand':
                 this.applyFormationExpand(player);
                 break;
+            case 'freeze_blast':
+                this.applyFreezeBlast(enemies);
+                break;
+            case 'lightning_storm':
+                this.applyLightningStorm(player, enemies);
+                break;
+            case 'fire_nova':
+                this.applyFireNova(player, enemies);
+                break;
+            case 'vortex_field':
+                this.applyVortexField(player, enemies);
+                break;
+            case 'plasma_burst':
+                this.applyPlasmaBurst(player, enemies);
+                break;
+            case 'ice_barrier':
+                this.applyIceBarrier(player);
+                break;
+            case 'magnetic_pull':
+                this.applyMagneticPull(player);
+                break;
+            case 'quantum_strike':
+                this.applyQuantumStrike(player, enemies);
+                break;
         }
     }
 
@@ -109,6 +133,15 @@ class Skill {
                         miniTank.heal(this.effect.value / 2);
                     }
                 }
+                break;
+            case 'vortex_field':
+                this.applyVortexPull(player, enemies, deltaTime);
+                break;
+            case 'ice_barrier':
+                this.maintainIceBarrier(player, deltaTime);
+                break;
+            case 'magnetic_pull':
+                this.applyMagneticEffect(player, deltaTime);
                 break;
         }
     }
@@ -263,6 +296,287 @@ class Skill {
         }
     }
 
+    // New Advanced Skill Implementations
+    applyFreezeBlast(enemies) {
+        for (const enemy of enemies) {
+            // Apply freeze effect
+            enemy.frozen = true;
+            enemy.originalSpeed = enemy.speed;
+            enemy.speed *= this.effect.slowFactor;
+            enemy.freezeDuration = this.effect.freezeDuration;
+            enemy.freezeEndTime = Date.now() + this.effect.freezeDuration;
+            
+            // Visual freeze effect
+            enemy.frozenEffect = true;
+        }
+    }
+
+    applyLightningStorm(player, enemies) {
+        if (enemies.length === 0) return;
+        
+        // Start from player position
+        const startX = player.mainTank.x;
+        const startY = player.mainTank.y;
+        
+        // Find closest enemies and create chain
+        const targets = [];
+        let currentTarget = this.findClosestEnemy(enemies, startX, startY);
+        
+        for (let i = 0; i < this.effect.chains && currentTarget; i++) {
+            targets.push(currentTarget);
+            
+            // Damage the target
+            const damage = this.effect.damage * (1 + this.level * 0.2);
+            currentTarget.takeDamage(damage);
+            
+            // Mark as hit to avoid hitting again
+            currentTarget.lightningHit = true;
+            
+            // Find next target in range
+            currentTarget = this.findClosestEnemy(
+                enemies.filter(e => !e.lightningHit),
+                currentTarget.x, currentTarget.y
+            );
+        }
+        
+        // Store lightning chain for visual effects
+        if (window.gameEngine && window.gameEngine.effectsManager) {
+            window.gameEngine.effectsManager.createLightningChain(startX, startY, targets);
+        }
+        
+        // Clear lightning hit markers
+        setTimeout(() => {
+            for (const enemy of enemies) {
+                enemy.lightningHit = false;
+            }
+        }, 100);
+    }
+
+    applyFireNova(player, enemies) {
+        const centerX = player.mainTank.x;
+        const centerY = player.mainTank.y;
+        const radius = this.effect.radius;
+        
+        for (const enemy of enemies) {
+            const distance = Math.sqrt(
+                Math.pow(enemy.x - centerX, 2) + Math.pow(enemy.y - centerY, 2)
+            );
+            
+            if (distance <= radius) {
+                // Apply initial damage
+                const damage = this.effect.damage * (1 + this.level * 0.15);
+                enemy.takeDamage(damage);
+                
+                // Apply burning effect
+                enemy.burning = true;
+                enemy.burnDamage = this.effect.damage / 2;
+                enemy.burnDuration = this.effect.dotDuration;
+                enemy.burnEndTime = Date.now() + this.effect.dotDuration;
+                enemy.burnInterval = 500; // Damage every 0.5 seconds
+                enemy.lastBurnTick = Date.now();
+            }
+        }
+    }
+
+    applyVortexField(player, enemies) {
+        const centerX = player.mainTank.x;
+        const centerY = player.mainTank.y;
+        
+        // Store vortex data for continuous effect
+        player.vortexActive = true;
+        player.vortexCenter = { x: centerX, y: centerY };
+        player.vortexRadius = this.effect.radius;
+        player.vortexForce = this.effect.pullForce;
+        player.vortexDamage = this.effect.damage;
+    }
+
+    applyPlasmaBurst(player, enemies) {
+        const startX = player.mainTank.x;
+        const startY = player.mainTank.y;
+        const angle = player.mainTank.angle;
+        const range = this.effect.range;
+        const width = this.effect.width;
+        const damage = this.effect.damage * (1 + this.level * 0.25);
+        
+        // Create plasma wave
+        for (const enemy of enemies) {
+            // Calculate if enemy is within plasma burst area
+            const dx = enemy.x - startX;
+            const dy = enemy.y - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance <= range) {
+                // Check if enemy is within the burst width
+                const enemyAngle = Math.atan2(dy, dx);
+                const angleDiff = Math.abs(enemyAngle - angle);
+                const normalizedAngleDiff = Math.min(angleDiff, Math.PI * 2 - angleDiff);
+                
+                if (normalizedAngleDiff <= width / 2) {
+                    enemy.takeDamage(damage);
+                    // Add plasma effect
+                    enemy.plasmaHit = true;
+                    enemy.plasmaEndTime = Date.now() + 1000;
+                }
+            }
+        }
+        
+        // Visual plasma burst effect
+        if (window.gameEngine && window.gameEngine.effectsManager) {
+            window.gameEngine.effectsManager.createPlasmaBurst(startX, startY, angle, range, width);
+        }
+    }
+
+    applyIceBarrier(player) {
+        const centerX = player.mainTank.x;
+        const centerY = player.mainTank.y;
+        const barriers = [];
+        
+        // Create ice barriers around the player
+        for (let i = 0; i < this.effect.count; i++) {
+            const angle = (i / this.effect.count) * Math.PI * 2;
+            const distance = 100; // Distance from player
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            
+            barriers.push({
+                x: x,
+                y: y,
+                health: this.effect.health,
+                maxHealth: this.effect.health,
+                angle: angle,
+                active: true
+            });
+        }
+        
+        player.iceBarriers = barriers;
+        player.iceBarrierActive = true;
+    }
+
+    applyMagneticPull(player) {
+        player.magneticFieldActive = true;
+        player.magneticRange = this.effect.range;
+        player.magneticRedirect = this.effect.redirect;
+    }
+
+    applyQuantumStrike(player, enemies) {
+        if (enemies.length === 0) return;
+        
+        // Find target enemy
+        const target = this.findClosestEnemy(enemies, player.mainTank.x, player.mainTank.y);
+        if (!target) return;
+        
+        // Store original position
+        const originalX = player.mainTank.x;
+        const originalY = player.mainTank.y;
+        
+        // Teleport to target
+        const teleportX = target.x + Math.cos(target.angle + Math.PI) * 80;
+        const teleportY = target.y + Math.sin(target.angle + Math.PI) * 80;
+        
+        player.mainTank.x = teleportX;
+        player.mainTank.y = teleportY;
+        
+        // Update mini tank positions
+        player.updateMiniTankPositions();
+        
+        // Deal massive damage
+        const damage = this.effect.damage * (1 + this.level * 0.3);
+        target.takeDamage(damage);
+        
+        // Damage nearby enemies
+        for (const enemy of enemies) {
+            if (enemy !== target) {
+                const distance = Math.sqrt(
+                    Math.pow(enemy.x - teleportX, 2) + Math.pow(enemy.y - teleportY, 2)
+                );
+                
+                if (distance <= this.effect.range) {
+                    enemy.takeDamage(damage * 0.5);
+                }
+            }
+        }
+        
+        // Visual quantum effect
+        if (window.gameEngine && window.gameEngine.effectsManager) {
+            window.gameEngine.effectsManager.createQuantumStrike(originalX, originalY, teleportX, teleportY);
+        }
+    }
+
+    // Helper methods for continuous effects
+    applyVortexPull(player, enemies, deltaTime) {
+        if (!player.vortexActive) return;
+        
+        const centerX = player.vortexCenter.x;
+        const centerY = player.vortexCenter.y;
+        const radius = player.vortexRadius;
+        const force = player.vortexForce;
+        const damage = player.vortexDamage;
+        
+        for (const enemy of enemies) {
+            const dx = centerX - enemy.x;
+            const dy = centerY - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance <= radius && distance > 0) {
+                // Pull enemies toward center
+                const pullStrength = (force * deltaTime) / 1000;
+                const pullX = (dx / distance) * pullStrength;
+                const pullY = (dy / distance) * pullStrength;
+                
+                enemy.x += pullX;
+                enemy.y += pullY;
+                
+                // Damage enemies in vortex
+                if (Math.random() < 0.1) { // 10% chance per frame
+                    enemy.takeDamage(damage);
+                }
+            }
+        }
+    }
+
+    maintainIceBarrier(player, deltaTime) {
+        if (!player.iceBarrierActive || !player.iceBarriers) return;
+        
+        // Update barrier positions to follow player
+        const centerX = player.mainTank.x;
+        const centerY = player.mainTank.y;
+        
+        for (let i = 0; i < player.iceBarriers.length; i++) {
+            const barrier = player.iceBarriers[i];
+            if (barrier.active) {
+                const distance = 100;
+                barrier.x = centerX + Math.cos(barrier.angle) * distance;
+                barrier.y = centerY + Math.sin(barrier.angle) * distance;
+            }
+        }
+    }
+
+    applyMagneticEffect(player, deltaTime) {
+        if (!player.magneticFieldActive) return;
+        
+        // This will be handled by the bullet system to redirect enemy bullets
+        // The effect is applied in the game engine's bullet update loop
+    }
+
+    // Helper method to find closest enemy
+    findClosestEnemy(enemies, x, y) {
+        let closest = null;
+        let minDistance = Infinity;
+        
+        for (const enemy of enemies) {
+            const distance = Math.sqrt(
+                Math.pow(enemy.x - x, 2) + Math.pow(enemy.y - y, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closest = enemy;
+            }
+        }
+        
+        return closest;
+    }
+
     upgrade() {
         if (this.level < this.maxLevel) {
             this.level++;
@@ -323,6 +637,31 @@ class SkillManager {
             
             new Skill('auto_repair', 'Auto-Repair System', 'Gradually repairs tanks for 20 seconds', 'active',
                 { type: 'auto_repair', value: 5 }, 20000, 30000, '🔄', 'REGEN'),
+            
+            // New Advanced Active Skills
+            new Skill('freeze_blast', 'Freeze Blast', 'Freezes and slows all enemies for 8 seconds', 'active',
+                { type: 'freeze_blast', slowFactor: 0.3, freezeDuration: 2000 }, 8000, 22000, '❄️', 'FREEZE'),
+            
+            new Skill('lightning_storm', 'Lightning Storm', 'Chain lightning jumps between enemies', 'active',
+                { type: 'lightning_storm', damage: 25, chains: 3, range: 150 }, 0, 18000, '⚡', 'BOLT'),
+            
+            new Skill('fire_nova', 'Fire Nova', 'Spreads burning damage over time', 'active',
+                { type: 'fire_nova', damage: 8, dotDuration: 5000, radius: 120 }, 0, 16000, '🔥', 'NOVA'),
+            
+            new Skill('vortex_field', 'Vortex Field', 'Pulls enemies together and damages them', 'active',
+                { type: 'vortex_field', pullForce: 100, damage: 15, radius: 200 }, 6000, 20000, '🌀', 'VORTEX'),
+            
+            new Skill('plasma_burst', 'Plasma Burst', 'High-damage energy wave that pierces enemies', 'active',
+                { type: 'plasma_burst', damage: 40, range: 300, width: 80 }, 0, 14000, '💎', 'PLASMA'),
+            
+            new Skill('ice_barrier', 'Ice Barrier', 'Creates protective ice walls around tanks', 'active',
+                { type: 'ice_barrier', health: 100, duration: 12000, count: 6 }, 12000, 25000, '🧊', 'WALL'),
+            
+            new Skill('magnetic_pull', 'Magnetic Field', 'Attracts and redirects enemy bullets', 'active',
+                { type: 'magnetic_pull', range: 180, redirect: true }, 10000, 19000, '🧲', 'MAGNET'),
+            
+            new Skill('quantum_strike', 'Quantum Strike', 'Teleports and deals massive damage', 'active',
+                { type: 'quantum_strike', damage: 60, range: 250, teleportRange: 150 }, 0, 30000, '✨', 'QUANTUM'),
             
             // Passive Skills
             new Skill('armor_upgrade', 'Reinforced Armor', 'Permanently increases max health', 'passive',
@@ -394,6 +733,30 @@ class SkillManager {
                     break;
                 case 'auto_repair':
                     shouldCast = playerHealth < 0.6;
+                    break;
+                case 'freeze_blast':
+                    shouldCast = enemies.length > 6 || playerHealth < 0.3;
+                    break;
+                case 'lightning_storm':
+                    shouldCast = enemies.length > 4;
+                    break;
+                case 'fire_nova':
+                    shouldCast = enemies.length > 5;
+                    break;
+                case 'vortex_field':
+                    shouldCast = enemies.length > 7;
+                    break;
+                case 'plasma_burst':
+                    shouldCast = enemies.length > 3;
+                    break;
+                case 'ice_barrier':
+                    shouldCast = playerHealth < 0.4;
+                    break;
+                case 'magnetic_pull':
+                    shouldCast = enemies.length > 8;
+                    break;
+                case 'quantum_strike':
+                    shouldCast = enemies.length > 10 || playerHealth < 0.2;
                     break;
             }
             
@@ -515,11 +878,17 @@ class SkillManager {
         return true;
     }
 
-    getRandomSkillChoices(count = 3) {
+    getRandomSkillChoices(count = 3, playerLevel = 1) {
         const available = this.availableSkills.filter(skill => {
             // Don't offer skills already at max level
             const existing = this.findSkill(skill.id);
-            return !existing || existing.level < existing.maxLevel;
+            if (existing && existing.level >= existing.maxLevel) {
+                return false;
+            }
+            
+            // Check if player level meets skill requirements
+            const requiredLevel = this.getSkillRequiredLevel(skill.id);
+            return playerLevel >= requiredLevel;
         });
         
         if (available.length <= count) {
@@ -554,6 +923,41 @@ class SkillManager {
         }
         
         return choices;
+    }
+
+    // Define level requirements for advanced skills
+    getSkillRequiredLevel(skillId) {
+        const levelRequirements = {
+            // Basic skills (available from level 1)
+            'heal': 1,
+            'damage_boost': 1,
+            'speed_boost': 1,
+            'shield': 1,
+            'explosive_shot': 1,
+            'multi_shot': 1,
+            'time_slow': 1,
+            'auto_repair': 1,
+            
+            // Advanced skills (require higher levels)
+            'freeze_blast': 3,      // Level 3+ for freeze effects
+            'lightning_storm': 4,   // Level 4+ for chain lightning
+            'fire_nova': 3,         // Level 3+ for DoT effects
+            'vortex_field': 5,      // Level 5+ for area control
+            'plasma_burst': 4,      // Level 4+ for piercing attacks
+            'ice_barrier': 6,       // Level 6+ for defensive structures
+            'magnetic_pull': 7,     // Level 7+ for bullet redirection
+            'quantum_strike': 8,    // Level 8+ for teleportation
+            
+            // Passive skills (available from level 1)
+            'armor_upgrade': 1,
+            'weapon_upgrade': 1,
+            'engine_upgrade': 1,
+            'rapid_fire': 1,
+            'targeting_system': 1,
+            'formation_expand': 2   // Level 2+ for formation changes
+        };
+        
+        return levelRequirements[skillId] || 1;
     }
 
     applyPassiveSkills(player) {
