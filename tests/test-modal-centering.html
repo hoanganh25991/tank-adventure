@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Modal Centering Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .test-btn {
+            padding: 15px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            touch-action: manipulation;
+        }
+        
+        .test-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Copy modal styles from main CSS */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 2rem rgba(74, 158, 255, 0.3);
+            position: relative;
+            margin: auto;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        
+        .modal-content h2 {
+            color: #3498db;
+            margin-bottom: 1.5rem;
+            font-size: 24px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .modal-buttons .menu-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+        
+        .modal-buttons .menu-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* iPhone specific modal fixes */
+        @media screen and (max-width: 768px) {
+            .modal {
+                height: 100%;
+                height: 100vh;
+                height: -webkit-fill-available;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+                transform: translateZ(0);
+                -webkit-transform: translateZ(0);
+                will-change: transform;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+            
+            .modal-content {
+                max-height: calc(100vh - 60px);
+                max-height: calc(100vh - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                flex-shrink: 0;
+                margin: auto;
+                width: min(90%, 400px);
+                max-width: 90vw;
+            }
+        }
+        
+        /* iPhone landscape mode specific fixes */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .modal {
+                padding: 10px;
+                align-items: center;
+            }
+            
+            .modal-content {
+                max-height: calc(100vh - 40px);
+                padding: 1rem;
+            }
+            
+            .modal-content h2 {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modal Centering Test for iPhone</h1>
+        <p>This test verifies that modals are properly centered on iPhone devices.</p>
+        
+        <button class="test-btn" onclick="showModal()">Show Test Modal</button>
+        
+        <div class="info">
+            <h3>Device Info:</h3>
+            <p>User Agent: <span id="userAgent"></span></p>
+            <p>Screen Size: <span id="screenSize"></span></p>
+            <p>Viewport Size: <span id="viewportSize"></span></p>
+            <p>Is iPhone: <span id="isIPhone"></span></p>
+        </div>
+    </div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Test Modal</h2>
+            <p>This modal should be perfectly centered on all devices, including iPhone.</p>
+            <div class="modal-buttons">
+                <button class="menu-btn" onclick="closeModal()">Close</button>
+                <button class="menu-btn" onclick="testResize()">Test Resize</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display device info
+        function updateDeviceInfo() {
+            document.getElementById('userAgent').textContent = navigator.userAgent;
+            document.getElementById('screenSize').textContent = `${screen.width}x${screen.height}`;
+            document.getElementById('viewportSize').textContent = `${window.innerWidth}x${window.innerHeight}`;
+            document.getElementById('isIPhone').textContent = /iPhone|iPad/i.test(navigator.userAgent) ? 'Yes' : 'No';
+        }
+
+        function showModal() {
+            const modal = document.getElementById('testModal');
+            modal.classList.remove('hidden');
+            
+            // Apply iPhone fixes
+            const isIPhone = /iPhone|iPad/i.test(navigator.userAgent);
+            if (isIPhone) {
+                console.log('Applying iPhone modal fixes');
+                modal.style.height = `${window.innerHeight}px`;
+                
+                // Prevent body scrolling
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('testModal');
+            modal.classList.add('hidden');
+            
+            // Clean up iPhone fixes
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
+
+        function testResize() {
+            const modal = document.getElementById('testModal');
+            if (!modal.classList.contains('hidden')) {
+                modal.style.height = `${window.innerHeight}px`;
+            }
+            updateDeviceInfo();
+        }
+
+        // Handle orientation changes
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                testResize();
+            }, 100);
+        });
+
+        // Initialize
+        updateDeviceInfo();
+        
+        // Update info on resize
+        window.addEventListener('resize', updateDeviceInfo);
+    </script>
+</body>
+</html>

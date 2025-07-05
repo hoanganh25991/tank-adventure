@@ -1276,12 +1276,18 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     backdrop-filter: blur(5px);
+    
+    /* iPhone specific fixes */
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal-content {
@@ -1293,6 +1299,12 @@ button {
     max-width: 400px;
     width: 90%;
     box-shadow: 0 0 2rem rgba(74, 158, 255, 0.3);
+    position: relative;
+    
+    /* iPhone specific centering fixes */
+    margin: auto;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .modal-content h2 {
@@ -1487,34 +1499,13 @@ button {
     animation: screenShake 0.2s ease-in-out;
 }
 
-/* Battle Type Selection Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+/* Battle Type Selection Modal - Additional styles */
 
 .modal.hidden {
     display: none !important;
 }
 
-.modal-content {
-    background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
-    border-radius: 15px;
-    padding: 25px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 5px 1rem rgba(0, 0, 0, 0.5);
-    border: 2px solid var(--border-accent);
-    text-align: center;
-}
+/* Battle type modal content - use existing .modal-content styles */
 
 .modal-header {
     display: flex;
@@ -1693,6 +1684,78 @@ button {
     .modal-close-btn {
         width: 35px;
         height: 35px;
+        font-size: 14px;
+    }
+}
+
+/* iPhone specific modal fixes */
+@media screen and (max-width: 768px) {
+    .modal {
+        /* Fix for iPhone viewport height issues */
+        height: 100%;
+        height: 100vh;
+        height: -webkit-fill-available;
+        
+        /* Ensure proper centering on iPhone */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        
+        /* Fix for iPhone Safari address bar */
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        
+        /* Force hardware acceleration for better performance */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+        
+        /* Fix for iPhone Safari viewport issues */
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+    
+    .modal-content {
+        /* Ensure modal content is visible */
+        max-height: calc(100vh - 60px);
+        max-height: calc(100vh - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        
+        /* Better centering on iPhone */
+        flex-shrink: 0;
+        margin: auto;
+        
+        /* Fix for iPhone landscape mode */
+        width: min(90%, 400px);
+        max-width: 90vw;
+    }
+}
+
+/* iPhone landscape mode specific fixes */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .modal {
+        /* Adjust for landscape mode */
+        padding: 10px;
+        align-items: center;
+    }
+    
+    .modal-content {
+        max-height: calc(100vh - 40px);
+        padding: 1rem;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .modal-buttons {
+        gap: 0.5rem;
+    }
+    
+    .modal-buttons .menu-btn {
+        padding: 8px 16px;
         font-size: 14px;
     }
 }

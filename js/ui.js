@@ -1232,6 +1232,9 @@ class GameUI {
         console.log('Showing pause modal');
         if (this.elements.pauseModal) {
             this.elements.pauseModal.style.display = 'flex';
+            
+            // iPhone viewport height fix
+            this.fixModalForIPhone(this.elements.pauseModal);
         }
     }
 
@@ -1239,6 +1242,65 @@ class GameUI {
         console.log('Hiding pause modal');
         if (this.elements.pauseModal) {
             this.elements.pauseModal.style.display = 'none';
+            
+            // Clean up iPhone fixes
+            if (this.elements.pauseModal._iphoneCleanup) {
+                this.elements.pauseModal._iphoneCleanup();
+            }
+        }
+    }
+
+    fixModalForIPhone(modal) {
+        // Fix iPhone viewport height issues
+        const isIPhone = /iPhone|iPad/i.test(navigator.userAgent);
+        const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        
+        if (isIPhone || isIOSSafari) {
+            console.log('Applying iPhone modal fixes');
+            
+            // Fix viewport height
+            const viewportHeight = window.innerHeight;
+            modal.style.height = `${viewportHeight}px`;
+            
+            // Ensure modal is properly centered
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.zIndex = '1000';
+            
+            // Apply CSS transforms for centering
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.position = 'relative';
+                modalContent.style.margin = 'auto';
+                modalContent.style.transform = 'translateZ(0)';
+            }
+            
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            
+            // Add a resize listener to handle orientation changes
+            const resizeHandler = () => {
+                if (modal.style.display === 'flex') {
+                    modal.style.height = `${window.innerHeight}px`;
+                }
+            };
+            
+            window.addEventListener('resize', resizeHandler);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(resizeHandler, 100);
+            });
+            
+            // Store cleanup function
+            modal._iphoneCleanup = () => {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                window.removeEventListener('resize', resizeHandler);
+            };
         }
     }
 
