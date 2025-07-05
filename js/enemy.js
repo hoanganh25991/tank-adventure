@@ -1566,6 +1566,18 @@ class WaveManager {
         this.wavePaused = false;
     }
 
+    endWave() {
+        // End the current wave and clean up
+        this.waveActive = false;
+        this.wavePaused = false;
+        this.enemies = [];
+        this.enemiesSpawned = 0;
+        this.totalEnemiesInWave = 0;
+        this.spawnTimer = 0;
+        this.burstTimer = 0;
+        console.log(`Wave ${this.currentWave} forcibly ended`);
+    }
+
     draw(ctx) {
         for (const enemy of this.enemies) {
             enemy.draw(ctx);
