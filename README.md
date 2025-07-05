@@ -10,7 +10,7 @@ A complete 2D tank battle game designed for mobile and tablet devices with touch
 ![tank-adventure](screenshots/tank-adventure-127-0-0-1-9003-iphone-14-pro-max.png)
 ![tank-adventure](screenshots/tank-adventure-upgrade-200330-20250704.jpeg)
 
- ## Demo
+## Demo
  
 [![Tank Adventure Game Demo](https://img.youtube.com/vi/W1IO_qIPe9g/maxresdefault.jpg)](https://www.youtube.com/watch?v=W1IO_qIPe9g)
 
