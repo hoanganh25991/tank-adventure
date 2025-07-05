@@ -582,15 +582,15 @@ class GameUI {
     handleResetGame() {
         // Show custom confirmation dialog before resetting
         this.showConfirmDialog(
-            'Reset Game',
-            '⚠️ WARNING: This will delete ALL your progress!',
+            this.localization.t('reset_game_title'),
+            this.localization.t('reset_game_message'),
             [
-                '• All tank upgrades will be lost',
-                '• Your level and experience will reset',
-                '• All earned coins will be removed',
-                '• All unlocked skills will be lost'
+                this.localization.t('reset_bullet_upgrades'),
+                this.localization.t('reset_bullet_level'),
+                this.localization.t('reset_bullet_coins'),
+                this.localization.t('reset_bullet_skills')
             ],
-            'This action cannot be undone.',
+            this.localization.t('reset_game_warning'),
             () => {
                 // Call the resetGame function from the game engine
                 this.gameEngine.resetGame();

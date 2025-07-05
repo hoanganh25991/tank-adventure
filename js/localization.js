@@ -160,7 +160,33 @@ class Localization {
                 'improved_engine': 'Improved Engine',
                 'improved_engine_desc': 'Permanently increases speed',
                 'rapid_fire_system': 'Rapid Fire System',
-                'rapid_fire_system_desc': 'Permanently reduces shoot cooldown'
+                'rapid_fire_system_desc': 'Permanently reduces shoot cooldown',
+                
+                // Battle Type Modal
+                'select_battle_type': 'Select Battle Type',
+                'quick_battle': 'Quick Battle',
+                'quick_battle_desc': '3 Waves',
+                'standard_battle': 'Standard Battle',
+                'standard_battle_desc': '5 Waves',
+                'extended_battle': 'Extended Battle',
+                'extended_battle_desc': '10 Waves',
+                'endless_battle': 'Endless Battle',
+                'endless_battle_desc': 'Infinite Waves',
+                'reward': 'Reward',
+                
+                // Confirmation Modal
+                'confirm_action': 'Confirm Action',
+                'are_you_sure': 'Are you sure?',
+                'confirm': 'Confirm',
+                'cancel': 'Cancel',
+                'reset_game_title': 'Reset Game',
+                'reset_game_message': 'Are you sure you want to reset all progress?',
+                'reset_game_warning': 'This action cannot be undone!',
+                'reset_bullet_upgrades': '• All tank upgrades will be lost',
+                'reset_bullet_level': '• Your level and experience will reset',
+                'reset_bullet_coins': '• All earned coins will be removed',
+                'reset_bullet_skills': '• All unlocked skills will be lost',
+                'loading': 'Loading...'
             },
             vi: {
                 // Main Menu
@@ -302,7 +328,33 @@ class Localization {
                 'improved_engine': 'Động Cơ Cải Tiến',
                 'improved_engine_desc': 'Tăng vĩnh viễn tốc độ',
                 'rapid_fire_system': 'Hệ Thống Bắn Nhanh',
-                'rapid_fire_system_desc': 'Giảm vĩnh viễn thời gian hồi chiêu bắn'
+                'rapid_fire_system_desc': 'Giảm vĩnh viễn thời gian hồi chiêu bắn',
+                
+                // Battle Type Modal
+                'select_battle_type': 'Chọn Loại Trận Đấu',
+                'quick_battle': 'Trận Nhanh',
+                'quick_battle_desc': '3 Đợt',
+                'standard_battle': 'Trận Tiêu Chuẩn',
+                'standard_battle_desc': '5 Đợt',
+                'extended_battle': 'Trận Mở Rộng',
+                'extended_battle_desc': '10 Đợt',
+                'endless_battle': 'Trận Vô Tận',
+                'endless_battle_desc': 'Vô Số Đợt',
+                'reward': 'Phần Thưởng',
+                
+                // Confirmation Modal
+                'confirm_action': 'Xác Nhận Hành Động',
+                'are_you_sure': 'Bạn có chắc chắn?',
+                'confirm': 'Xác Nhận',
+                'cancel': 'Hủy Bỏ',
+                'reset_game_title': 'Đặt Lại Trò Chơi',
+                'reset_game_message': 'Bạn có chắc chắn muốn đặt lại toàn bộ tiến trình?',
+                'reset_game_warning': 'Hành động này không thể hoàn tác!',
+                'reset_bullet_upgrades': '• Tất cả nâng cấp xe tăng sẽ bị mất',
+                'reset_bullet_level': '• Cấp độ và kinh nghiệm sẽ bị đặt lại',
+                'reset_bullet_coins': '• Tất cả xu đã kiếm được sẽ bị xóa',
+                'reset_bullet_skills': '• Tất cả kỹ năng đã mở khóa sẽ bị mất',
+                'loading': 'Đang Tải...'
             }
         };
     }
