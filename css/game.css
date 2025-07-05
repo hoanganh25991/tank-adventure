@@ -686,6 +686,14 @@ button {
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     position: relative;
+    box-sizing: border-box;
+}
+
+/* Base Screen when active - ensure sticky buttons work properly */
+#baseScreen.active {
+    display: flex !important;
+    flex-direction: column;
+    height: 100vh;
 }
 
 
@@ -717,12 +725,13 @@ button {
     color: var(--primary-blue);
     text-align: center;
     letter-spacing: 0.05em;
+    flex-shrink: 0; /* Ensure title doesn't shrink */
 }
 
 #baseContent {
     max-width: 800px;
     margin: 0 auto;
-    max-height: calc(100vh - 160px);
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 8px;
@@ -734,6 +743,9 @@ button {
     
     /* Ensure scrolling works on mobile */
     touch-action: pan-y;
+    
+    /* Ensure content doesn't interfere with sticky buttons */
+    min-height: 0;
 }
 
 /* Upgrades Grid Layout */
@@ -1043,6 +1055,7 @@ button {
     margin-bottom: 1rem;
     border-left: 4px solid var(--primary-blue);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0; /* Ensure stats don't shrink */
 }
 
 .stat-item {
@@ -1164,6 +1177,52 @@ button {
 @media (max-width: 768px) {
     .skill-option {
         min-height: 100px;
+    }
+}
+
+/* Mobile Landscape Optimizations for Base Screen */
+@media (max-height: 500px) and (min-width: 600px) {
+    #baseContent {
+        max-height: calc(100vh - 120px);
+        padding-bottom: 80px; /* Increase padding for sticky buttons */
+    }
+    
+    #baseButtons {
+        padding: 10px 15px 15px 15px;
+        min-height: 50px;
+        /* Ensure buttons stay visible */
+        background: linear-gradient(to top, var(--bg-dark) 60%, transparent);
+    }
+    
+    #baseButtons button {
+        padding: 8px 20px;
+        font-size: 16px;
+    }
+}
+
+/* Extra Short Mobile Landscape - Ensure buttons are always visible */
+@media (max-height: 400px) and (min-width: 600px) {
+    #baseContent {
+        max-height: calc(100vh - 100px);
+        padding-bottom: 70px;
+    }
+    
+    #baseButtons {
+        padding: 8px 10px 10px 10px;
+        min-height: 45px;
+        /* Stronger background to ensure visibility */
+        background: linear-gradient(to top, var(--bg-dark) 80%, transparent);
+        /* Use fixed positioning as fallback for very short screens */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+    }
+    
+    #baseButtons button {
+        padding: 6px 15px;
+        font-size: 14px;
     }
 }
 
@@ -1666,11 +1725,15 @@ button {
     gap: 15px;
     margin-top: 20px;
     margin-bottom: 20px;
-    padding-bottom: 20px;
+    padding: 15px 20px 20px 20px;
     position: sticky;
     bottom: 0;
     background: linear-gradient(to top, var(--bg-dark), transparent);
     z-index: 5;
+    /* Ensure buttons don't get cut off on mobile landscape */
+    min-height: 60px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #startBattleFromBaseBtn {
