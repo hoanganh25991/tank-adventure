@@ -58,6 +58,22 @@ body {
     touch-action: manipulation;
 }
 
+/* Global Ghibli Font Styling */
+p, span, div, li, label, input, textarea {
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+button {
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 500;
+}
+
 /* Game Container */
 #gameContainer {
     position: relative;
@@ -756,9 +772,12 @@ body {
 
 #baseScreen h2 {
     margin-bottom: 30px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 36px;
+    font-weight: 600;
     color: var(--primary-blue);
     text-align: center;
+    letter-spacing: 0.05em;
 }
 
 #baseContent {
@@ -800,11 +819,14 @@ body {
 .upgrade-category h3 {
     color: var(--primary-blue);
     margin-bottom: 16px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 20px;
+    font-weight: 600;
     text-align: center;
     padding-bottom: 10px;
     border-bottom: 2px solid rgba(74, 158, 255, 0.3);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.03em;
 }
 
 .upgrade-section {
@@ -847,7 +869,8 @@ body {
 .upgrade-current {
     font-size: 18px;
     color: var(--primary-blue);
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
 }
 
 .upgrade-btn {
@@ -860,7 +883,8 @@ body {
     border-radius: 10px;
     background: linear-gradient(135deg, var(--color-warning), #ffaa66);
     color: var(--text-primary);
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(255, 153, 68, 0.2);
@@ -1091,6 +1115,7 @@ body {
 .stat-label {
     font-size: 14px;
     color: var(--text-muted);
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 4px;
@@ -1100,7 +1125,8 @@ body {
 .stat-value {
     font-size: 20px;
     color: var(--primary-blue);
-    font-weight: bold;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
+    font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -1159,13 +1185,18 @@ body {
 .orientation-content h2 {
     color: var(--primary-blue);
     margin: 20px 0;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
 }
 
 .orientation-content p {
     color: var(--text-secondary);
     margin-bottom: 20px;
+    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 18px;
+    font-weight: 400;
     line-height: 1.5;
 }
 
