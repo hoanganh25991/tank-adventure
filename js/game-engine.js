@@ -153,6 +153,14 @@ class GameEngine {
             this.upgradeManager.applyAllUpgrades(this.player);
             this.skillManager.applyPassiveSkills(this.player);
             
+            // Load background music
+            try {
+                await this.soundManager.loadBackgroundMusic('assets/audio/stress-relief.mp3');
+                console.log('Background music loaded successfully');
+            } catch (error) {
+                console.warn('Failed to load background music:', error);
+            }
+            
             // Set initial scene
             this.currentScene = 'menu';
             this.ui.showScreen('mainMenu');
@@ -789,6 +797,9 @@ class GameEngine {
     endBattle(victory) {
         this.currentScene = 'results';
         
+        // Stop background music
+        this.soundManager.stopBackgroundMusic();
+        
         // Check if this was the final wave
         const isFinalWave = this.currentWave >= this.maxWaves;
         
@@ -864,6 +875,9 @@ class GameEngine {
         this.currentWave = 1;
         this.waveCompleted = false;
         
+        // Start background music for battle
+        this.soundManager.playBackgroundMusic('battle');
+        
         // Set battle type and max waves
         this.battleType = battleType;
         switch (battleType) {
@@ -937,6 +951,9 @@ class GameEngine {
         console.log(`Resuming battle, starting wave ${this.currentWave + 1}`);
         this.currentScene = 'battle';
         
+        // Resume background music for continuing battle
+        this.soundManager.playBackgroundMusic('battle');
+        
         // Start the next wave after skill selection
         this.currentWave++;
         this.waveCompleted = false; // Reset wave completion flag for new wave
@@ -954,6 +971,9 @@ class GameEngine {
             this.gamePaused = true;
             console.log('Game paused');
             
+            // Pause background music
+            this.soundManager.pauseBackgroundMusic();
+            
             // Show pause modal
             if (this.ui) {
                 this.ui.showPauseModal();
@@ -965,6 +985,9 @@ class GameEngine {
         if (this.currentScene === 'battle') {
             this.gamePaused = false;
             console.log('Game resumed');
+            
+            // Resume background music
+            this.soundManager.resumeBackgroundMusic();
             
             // Hide pause modal
             if (this.ui) {

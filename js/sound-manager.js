@@ -5,8 +5,11 @@ class SoundManager {
     constructor() {
         this.enabled = true;
         this.volume = 0.5;
+        this.musicVolume = 0.3; // Separate volume for background music
         this.sounds = {};
         this.audioContext = null;
+        this.backgroundMusic = null;
+        this.currentMusicTrack = null;
         
         // Initialize Web Audio API if available
         try {
@@ -95,6 +98,90 @@ class SoundManager {
         oscillator.stop(this.audioContext.currentTime + duration);
     }
 
+    // Background Music Methods
+    async loadBackgroundMusic(url) {
+        try {
+            console.log(`Loading background music: ${url}`);
+            this.backgroundMusic = new Audio(url);
+            this.backgroundMusic.loop = true;
+            this.backgroundMusic.volume = this.musicVolume;
+            this.backgroundMusic.preload = 'auto';
+            
+            // Return a promise that resolves when the audio can play
+            return new Promise((resolve, reject) => {
+                this.backgroundMusic.addEventListener('canplaythrough', () => {
+                    console.log('Background music loaded successfully');
+                    resolve();
+                });
+                this.backgroundMusic.addEventListener('error', (e) => {
+                    console.error('Failed to load background music:', e);
+                    reject(e);
+                });
+            });
+        } catch (error) {
+            console.error('Error loading background music:', error);
+            throw error;
+        }
+    }
+
+    playBackgroundMusic(trackName = 'battle') {
+        if (!this.enabled || !this.backgroundMusic) return;
+        
+        try {
+            // Reset to beginning and play
+            this.backgroundMusic.currentTime = 0;
+            this.backgroundMusic.volume = this.musicVolume;
+            
+            const playPromise = this.backgroundMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log(`🎵 Background music started: ${trackName}`);
+                    this.currentMusicTrack = trackName;
+                }).catch(error => {
+                    console.warn('Background music play failed:', error);
+                });
+            }
+        } catch (error) {
+            console.warn('Error playing background music:', error);
+        }
+    }
+
+    stopBackgroundMusic() {
+        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
+            console.log('🎵 Background music stopped');
+            this.currentMusicTrack = null;
+        }
+    }
+
+    pauseBackgroundMusic() {
+        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            console.log('🎵 Background music paused');
+        }
+    }
+
+    resumeBackgroundMusic() {
+        if (this.backgroundMusic && this.backgroundMusic.paused && this.enabled) {
+            const playPromise = this.backgroundMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('🎵 Background music resumed');
+                }).catch(error => {
+                    console.warn('Background music resume failed:', error);
+                });
+            }
+        }
+    }
+
+    setMusicVolume(volume) {
+        this.musicVolume = Math.max(0, Math.min(1, volume));
+        if (this.backgroundMusic) {
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+    }
+
     // Set volume
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
@@ -103,6 +190,9 @@ class SoundManager {
     // Enable/disable sound
     setEnabled(enabled) {
         this.enabled = enabled;
+        if (!enabled && this.backgroundMusic) {
+            this.pauseBackgroundMusic();
+        }
     }
 
     // Load sound files (placeholder for future implementation)

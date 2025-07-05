@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Background Music Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+        .control-btn {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #4a9eff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .control-btn:hover {
+            background: #6bb6ff;
+        }
+        .control-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .volume-control {
+            margin: 10px 0;
+        }
+        .volume-control input {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Background Music Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>Music File Status</h2>
+        <div id="fileStatus" class="status">Checking music file...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Sound Manager Test</h2>
+        <button class="control-btn" onclick="loadMusic()">Load Music</button>
+        <button class="control-btn" onclick="playMusic()" id="playBtn" disabled>Play Battle Music</button>
+        <button class="control-btn" onclick="pauseMusic()" id="pauseBtn" disabled>Pause Music</button>
+        <button class="control-btn" onclick="resumeMusic()" id="resumeBtn" disabled>Resume Music</button>
+        <button class="control-btn" onclick="stopMusic()" id="stopBtn" disabled>Stop Music</button>
+        
+        <div class="volume-control">
+            <label>Music Volume: </label>
+            <input type="range" min="0" max="1" step="0.1" value="0.3" onchange="setVolume(this.value)">
+            <span id="volumeDisplay">30%</span>
+        </div>
+        
+        <div id="musicStatus" class="status">Sound Manager not initialized</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Battle Simulation</h2>
+        <button class="control-btn" onclick="simulateStartBattle()">Simulate Start Battle</button>
+        <button class="control-btn" onclick="simulateEndBattle()">Simulate End Battle</button>
+        <button class="control-btn" onclick="simulatePauseBattle()">Simulate Pause Battle</button>
+        <button class="control-btn" onclick="simulateResumeBattle()">Simulate Resume Battle</button>
+        
+        <div id="battleStatus" class="status">Battle not started</div>
+    </div>
+
+    <script src="../js/sound-manager.js"></script>
+    <script>
+        let soundManager;
+        let battleActive = false;
+        let battlePaused = false;
+
+        // Initialize sound manager
+        function initSoundManager() {
+            soundManager = new SoundManager();
+            updateMusicStatus('Sound Manager initialized');
+        }
+
+        // Check if music file exists
+        async function checkMusicFile() {
+            try {
+                const response = await fetch('assets/audio/stress-relief.mp3', { method: 'HEAD' });
+                if (response.ok) {
+                    updateFileStatus('✅ Music file found: assets/audio/stress-relief.mp3');
+                } else {
+                    updateFileStatus('❌ Music file not found: assets/audio/stress-relief.mp3 (Status: ' + response.status + ')');
+                }
+            } catch (error) {
+                updateFileStatus('❌ Error checking music file: ' + error.message);
+            }
+        }
+
+        // Load music
+        async function loadMusic() {
+            if (!soundManager) {
+                updateMusicStatus('❌ Sound Manager not initialized');
+                return;
+            }
+
+            try {
+                updateMusicStatus('Loading music...');
+                await soundManager.loadBackgroundMusic('assets/audio/stress-relief.mp3');
+                updateMusicStatus('✅ Music loaded successfully');
+                
+                // Enable control buttons
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = false;
+                document.getElementById('resumeBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = false;
+            } catch (error) {
+                updateMusicStatus('❌ Failed to load music: ' + error.message);
+            }
+        }
+
+        // Music control functions
+        function playMusic() {
+            if (soundManager) {
+                soundManager.playBackgroundMusic('battle');
+                updateMusicStatus('🎵 Playing battle music');
+            }
+        }
+
+        function pauseMusic() {
+            if (soundManager) {
+                soundManager.pauseBackgroundMusic();
+                updateMusicStatus('⏸️ Music paused');
+            }
+        }
+
+        function resumeMusic() {
+            if (soundManager) {
+                soundManager.resumeBackgroundMusic();
+                updateMusicStatus('▶️ Music resumed');
+            }
+        }
+
+        function stopMusic() {
+            if (soundManager) {
+                soundManager.stopBackgroundMusic();
+                updateMusicStatus('⏹️ Music stopped');
+            }
+        }
+
+        function setVolume(value) {
+            if (soundManager) {
+                soundManager.setMusicVolume(parseFloat(value));
+                document.getElementById('volumeDisplay').textContent = Math.round(value * 100) + '%';
+                updateMusicStatus(`🔊 Volume set to ${Math.round(value * 100)}%`);
+            }
+        }
+
+        // Battle simulation functions
+        function simulateStartBattle() {
+            if (soundManager) {
+                battleActive = true;
+                battlePaused = false;
+                soundManager.playBackgroundMusic('battle');
+                updateBattleStatus('⚔️ Battle started - Music playing');
+            }
+        }
+
+        function simulateEndBattle() {
+            if (soundManager) {
+                battleActive = false;
+                battlePaused = false;
+                soundManager.stopBackgroundMusic();
+                updateBattleStatus('🏁 Battle ended - Music stopped');
+            }
+        }
+
+        function simulatePauseBattle() {
+            if (soundManager && battleActive) {
+                battlePaused = true;
+                soundManager.pauseBackgroundMusic();
+                updateBattleStatus('⏸️ Battle paused - Music paused');
+            }
+        }
+
+        function simulateResumeBattle() {
+            if (soundManager && battleActive && battlePaused) {
+                battlePaused = false;
+                soundManager.resumeBackgroundMusic();
+                updateBattleStatus('▶️ Battle resumed - Music resumed');
+            }
+        }
+
+        // Status update functions
+        function updateFileStatus(message) {
+            document.getElementById('fileStatus').textContent = message;
+        }
+
+        function updateMusicStatus(message) {
+            document.getElementById('musicStatus').textContent = message;
+        }
+
+        function updateBattleStatus(message) {
+            document.getElementById('battleStatus').textContent = message;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initSoundManager();
+            checkMusicFile();
+        });
+    </script>
+</body>
+</html>
