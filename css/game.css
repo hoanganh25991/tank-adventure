@@ -37,6 +37,10 @@
     
     /* Game Canvas */
     --canvas-bg: #2a4a2a;
+    
+    /* Android-specific viewport variables */
+    --vh: 100vh;
+    --vw: 100vw;
 }
 
 body {
@@ -56,6 +60,55 @@ body {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: none;
     touch-action: manipulation;
+}
+
+/* Android-specific TWA fullscreen support */
+@media screen and (max-width: 1024px) {
+    body {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for Android */
+    }
+    
+    html {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for Android */
+        overflow: hidden;
+    }
+}
+
+/* Android TWA specific styles */
+@media screen and (display-mode: fullscreen) {
+    body {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+    }
+    
+    html {
+        overflow: hidden !important;
+    }
+}
+
+/* Android landscape orientation fixes */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    body {
+        height: 100vh !important;
+        height: 100dvh !important;
+    }
+    
+    #gameContainer {
+        height: 100vh !important;
+        height: 100dvh !important;
+    }
 }
 
 /* Global Ghibli Font Styling */
@@ -80,6 +133,18 @@ button {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+}
+
+/* Android-specific game container */
+@media screen and (max-width: 1024px) {
+    #gameContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--vw);
+        height: var(--vh);
+        overflow: hidden;
+    }
 }
 
 /* Canvas */

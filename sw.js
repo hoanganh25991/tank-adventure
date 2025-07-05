@@ -1,7 +1,7 @@
 // Tank Adventure Service Worker
-const CACHE_NAME = 'tank-adventure-v1.0.0';
-const STATIC_CACHE_NAME = 'tank-adventure-static-v1.0.0';
-const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v1.0.0';
+const CACHE_NAME = 'tank-adventure-v1.1.0';
+const STATIC_CACHE_NAME = 'tank-adventure-static-v1.1.0';
+const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v1.1.0';
 
 // Files to cache for offline functionality
 const STATIC_ASSETS = [
@@ -19,6 +19,8 @@ const STATIC_ASSETS = [
     '/tank-adventure/js/utils.js',
     '/tank-adventure/js/sound-manager.js',
     '/tank-adventure/js/orientation.js',
+    '/tank-adventure/js/fullscreen.js',
+    '/tank-adventure/js/android-twa.js',
     '/tank-adventure/assets/favicon/favicon.ico',
     '/tank-adventure/assets/favicon/android-chrome-192x192.png',
     '/tank-adventure/assets/favicon/android-chrome-512x512.png',
@@ -84,6 +86,16 @@ self.addEventListener('activate', (event) => {
             .then(() => {
                 console.log('Service Worker: Activated successfully');
                 return self.clients.claim(); // Take control of all pages
+            })
+            .then(() => {
+                // Send Android fullscreen message to all clients
+                return self.clients.matchAll().then((clients) => {
+                    clients.forEach((client) => {
+                        client.postMessage({
+                            type: 'ENABLE_FULLSCREEN'
+                        });
+                    });
+                });
             })
     );
 });
