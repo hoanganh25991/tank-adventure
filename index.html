@@ -113,6 +113,9 @@
 </head>
 <body>
     <div id="gameContainer">
+        <!-- Install PWA Button -->
+        <button id="installPWABtn" class="menu-btn install-btn">📱 Install App</button>
+        
         <!-- Main Canvas -->
         <canvas id="gameCanvas"></canvas>
         
@@ -671,42 +674,16 @@
         });
         
         function showInstallButton() {
-            // Create install button if it doesn't exist
+            // Use existing HTML button instead of creating a new one
             if (!installButton) {
-                installButton = document.createElement('button');
-                installButton.id = 'installPWABtn';
-                installButton.className = 'menu-btn install-btn';
-                installButton.innerHTML = '📱 Install App';
-                installButton.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 10000;
-                    background: linear-gradient(135deg, #4a90e2, #357abd);
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-                    transition: all 0.3s ease;
-                `;
-                
-                installButton.addEventListener('click', installPWA);
-                installButton.addEventListener('mouseenter', () => {
-                    installButton.style.transform = 'translateY(-2px)';
-                    installButton.style.boxShadow = '0 6px 20px rgba(74, 144, 226, 0.4)';
-                });
-                installButton.addEventListener('mouseleave', () => {
-                    installButton.style.transform = 'translateY(0)';
-                    installButton.style.boxShadow = '0 4px 15px rgba(74, 144, 226, 0.3)';
-                });
-                
-                document.body.appendChild(installButton);
+                installButton = document.getElementById('installPWABtn');
+                if (installButton) {
+                    installButton.addEventListener('click', installPWA);
+                }
             }
-            installButton.style.display = 'block';
+            if (installButton) {
+                installButton.style.display = 'block';
+            }
         }
         
         function hideInstallButton() {

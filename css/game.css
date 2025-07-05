@@ -414,6 +414,42 @@ button {
     transform: translateY(0);
 }
 
+/* Install PWA Button */
+.install-btn {
+    position: fixed !important;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: linear-gradient(135deg, #4a90e2, #357abd) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 20px !important;
+    border-radius: 25px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3) !important;
+    transition: all 0.3s ease !important;
+    width: auto !important;
+    margin: 0 !important;
+    opacity: 1;
+    display: none; /* Hidden by default until PWA is available */
+}
+
+.install-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4) !important;
+}
+
+.install-btn:active {
+    transform: translateY(0) !important;
+}
+
+/* Install button opacity when game is active */
+.install-btn.game-active {
+    opacity: 0.1;
+}
+
 /* Additional touch support for settings button specifically */
 #settingsBtn {
     /* Ensure button is always touchable */

@@ -702,6 +702,18 @@ class GameUI {
             console.error('Target screen not found:', screenName);
             console.log('Available screens:', Object.keys(this.elements.screens));
         }
+        
+        // Handle install button opacity
+        const installBtn = document.getElementById('installPWABtn');
+        if (installBtn) {
+            if (screenName === 'battleScreen') {
+                // Game is active, reduce opacity
+                installBtn.classList.add('game-active');
+            } else {
+                // Game is not active, full opacity
+                installBtn.classList.remove('game-active');
+            }
+        }
     }
 
     showSkillSelection(skillChoices) {
