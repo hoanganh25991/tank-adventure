@@ -32,6 +32,12 @@ A complete 2D tank battle game designed for mobile and tablet devices with touch
 
 ![tank-adventure](screenshots/tank-adventure-multi-languages-iphone-14-pro-max.png)
 
+## Google Play
+
+Install Android App: https://play.google.com/store/apps/details?id=io.github.hoanganh25991.twa
+
+![google-play](screenshots/tank-adventure-apps-on-google-play-125133-20250706.jpeg)
+
 ## Features
 
 ### Core Gameplay
