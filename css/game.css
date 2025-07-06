@@ -1288,6 +1288,8 @@ button {
     align-items: center;
     text-align: center;
     flex: 1;
+    min-width: 140px;
+    box-sizing: border-box;
     padding: 0 10px;
 }
 
