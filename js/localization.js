@@ -59,9 +59,9 @@ class Localization {
                 
                 // Base/Upgrades
                 'tank_base': 'Tank Base',
-                'level': 'Level',
-                'experience': 'Experience',
-                'coins': 'Coins',
+                'level': '🏆 Level',
+                'experience': '⚡ Experience',
+                'coins': '🪙 Coins',
                 'main_tank': '🚗 Main Tank',
                 'mini_tanks': '🚙 Mini Tanks',
                 'armor': '❤️ Armor',
@@ -327,9 +327,9 @@ class Localization {
                 
                 // Base/Upgrades
                 'tank_base': 'Căn Cứ Xe Tăng',
-                'level': 'Cấp Độ',
-                'experience': 'Kinh Nghiệm',
-                'coins': 'Xu',
+                'level': '🏆 Cấp Độ',
+                'experience': '⚡ Kinh Nghiệm',
+                'coins': '🪙 Xu',
                 'main_tank': '🚗 Xe Tăng Chính',
                 'mini_tanks': '🚙 Xe Tăng Nhỏ',
                 'armor': '❤️ Giáp',
