@@ -1,7 +1,7 @@
 // Tank Adventure Service Worker
-const CACHE_NAME = 'tank-adventure-v7.0.0.1';
-const STATIC_CACHE_NAME = 'tank-adventure-static-v7.0.0.1';
-const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v7.0.0.1';
+const CACHE_NAME = 'tank-adventure-v7.0.0.2';
+const STATIC_CACHE_NAME = 'tank-adventure-static-v7.0.0.2';
+const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v7.0.0.2';
 
 // Files to cache for offline functionality
 const STATIC_ASSETS = [
