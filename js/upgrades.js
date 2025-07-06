@@ -405,56 +405,56 @@ class UpgradeManager {
         switch (id) {
             case 'mainHealth':
             case 'miniHealth':
-                const healthUnit = localization ? localization.get('health_unit') : 'Health';
+                const healthUnit = localization ? localization.t('health_unit') : 'Health';
                 return `+${totalEffect} ${healthUnit}`;
                 
             case 'mainDamage':
             case 'miniDamage':
-                const damageUnit = localization ? localization.get('damage_unit') : 'Damage';
+                const damageUnit = localization ? localization.t('damage_unit') : 'Damage';
                 return `+${totalEffect.toFixed(0)} ${damageUnit}`;
                 
             case 'mainSpeed':
             case 'miniSpeed':
-                const speedUnit = localization ? localization.get('speed_unit') : 'Speed';
+                const speedUnit = localization ? localization.t('speed_unit') : 'Speed';
                 return `+${totalEffect.toFixed(1)} ${speedUnit}`;
                 
             case 'mainFireRate':
             case 'miniFireRate':
                 const reduction = Math.round((1 - Math.pow(upgrade.baseValue, effectLevel)) * 100);
-                const cooldownUnit = localization ? localization.get('cooldown_unit') : 'Cooldown';
+                const cooldownUnit = localization ? localization.t('cooldown_unit') : 'Cooldown';
                 return `-${reduction}% ${cooldownUnit}`;
                 
             case 'formation':
-                const miniTanksUnit = localization ? localization.get('mini_tanks_unit') : 'Mini Tanks';
+                const miniTanksUnit = localization ? localization.t('mini_tanks_unit') : 'Mini Tanks';
                 return `+${Math.min(effectLevel, 3)} ${miniTanksUnit}`;
                 
             case 'coordination':
-                const coordinationUnit = localization ? localization.get('coordination_unit') : 'Coordination';
+                const coordinationUnit = localization ? localization.t('coordination_unit') : 'Coordination';
                 return `+${(totalEffect * 100).toFixed(0)}% ${coordinationUnit}`;
                 
             case 'coinBonus':
             case 'expBonus':
-                const bonusUnit = localization ? localization.get('bonus_unit') : 'Bonus';
+                const bonusUnit = localization ? localization.t('bonus_unit') : 'Bonus';
                 return `+${(totalEffect * 100).toFixed(0)}% ${bonusUnit}`;
                 
             case 'bulletSpeed':
-                const bulletSpeedUnit = localization ? localization.get('bullet_speed_unit') : 'Bullet Speed';
+                const bulletSpeedUnit = localization ? localization.t('bullet_speed_unit') : 'Bullet Speed';
                 return `+${totalEffect} ${bulletSpeedUnit}`;
                 
             case 'autoRepair':
-                const hpPerSecUnit = localization ? localization.get('hp_per_sec_unit') : 'HP/sec';
+                const hpPerSecUnit = localization ? localization.t('hp_per_sec_unit') : 'HP/sec';
                 return `${totalEffect.toFixed(1)} ${hpPerSecUnit}`;
                 
             case 'shield':
-                const shieldUnit = localization ? localization.get('shield_unit') : 'Shield';
+                const shieldUnit = localization ? localization.t('shield_unit') : 'Shield';
                 return `+${totalEffect} ${shieldUnit}`;
                 
             case 'multiShot':
-                const multiShotUnit = localization ? localization.get('multi_shot_unit') : 'Multi-Shot';
+                const multiShotUnit = localization ? localization.t('multi_shot_unit') : 'Multi-Shot';
                 return `${(totalEffect * 100).toFixed(0)}% ${multiShotUnit}`;
                 
             default:
-                const levelUnit = localization ? localization.get('level_unit') : 'Level';
+                const levelUnit = localization ? localization.t('level_unit') : 'Level';
                 return `${levelUnit} ${effectLevel}`;
         }
     }

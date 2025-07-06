@@ -1011,8 +1011,9 @@ class GameEngine {
         // Save current progress before reload
         this.saveGame();
         
-        // Reload the entire application to avoid complex state management issues
-        window.location.reload();
+        // Navigate to clean URL without query parameters
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.location.href = cleanUrl;
     }
 
     resetBattleState() {
