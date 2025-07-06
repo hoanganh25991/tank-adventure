@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- PWA Builder TWA specific meta tags -->
+    <meta name="twa-display-mode" content="fullscreen">
+    <meta name="twa-fullscreen" content="true">
+    <meta name="android-system-ui-visibility" content="immersive-sticky">
+    <meta name="android-layout-fullscreen" content="true">
+    
+    <title>PWA Fullscreen Test - Tank Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #4a90e2);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .test-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .status-indicator {
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background: #4CAF50;
+        }
+        
+        .status-warning {
+            background: #FF9800;
+        }
+        
+        .status-error {
+            background: #F44336;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            max-width: 600px;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .test-button:hover {
+            background: #357abd;
+        }
+        
+        .dimensions {
+            font-family: monospace;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 PWA Fullscreen Test</h1>
+        <p>Tank Adventure - PWA Builder Fullscreen Verification</p>
+        
+        <div id="fullscreenStatus" class="status-indicator">
+            Checking fullscreen status...
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>Environment</h3>
+                <div id="environmentInfo">Loading...</div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Display Mode</h3>
+                <div id="displayModeInfo">Loading...</div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Viewport</h3>
+                <div id="viewportInfo" class="dimensions">Loading...</div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Screen</h3>
+                <div id="screenInfo" class="dimensions">Loading...</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="test-button" onclick="testFullscreen()">Test Fullscreen API</button>
+            <button class="test-button" onclick="forceFullscreen()">Force TWA Fullscreen</button>
+            <button class="test-button" onclick="refreshInfo()">Refresh Info</button>
+        </div>
+        
+        <div id="testResults" style="margin-top: 20px;"></div>
+    </div>
+
+    <script src="../js/fullscreen.js"></script>
+    <script>
+        function updateFullscreenStatus() {
+            const statusEl = document.getElementById('fullscreenStatus');
+            const isFullscreen = document.fullscreenElement || 
+                               document.webkitFullscreenElement || 
+                               document.msFullscreenElement;
+            
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.matchMedia('(display-mode: fullscreen)').matches ||
+                         window.navigator.standalone === true;
+            
+            const isTWA = window.fullscreenManager ? window.fullscreenManager.detectTWA() : false;
+            
+            if (isFullscreen || (isPWA && isTWA)) {
+                statusEl.textContent = '✅ Fullscreen Active';
+                statusEl.className = 'status-indicator status-success';
+            } else if (isPWA) {
+                statusEl.textContent = '⚠️ PWA Mode (Not Full Fullscreen)';
+                statusEl.className = 'status-indicator status-warning';
+            } else {
+                statusEl.textContent = '❌ Browser Mode';
+                statusEl.className = 'status-indicator status-error';
+            }
+        }
+        
+        function updateEnvironmentInfo() {
+            const envEl = document.getElementById('environmentInfo');
+            const userAgent = navigator.userAgent;
+            const isAndroid = /Android/i.test(userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+            const isChrome = /Chrome/i.test(userAgent);
+            
+            let environment = 'Desktop';
+            if (isAndroid) environment = 'Android';
+            else if (isIOS) environment = 'iOS';
+            
+            envEl.innerHTML = `
+                <div>Platform: ${environment}</div>
+                <div>Chrome: ${isChrome ? 'Yes' : 'No'}</div>
+                <div>WebView: ${userAgent.includes('wv') ? 'Yes' : 'No'}</div>
+            `;
+        }
+        
+        function updateDisplayModeInfo() {
+            const displayEl = document.getElementById('displayModeInfo');
+            const modes = [
+                { name: 'Fullscreen', query: '(display-mode: fullscreen)' },
+                { name: 'Standalone', query: '(display-mode: standalone)' },
+                { name: 'Minimal-UI', query: '(display-mode: minimal-ui)' },
+                { name: 'Browser', query: '(display-mode: browser)' }
+            ];
+            
+            const activeMode = modes.find(mode => window.matchMedia(mode.query).matches);
+            const isPWA = window.fullscreenManager ? window.fullscreenManager.detectPWA() : false;
+            const isTWA = window.fullscreenManager ? window.fullscreenManager.detectTWA() : false;
+            
+            displayEl.innerHTML = `
+                <div>Mode: ${activeMode ? activeMode.name : 'Unknown'}</div>
+                <div>PWA: ${isPWA ? 'Yes' : 'No'}</div>
+                <div>TWA: ${isTWA ? 'Yes' : 'No'}</div>
+            `;
+        }
+        
+        function updateViewportInfo() {
+            const viewportEl = document.getElementById('viewportInfo');
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const vvw = window.visualViewport ? window.visualViewport.width : 'N/A';
+            const vvh = window.visualViewport ? window.visualViewport.height : 'N/A';
+            
+            viewportEl.innerHTML = `
+                Inner: ${vw} × ${vh}<br>
+                Visual: ${vvw} × ${vvh}<br>
+                Ratio: ${(vw/vh).toFixed(2)}
+            `;
+        }
+        
+        function updateScreenInfo() {
+            const screenEl = document.getElementById('screenInfo');
+            const sw = window.screen.width;
+            const sh = window.screen.height;
+            const saw = window.screen.availWidth;
+            const sah = window.screen.availHeight;
+            
+            screenEl.innerHTML = `
+                Screen: ${sw} × ${sh}<br>
+                Available: ${saw} × ${sah}<br>
+                Ratio: ${(sw/sh).toFixed(2)}
+            `;
+        }
+        
+        function refreshInfo() {
+            updateFullscreenStatus();
+            updateEnvironmentInfo();
+            updateDisplayModeInfo();
+            updateViewportInfo();
+            updateScreenInfo();
+        }
+        
+        function testFullscreen() {
+            const resultsEl = document.getElementById('testResults');
+            
+            if (window.fullscreenManager) {
+                try {
+                    window.fullscreenManager.enableFullscreen();
+                    resultsEl.innerHTML = '<div style="color: #4CAF50;">✅ Fullscreen API called</div>';
+                } catch (error) {
+                    resultsEl.innerHTML = `<div style="color: #F44336;">❌ Fullscreen API failed: ${error.message}</div>`;
+                }
+            } else {
+                resultsEl.innerHTML = '<div style="color: #FF9800;">⚠️ Fullscreen manager not available</div>';
+            }
+            
+            setTimeout(refreshInfo, 500);
+        }
+        
+        function forceFullscreen() {
+            const resultsEl = document.getElementById('testResults');
+            
+            if (window.fullscreenManager && window.fullscreenManager.forceTWAFullscreen) {
+                try {
+                    window.fullscreenManager.forceTWAFullscreen();
+                    resultsEl.innerHTML = '<div style="color: #4CAF50;">✅ TWA Fullscreen forced</div>';
+                } catch (error) {
+                    resultsEl.innerHTML = `<div style="color: #F44336;">❌ TWA Fullscreen failed: ${error.message}</div>`;
+                }
+            } else {
+                resultsEl.innerHTML = '<div style="color: #FF9800;">⚠️ TWA Fullscreen not available</div>';
+            }
+            
+            setTimeout(refreshInfo, 500);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(refreshInfo, 100);
+        });
+        
+        // Update on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(refreshInfo, 500);
+        });
+        
+        // Update on resize
+        window.addEventListener('resize', () => {
+            setTimeout(refreshInfo, 100);
+        });
+        
+        // Auto-refresh every 5 seconds
+        setInterval(refreshInfo, 5000);
+    </script>
+</body>
+</html>
