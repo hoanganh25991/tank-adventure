@@ -90,6 +90,9 @@ class GameEngine {
             space: false
         };
         
+        // Quick actions system for PWA shortcuts
+        this.quickActions = null; // Will be initialized after UI is ready
+        
         this.initialize();
         this.initializeTankRendering();
         this.setupKeyboardControls();
@@ -164,6 +167,12 @@ class GameEngine {
             // Set initial scene
             this.currentScene = 'menu';
             this.ui.showScreen('mainMenu');
+            
+            // Initialize quick actions system after UI is ready
+            if (window.QuickActions) {
+                this.quickActions = new window.QuickActions(this);
+                console.log('Quick Actions system initialized');
+            }
             
             // Start game loop
             this.startGameLoop();

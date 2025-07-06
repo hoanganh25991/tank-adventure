@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upgrade Translations - Tank Adventure</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        body {
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            font-family: 'Comfortaa', sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .language-switcher {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .language-switcher button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .language-switcher button.active {
+            background: #27ae60;
+        }
+        .upgrade-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        .upgrade-name {
+            font-weight: bold;
+        }
+        .test-info {
+            background: #34495e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-info">
+            <h1>🧪 Upgrade Translations Test</h1>
+            <p>This test verifies that all upgrade-related translations are working correctly.</p>
+            <p>Switch between languages to see the translations in action.</p>
+        </div>
+
+        <div class="language-switcher">
+            <button id="englishBtn" class="active">English</button>
+            <button id="vietnameseBtn">Tiếng Việt</button>
+        </div>
+
+        <div class="upgrade-section">
+            <h2 data-translate="main_tank">🚗 Main Tank</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="armor">❤️ Armor</span>
+                <span>Level 5</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="cannon">⚔️ Cannon</span>
+                <span>Level 3</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="engine">💨 Engine</span>
+                <span>Level 2</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="auto_loader">🔥 Auto-loader</span>
+                <span>Level 4</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2 data-translate="mini_tanks">🚙 Mini Tanks</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="armor">❤️ Armor</span>
+                <span>Level 3</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="weapons">⚔️ Weapons</span>
+                <span>Level 2</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="mobility">💨 Mobility</span>
+                <span>Level 1</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="coordination">🎯 Coordination</span>
+                <span>Level 2</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2 data-translate="formation_category">⚡ Formation</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="tactics">🚁 Tactics</span>
+                <span>Level 1</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="coordination">🎯 Coordination</span>
+                <span>Level 2</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2 data-translate="economy_category">💰 Economy</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="salvage">🔧 Salvage</span>
+                <span>Level 3</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="experience_upgrade">📚 Experience</span>
+                <span>Level 2</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2 data-translate="special_category">🌟 Special</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="accelerator">🚀 Accelerator</span>
+                <span>Level 1</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="auto_repair_upgrade">🔧 Auto-Repair</span>
+                <span>Level 0</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="shield_upgrade">🛡️ Shield</span>
+                <span>Level 0</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="multi_shot_upgrade">💥 Multi-Shot</span>
+                <span>Level 0</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2>Player Stats</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="level">Level</span>
+                <span>15</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="experience">Experience</span>
+                <span>1250 / 1500</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name" data-translate="coins">Coins</span>
+                <span>2500</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
+            <h2>Buttons</h2>
+            <button class="menu-btn" data-translate="menu_battle">🔥 Battle</button>
+            <button class="menu-btn" data-translate="back_to_menu">Back to Menu</button>
+        </div>
+    </div>
+
+    <!-- Include game scripts -->
+    <script src="../js/localization.js"></script>
+    <script>
+        // Initialize localization
+        const localization = new Localization();
+        window.Localization = localization;
+
+        // Language switching functionality
+        const englishBtn = document.getElementById('englishBtn');
+        const vietnameseBtn = document.getElementById('vietnameseBtn');
+
+        function updateLanguageButtons() {
+            const currentLang = localization.getCurrentLanguage();
+            englishBtn.classList.toggle('active', currentLang === 'en');
+            vietnameseBtn.classList.toggle('active', currentLang === 'vi');
+        }
+
+        function updateTranslations() {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const translation = localization.get(key);
+                if (translation) {
+                    element.textContent = translation;
+                }
+            });
+        }
+
+        englishBtn.addEventListener('click', () => {
+            localization.setLanguage('en');
+            updateLanguageButtons();
+            updateTranslations();
+        });
+
+        vietnameseBtn.addEventListener('click', () => {
+            localization.setLanguage('vi');
+            updateLanguageButtons();
+            updateTranslations();
+        });
+
+        // Initial setup
+        updateLanguageButtons();
+        updateTranslations();
+
+        console.log('Upgrade translations test loaded successfully!');
+        console.log('Current language:', localization.getCurrentLanguage());
+    </script>
+</body>
+</html>

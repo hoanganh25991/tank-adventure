@@ -210,6 +210,20 @@ class Localization {
                 'magnetic_pull_desc': 'Attracts and redirects enemy bullets',
                 'quantum_strike_desc': 'Teleports and deals massive damage',
                 
+                // Upgrade Categories
+                'formation_category': 'Formation',
+                'economy_category': 'Economy',
+                'special_category': 'Special',
+                
+                // Upgrade Names (missing ones)
+                'tactics': 'Tactics',
+                'salvage': 'Salvage',
+                'experience_upgrade': 'Experience',
+                'accelerator': 'Accelerator',
+                'auto_repair_upgrade': 'Auto-Repair',
+                'shield_upgrade': 'Shield',
+                'multi_shot_upgrade': 'Multi-Shot',
+                
                 // Skill Short Names for Button Display
                 'heal_short': 'REPAIR',
                 'damage_boost_short': 'POWER',
@@ -449,6 +463,20 @@ class Localization {
                 'ice_barrier_desc': 'Tạo tường băng bảo vệ xung quanh xe tăng',
                 'magnetic_pull_desc': 'Hút và chuyển hướng đạn kẻ thù',
                 'quantum_strike_desc': 'Dịch chuyển và gây sát thương khủng khiếp',
+                
+                // Upgrade Categories - Vietnamese
+                'formation_category': 'Đội Hình',
+                'economy_category': 'Kinh Tế',
+                'special_category': 'Đặc Biệt',
+                
+                // Upgrade Names (missing ones) - Vietnamese
+                'tactics': 'Chiến Thuật',
+                'salvage': 'Thu Gom',
+                'experience_upgrade': 'Kinh Nghiệm',
+                'accelerator': 'Gia Tốc',
+                'auto_repair_upgrade': 'Tự Sửa',
+                'shield_upgrade': 'Khiên',
+                'multi_shot_upgrade': 'Đa Pháo',
                 
                 // Skill Short Names for Button Display - Vietnamese
                 'heal_short': 'SỬA',
