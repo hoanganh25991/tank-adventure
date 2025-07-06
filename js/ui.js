@@ -30,6 +30,12 @@ class VirtualJoystick {
     }
 
     handleTouchStart(event) {
+        // Check if we're in battle mode - only handle joystick in battle
+        const battleScreen = document.getElementById('battleScreen');
+        const isInBattle = battleScreen && battleScreen.classList.contains('active');
+        
+        if (!isInBattle) return;
+        
         event.preventDefault();
         this.isActive = true;
         this.touchId = event.touches[0].identifier; // Track specific touch
@@ -40,6 +46,12 @@ class VirtualJoystick {
 
     handleTouchMove(event) {
         if (!this.isActive) return;
+        
+        // Check if we're in battle mode - only handle joystick in battle
+        const battleScreen = document.getElementById('battleScreen');
+        const isInBattle = battleScreen && battleScreen.classList.contains('active');
+        
+        if (!isInBattle) return;
         
         // Find the touch that belongs to this joystick
         let relevantTouch = null;
@@ -57,6 +69,18 @@ class VirtualJoystick {
     }
 
     handleTouchEnd(event) {
+        // Check if we're in battle mode - only handle joystick in battle
+        const battleScreen = document.getElementById('battleScreen');
+        const isInBattle = battleScreen && battleScreen.classList.contains('active');
+        
+        if (!isInBattle) {
+            // Reset joystick if we're not in battle anymore
+            if (this.isActive) {
+                this.resetStick();
+            }
+            return;
+        }
+        
         // Check if our tracked touch ended
         let touchEnded = true;
         for (let i = 0; i < event.touches.length; i++) {
@@ -482,9 +506,16 @@ class GameUI {
             }
         });
         
-        // Prevent scrolling on touch
+        // Prevent scrolling on touch - but allow in scrollable areas
         document.addEventListener('touchmove', (e) => {
-            if (e.target.closest('#gameContainer')) {
+            // Check if we're in a scrollable area
+            const isInScrollableArea = e.target.closest('#settingsContent') || 
+                                     e.target.closest('#baseContent') || 
+                                     e.target.closest('.info-section') ||
+                                     e.target.closest('.upgrade-category');
+            
+            // Only prevent default if we're in the game container but not in a scrollable area
+            if (e.target.closest('#gameContainer') && !isInScrollableArea) {
                 e.preventDefault();
             }
         }, { passive: false });

@@ -791,6 +791,8 @@ button {
 /* Settings Screen */
 #settingsScreen {
     overflow-y: auto;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
 }
 
 #settingsScreen h2 {
@@ -808,7 +810,13 @@ button {
     margin: 0 auto;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 8px;
+    
+    /* Enhanced touch scrolling */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
 }
 
 .info-section {
@@ -898,9 +906,10 @@ button {
     overflow-y: auto;
     overflow-x: hidden;
     
-    /* Ensure proper scrolling on mobile */
+    /* Enhanced touch scrolling */
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    overscroll-behavior: contain;
     position: relative;
     box-sizing: border-box;
 }
@@ -953,12 +962,11 @@ button {
     padding-right: 8px;
     padding-bottom: 60px; /* Add bottom padding for sticky buttons */
     
-    /* iPhone Safari optimizations */
+    /* Enhanced touch scrolling */
     -webkit-overflow-scrolling: touch;
-    position: relative;
-    
-    /* Ensure scrolling works on mobile */
     touch-action: pan-y;
+    overscroll-behavior: contain;
+    position: relative;
     
     /* Ensure content doesn't interfere with sticky buttons */
     min-height: 0;
