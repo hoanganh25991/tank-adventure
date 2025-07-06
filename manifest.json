@@ -113,5 +113,9 @@
       ]
     }
   ],
-  "related_applications": []
+  "related_applications": [],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "iarc_rating_id": "e84b072d-71de-4725-bb24-fa8bb1e50000"
 }
