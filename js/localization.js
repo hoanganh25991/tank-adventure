@@ -224,6 +224,20 @@ class Localization {
                 'shield_upgrade': 'Shield',
                 'multi_shot_upgrade': 'Multi-Shot',
                 
+                // Upgrade Effect Units
+                'health_unit': 'Health',
+                'damage_unit': 'Damage',
+                'speed_unit': 'Speed',
+                'cooldown_unit': 'Cooldown',
+                'mini_tanks_unit': 'Mini Tanks',
+                'coordination_unit': 'Coordination',
+                'bonus_unit': 'Bonus',
+                'bullet_speed_unit': 'Bullet Speed',
+                'hp_per_sec_unit': 'HP/sec',
+                'shield_unit': 'Shield',
+                'multi_shot_unit': 'Multi-Shot',
+                'level_unit': 'Level',
+                
                 // Skill Short Names for Button Display
                 'heal_short': 'REPAIR',
                 'damage_boost_short': 'POWER',
@@ -478,6 +492,20 @@ class Localization {
                 'shield_upgrade': 'Khiên',
                 'multi_shot_upgrade': 'Đa Pháo',
                 
+                // Upgrade Effect Units - Vietnamese
+                'health_unit': 'Máu',
+                'damage_unit': 'Sát Thương',
+                'speed_unit': 'Tốc Độ',
+                'cooldown_unit': 'Hồi Chiêu',
+                'mini_tanks_unit': 'Xe Tăng Nhỏ',
+                'coordination_unit': 'Phối Hợp',
+                'bonus_unit': 'Thưởng',
+                'bullet_speed_unit': 'Tốc Độ Đạn',
+                'hp_per_sec_unit': 'Máu/giây',
+                'shield_unit': 'Khiên',
+                'multi_shot_unit': 'Đa Pháo',
+                'level_unit': 'Cấp',
+                
                 // Skill Short Names for Button Display - Vietnamese
                 'heal_short': 'SỬA',
                 'damage_boost_short': 'SỨC MẠNH',
@@ -609,6 +637,11 @@ class Localization {
     updateDynamicText() {
         // Update dynamic text that's set via JavaScript
         // This will be called from UI updates
+        
+        // Update upgrade displays if UI manager exists
+        if (window.uiManager && typeof window.uiManager.updateBaseScreen === 'function') {
+            window.uiManager.updateBaseScreen();
+        }
     }
 
     // Helper method to get skill translation

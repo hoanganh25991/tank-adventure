@@ -172,6 +172,34 @@
         </div>
 
         <div class="upgrade-section">
+            <h2>Upgrade Effects Test</h2>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Health Upgrade</span>
+                <span id="healthEffect">+20 Health</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Damage Upgrade</span>
+                <span id="damageEffect">+5 Damage</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Speed Upgrade</span>
+                <span id="speedEffect">+0.3 Speed</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Cooldown Upgrade</span>
+                <span id="cooldownEffect">-10% Cooldown</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Formation Upgrade</span>
+                <span id="formationEffect">+1 Mini Tanks</span>
+            </div>
+            <div class="upgrade-item">
+                <span class="upgrade-name">Shield Upgrade</span>
+                <span id="shieldEffect">+15 Shield</span>
+            </div>
+        </div>
+
+        <div class="upgrade-section">
             <h2>Buttons</h2>
             <button class="menu-btn" data-translate="menu_battle">🔥 Battle</button>
             <button class="menu-btn" data-translate="back_to_menu">Back to Menu</button>
@@ -204,6 +232,26 @@
                     element.textContent = translation;
                 }
             });
+            
+            // Update upgrade effect translations
+            updateUpgradeEffects();
+        }
+        
+        function updateUpgradeEffects() {
+            // Simulate upgrade effects with translations
+            const healthUnit = localization.get('health_unit') || 'Health';
+            const damageUnit = localization.get('damage_unit') || 'Damage';
+            const speedUnit = localization.get('speed_unit') || 'Speed';
+            const cooldownUnit = localization.get('cooldown_unit') || 'Cooldown';
+            const miniTanksUnit = localization.get('mini_tanks_unit') || 'Mini Tanks';
+            const shieldUnit = localization.get('shield_unit') || 'Shield';
+            
+            document.getElementById('healthEffect').textContent = `+20 ${healthUnit}`;
+            document.getElementById('damageEffect').textContent = `+5 ${damageUnit}`;
+            document.getElementById('speedEffect').textContent = `+0.3 ${speedUnit}`;
+            document.getElementById('cooldownEffect').textContent = `-10% ${cooldownUnit}`;
+            document.getElementById('formationEffect').textContent = `+1 ${miniTanksUnit}`;
+            document.getElementById('shieldEffect').textContent = `+15 ${shieldUnit}`;
         }
 
         englishBtn.addEventListener('click', () => {
