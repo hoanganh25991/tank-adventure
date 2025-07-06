@@ -612,10 +612,78 @@ class GameUI {
         }
     }
 
-    handleStartBattle() {
+    async handleStartBattle() {
         console.log('handleStartBattle called');
-        // Show battle type selection directly without requesting fullscreen
+        
+        // Request fullscreen first
+        try {
+            await this.requestFullscreen();
+            console.log('Fullscreen enabled successfully');
+        } catch (error) {
+            console.warn('Fullscreen request failed:', error);
+            // Continue anyway - some browsers/situations don't support fullscreen
+        }
+        
+        // Show battle type selection after fullscreen
         this.showBattleTypeSelection();
+    }
+    
+    requestFullscreen() {
+        return new Promise((resolve, reject) => {
+            const element = document.documentElement;
+            
+            // Check if already in fullscreen
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                resolve();
+                return;
+            }
+            
+            // Set up event listeners for fullscreen change
+            const onFullscreenChange = () => {
+                document.removeEventListener('fullscreenchange', onFullscreenChange);
+                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
+                document.removeEventListener('msfullscreenchange', onFullscreenChange);
+                
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    resolve();
+                } else {
+                    reject(new Error('Fullscreen request was denied'));
+                }
+            };
+            
+            const onFullscreenError = (error) => {
+                document.removeEventListener('fullscreenerror', onFullscreenError);
+                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
+                reject(error);
+            };
+            
+            // Add event listeners
+            document.addEventListener('fullscreenchange', onFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+            document.addEventListener('mozfullscreenchange', onFullscreenChange);
+            document.addEventListener('msfullscreenchange', onFullscreenChange);
+            document.addEventListener('fullscreenerror', onFullscreenError);
+            document.addEventListener('webkitfullscreenerror', onFullscreenError);
+            
+            // Request fullscreen with different API methods
+            if (element.requestFullscreen) {
+                element.requestFullscreen({ navigationUI: "hide" }).catch(reject);
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            } else {
+                reject(new Error('Fullscreen API not supported'));
+            }
+            
+            // Timeout after 3 seconds
+            setTimeout(() => {
+                reject(new Error('Fullscreen request timeout'));
+            }, 3000);
+        });
     }
     
     // Removed unused fullscreen request functions

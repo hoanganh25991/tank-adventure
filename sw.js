@@ -1,7 +1,7 @@
 // Tank Adventure Service Worker
-const CACHE_NAME = 'tank-adventure-v1.1.0';
-const STATIC_CACHE_NAME = 'tank-adventure-static-v1.1.0';
-const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v1.1.0';
+const CACHE_NAME = 'tank-adventure-v1.1.1';
+const STATIC_CACHE_NAME = 'tank-adventure-static-v1.1.1';
+const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v1.1.1';
 
 // Files to cache for offline functionality
 const STATIC_ASSETS = [
@@ -19,7 +19,6 @@ const STATIC_ASSETS = [
     '/tank-adventure/js/utils.js',
     '/tank-adventure/js/sound-manager.js',
     '/tank-adventure/js/orientation.js',
-    '/tank-adventure/js/fullscreen.js',
     '/tank-adventure/js/android-twa.js',
     '/tank-adventure/assets/favicon/favicon.ico',
     '/tank-adventure/assets/favicon/android-chrome-192x192.png',
@@ -119,6 +118,16 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
+// Helper function to check if a response is cacheable
+function isCacheable(response) {
+    // Don't cache partial content (206), redirects, or error responses
+    return response.ok && 
+           response.status !== 206 && 
+           response.status < 300 &&
+           response.type !== 'opaque' &&
+           response.headers.get('cache-control') !== 'no-cache';
+}
+
 // Handle different fetch strategies based on URL patterns
 async function handleFetchRequest(request) {
     const url = request.url;
@@ -156,10 +165,16 @@ async function networkFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
         
-        if (networkResponse.ok) {
-            // Cache successful responses
-            const cache = await caches.open(DYNAMIC_CACHE_NAME);
-            cache.put(request, networkResponse.clone());
+        // Only cache suitable responses
+        if (isCacheable(networkResponse)) {
+            try {
+                // Cache successful responses
+                const cache = await caches.open(DYNAMIC_CACHE_NAME);
+                await cache.put(request, networkResponse.clone());
+            } catch (cacheError) {
+                // Log cache errors but don't fail the request
+                console.warn('Service Worker: Failed to cache response:', cacheError);
+            }
         }
         
         return networkResponse;
@@ -185,10 +200,16 @@ async function cacheFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
         
-        if (networkResponse.ok) {
-            // Cache the response for future use
-            const cache = await caches.open(DYNAMIC_CACHE_NAME);
-            cache.put(request, networkResponse.clone());
+        // Only cache suitable responses
+        if (isCacheable(networkResponse)) {
+            try {
+                // Cache the response for future use
+                const cache = await caches.open(DYNAMIC_CACHE_NAME);
+                await cache.put(request, networkResponse.clone());
+            } catch (cacheError) {
+                // Log cache errors but don't fail the request
+                console.warn('Service Worker: Failed to cache response:', cacheError);
+            }
         }
         
         return networkResponse;
