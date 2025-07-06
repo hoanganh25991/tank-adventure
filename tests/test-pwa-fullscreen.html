@@ -245,6 +245,14 @@
                 try {
                     window.fullscreenManager.enableFullscreen();
                     resultsEl.innerHTML = '<div style="color: #4CAF50;">✅ Fullscreen API called</div>';
+                    
+                    // Show detection details
+                    const isTWA = window.fullscreenManager.detectTWA();
+                    const isPWA = window.fullscreenManager.detectPWA();
+                    resultsEl.innerHTML += `<div style="color: #2196F3; margin-top: 10px;">
+                        TWA Detected: ${isTWA ? 'Yes' : 'No'}<br>
+                        PWA Detected: ${isPWA ? 'Yes' : 'No'}
+                    </div>`;
                 } catch (error) {
                     resultsEl.innerHTML = `<div style="color: #F44336;">❌ Fullscreen API failed: ${error.message}</div>`;
                 }

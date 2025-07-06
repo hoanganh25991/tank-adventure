@@ -8,14 +8,18 @@ class FullscreenManager {
     init() {
         // Detect if running in PWA mode
         this.isPWA = this.detectPWA();
+        this.isTWA = this.detectTWA();
         
         // Android-specific initialization
         if (this.isAndroid) {
             this.initAndroidFullscreen();
         }
         
-        // Force fullscreen if possible
-        if (this.isPWA) {
+        // Force fullscreen immediately for TWAs
+        if (this.isTWA) {
+            console.log('TWA detected - forcing fullscreen');
+            this.forceTWAFullscreen();
+        } else if (this.isPWA) {
             this.enableFullscreen();
         }
         
@@ -24,6 +28,40 @@ class FullscreenManager {
         
         // Hide address bar on mobile browsers
         this.hideAddressBar();
+        
+        // Additional TWA-specific initialization
+        if (this.isTWA) {
+            this.initTWASpecific();
+        }
+    }
+    
+    initTWASpecific() {
+        // TWA-specific initialization
+        console.log('Initializing TWA-specific features');
+        
+        // Force landscape orientation
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {
+                console.log('Could not lock orientation');
+            });
+        }
+        
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        // Prevent text selection
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
+        
+        // Force focus to prevent keyboard issues
+        document.addEventListener('touchstart', () => {
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
+        });
     }
     
     detectAndroid() {
@@ -89,6 +127,8 @@ class FullscreenManager {
         const userAgent = navigator.userAgent;
         const isAndroid = /Android/i.test(userAgent);
         
+        if (!isAndroid) return false;
+        
         // Check for TWA-specific indicators
         const twaIndicators = [
             // PWA Builder TWA indicators
@@ -96,18 +136,53 @@ class FullscreenManager {
             userAgent.includes('Version/') && userAgent.includes('Chrome/'),
             // Check for custom TWA user agent patterns
             userAgent.includes('tankadventure') || userAgent.includes('TankAdventure'),
-            // Check for standalone display mode
+            // Check for standalone display mode (common in TWAs)
             window.matchMedia('(display-mode: standalone)').matches,
             window.matchMedia('(display-mode: fullscreen)').matches,
             // Check for Android app context
             document.referrer.includes('android-app://'),
             // Check for TWA-specific window properties
             window.chrome && window.chrome.webstore === undefined,
-            // Check for PWA Builder specific indicators
-            window.location.href.includes('hoanganh25991.github.io') && isAndroid
+            // Check if running from our GitHub Pages domain on Android (likely TWA)
+            window.location.href.includes('hoanganh25991.github.io'),
+            // Check for missing browser features (common in TWA WebView)
+            !window.external || !window.external.AddSearchProvider,
+            // Check for Android WebView specific properties
+            window.AndroidInterface !== undefined,
+            // Check for TWA-specific viewport behavior
+            window.innerHeight === window.screen.height,
+            // Check if window.open is restricted (common in TWA)
+            this.isWindowOpenRestricted()
         ];
         
-        return isAndroid && twaIndicators.some(indicator => indicator);
+        const detectedCount = twaIndicators.filter(indicator => indicator).length;
+        const isTWA = detectedCount >= 2; // Need at least 2 indicators
+        
+        console.log(`TWA Detection: ${detectedCount}/13 indicators, Result: ${isTWA}`);
+        console.log('TWA Indicators:', {
+            webview: userAgent.includes('wv'),
+            standalone: window.matchMedia('(display-mode: standalone)').matches,
+            fullscreen: window.matchMedia('(display-mode: fullscreen)').matches,
+            githubPages: window.location.href.includes('hoanganh25991.github.io'),
+            noWebstore: window.chrome && window.chrome.webstore === undefined,
+            heightMatch: window.innerHeight === window.screen.height
+        });
+        
+        return isTWA;
+    }
+    
+    isWindowOpenRestricted() {
+        // Test if window.open is restricted (common in TWA)
+        try {
+            const testWindow = window.open('', '_blank', 'width=1,height=1');
+            if (testWindow) {
+                testWindow.close();
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return true; // Restricted
+        }
     }
     
     enableFullscreen() {
