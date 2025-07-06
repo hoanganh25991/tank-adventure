@@ -506,16 +506,21 @@ class GameUI {
             }
         });
         
-        // Prevent scrolling on touch - but allow in scrollable areas
+        // Prevent scrolling on touch - but allow in scrollable areas and on buttons
         document.addEventListener('touchmove', (e) => {
-            // Check if we're in a scrollable area
+            // Check if we're in a scrollable area or touching a button
             const isInScrollableArea = e.target.closest('#settingsContent') || 
                                      e.target.closest('#baseContent') || 
                                      e.target.closest('.info-section') ||
                                      e.target.closest('.upgrade-category');
             
-            // Only prevent default if we're in the game container but not in a scrollable area
-            if (e.target.closest('#gameContainer') && !isInScrollableArea) {
+            const isButton = e.target.closest('button') || 
+                           e.target.closest('.menu-btn') || 
+                           e.target.closest('.action-btn') ||
+                           e.target.closest('.upgrade-btn');
+            
+            // Only prevent default if we're in the game container but not in a scrollable area or on a button
+            if (e.target.closest('#gameContainer') && !isInScrollableArea && !isButton) {
                 e.preventDefault();
             }
         }, { passive: false });
@@ -608,6 +613,7 @@ class GameUI {
     }
 
     handleStartBattle() {
+        console.log('handleStartBattle called');
         // Show battle type selection directly without requesting fullscreen
         this.showBattleTypeSelection();
     }
@@ -616,8 +622,15 @@ class GameUI {
     // requestFullscreenAndShowBattleType(), showLoadingMessage(), hideLoadingMessage()
     
     showBattleTypeSelection() {
+        console.log('showBattleTypeSelection called');
         // Use the existing modal element
         const modal = this.elements.battleTypeModal;
+        console.log('Battle type modal element:', modal);
+        
+        if (!modal) {
+            console.error('Battle type modal not found!');
+            return;
+        }
         
         // Check specifically for iPhone 14 Pro Max dimensions (or similar)
         const isIPhone14ProMaxLandscape = window.innerWidth >= 900 && window.innerHeight <= 430;
@@ -630,6 +643,7 @@ class GameUI {
         }
         
         // Show the modal
+        console.log('Showing battle type modal');
         modal.classList.remove('hidden');
     }
 
