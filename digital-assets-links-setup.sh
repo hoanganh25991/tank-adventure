@@ -10,8 +10,12 @@ echo "======================================================="
 
 # Configuration
 DOMAIN="hoanganh25991.github.io"
-PACKAGE_NAME="com.tankadventure.app" # Adjust this to your actual package name
-SHA256_FINGERPRINT=""                # Will be extracted from your keystore
+PACKAGE_NAME="io.github.hoanganh25991.twa" # Adjust this to your actual package name
+SHA256_FINGERPRINT=""                      # Will be extracted from your keystore
+
+# Keystore configuration
+KEYSTORE_PATH="/Users/anhle/work-station/google-play-sign-key/tank-adventure.keystore"
+KEY_ALIAS="tank-adventure"
 
 # Colors for output
 RED='\033[0;31m'
@@ -34,13 +38,42 @@ if [ -f "$KEYSTORE_PATH" ]; then
     echo -e "${YELLOW}🔍 Extracting SHA256 fingerprint...${NC}"
 
     if command -v keytool &>/dev/null; then
-        SHA256_FINGERPRINT=$(keytool -list -v -keystore "$KEYSTORE_PATH" -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_ALIAS_PASSWORD" | grep "SHA256:" | head -1 | cut -d' ' -f3)
+        # Prompt for keystore password
+        echo -n "Enter keystore password: "
+        read -s KEYSTORE_PASSWORD
+        echo ""
+
+        # For PKCS12 keystores, only store password is needed
+        SHA256_FINGERPRINT=$(keytool -list -v -keystore "$KEYSTORE_PATH" -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD" 2>/dev/null | grep "SHA256:" | head -1 | cut -d' ' -f3)
 
         if [ -n "$SHA256_FINGERPRINT" ]; then
             echo -e "${GREEN}✅ SHA256 Fingerprint: $SHA256_FINGERPRINT${NC}"
         else
             echo -e "${RED}❌ Could not extract SHA256 fingerprint${NC}"
-            exit 1
+            echo -e "${YELLOW}💡 Let's check what aliases are available:${NC}"
+            echo ""
+            keytool -list -keystore "$KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD" 2>/dev/null || echo "Failed to list keystore contents"
+            echo ""
+            echo -e "${YELLOW}📝 Available options:${NC}"
+            echo "   1. Check if the alias '$KEY_ALIAS' exists in the keystore"
+            echo "   2. Try different alias names (commonly: 'key0', 'android', 'app')"
+            echo "   3. Manual extraction: keytool -list -v -keystore \"$KEYSTORE_PATH\" -storepass [password]"
+
+            # Ask user if they want to try a different alias
+            echo -n "Enter different alias name (or press Enter to exit): "
+            read -r NEW_ALIAS
+            if [ -n "$NEW_ALIAS" ]; then
+                SHA256_FINGERPRINT=$(keytool -list -v -keystore "$KEYSTORE_PATH" -alias "$NEW_ALIAS" -storepass "$KEYSTORE_PASSWORD" 2>/dev/null | grep "SHA256:" | head -1 | cut -d' ' -f3)
+                if [ -n "$SHA256_FINGERPRINT" ]; then
+                    echo -e "${GREEN}✅ SHA256 Fingerprint: $SHA256_FINGERPRINT${NC}"
+                    KEY_ALIAS="$NEW_ALIAS"
+                else
+                    echo -e "${RED}❌ Still could not extract SHA256 fingerprint${NC}"
+                    exit 1
+                fi
+            else
+                exit 1
+            fi
         fi
     else
         echo -e "${RED}❌ keytool not found. Please install Java JDK${NC}"

@@ -1,0 +1,18 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.hoanganh25991.twa",
+      "sha256_cert_fingerprints": ["C0:A2:E4:D0:FC:D5:15:C4:7D:2F:66:AD:33:39:95:28:80:8C:97:C0:30:73:A2:85:D3:77:6C:F1:ED:2E:FF:12"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app", 
+      "package_name": "io.github.hoanganh25991.twa",
+      "sha256_cert_fingerprints": ["C0:A2:E4:D0:FC:D5:15:C4:7D:2F:66:AD:33:39:95:28:80:8C:97:C0:30:73:A2:85:D3:77:6C:F1:ED:2E:FF:12"]
+    }
+  }
+]

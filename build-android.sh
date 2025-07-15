@@ -169,6 +169,35 @@ case $choice in
             mv "$temp_file" twa-manifest.json
 
             echo -e "${GREEN}✅ TWA manifest configured for fullscreen gaming${NC}"
+
+            # Create GitHub Pages compatible assetlinks.json
+            echo -e "${YELLOW}📝 Creating GitHub Pages compatible asset links...${NC}"
+
+            # Method 1: Standard .well-known location (with .nojekyll support)
+            mkdir -p .well-known
+            cat >.well-known/assetlinks.json <<'EOF'
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tankadventure.app",
+      "sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT_HERE"]
+    }
+  }
+]
+EOF
+
+            # Method 2: Root level backup location
+            cp .well-known/assetlinks.json ./assetlinks.json
+
+            # Create .nojekyll file to disable Jekyll processing
+            touch .nojekyll
+
+            echo -e "${GREEN}✅ Asset links created for GitHub Pages${NC}"
+            echo -e "${YELLOW}📍 URLs will be available at:${NC}"
+            echo "   • https://hoanganh25991.github.io/tank-adventure/.well-known/assetlinks.json"
+            echo "   • https://hoanganh25991.github.io/tank-adventure/assetlinks.json (backup)"
         fi
     fi
 
@@ -253,6 +282,30 @@ case $choice in
         mv "$temp_file" twa-manifest.json
 
         echo -e "${GREEN}✅ TWA manifest configured for fullscreen gaming${NC}"
+
+        # Create GitHub Pages compatible assetlinks.json (duplicate from above for both methods)
+        if [ ! -f ".well-known/assetlinks.json" ]; then
+            echo -e "${YELLOW}📝 Creating GitHub Pages compatible asset links...${NC}"
+
+            mkdir -p .well-known
+            cat >.well-known/assetlinks.json <<'EOF'
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tankadventure.app",
+      "sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT_HERE"]
+    }
+  }
+]
+EOF
+
+            cp .well-known/assetlinks.json ./assetlinks.json
+            touch .nojekyll
+
+            echo -e "${GREEN}✅ Asset links created${NC}"
+        fi
     fi
 
     bubblewrap build --skipPwaValidation
