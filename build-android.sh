@@ -13,6 +13,13 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}🚀 Tank Adventure Android AAB Builder${NC}"
 echo "=========================================="
+echo -e "${YELLOW}📋 This script will configure the TWA to:${NC}"
+echo "   • Hide the URL bar (enableUrlBarHiding: true)"
+echo "   • Set fullscreen display mode"
+echo "   • Optimize for landscape gaming"
+echo "   • Remove notifications and shortcuts"
+echo "   • Use dark theme colors"
+echo ""
 
 # Check if tools are installed
 echo -e "${YELLOW}Checking prerequisites...${NC}"
@@ -27,13 +34,46 @@ if ! command -v bubblewrap &>/dev/null; then
     npm install -g @bubblewrap/cli
 fi
 
+if ! command -v jq &>/dev/null; then
+    echo -e "${YELLOW}🔧 jq not found. Installing for better JSON manipulation...${NC}"
+    # Try to install jq using various package managers
+    if command -v brew &>/dev/null; then
+        brew install jq
+    elif command -v apt-get &>/dev/null; then
+        sudo apt-get update && sudo apt-get install -y jq
+    elif command -v yum &>/dev/null; then
+        sudo yum install -y jq
+    else
+        echo -e "${YELLOW}⚠️  Could not install jq automatically. Will use sed fallback.${NC}"
+    fi
+fi
+
 echo -e "${GREEN}✅ Prerequisites checked${NC}"
 
 # Configuration
 PWA_URL="https://hoanganh25991.github.io/tank-adventure"
+MANIFEST_URL="$PWA_URL/manifest.json"
 APP_NAME="Tank Adventure"
 BUILD_DIR="./android-build"
 OUTPUT_DIR="./aab-output"
+
+# Validate URLs to prevent double slash issues
+echo -e "${YELLOW}🔍 Validating URLs...${NC}"
+echo "   PWA URL: $PWA_URL"
+echo "   Manifest URL: $MANIFEST_URL"
+
+# Check for double slashes in URLs
+if [[ "$PWA_URL" == *"//"* ]] && [[ "$PWA_URL" != "https://"* ]]; then
+    echo -e "${RED}❌ Double slash detected in PWA_URL${NC}"
+    exit 1
+fi
+
+if [[ "$MANIFEST_URL" == *"//"* ]] && [[ "$MANIFEST_URL" != "https://"* ]]; then
+    echo -e "${RED}❌ Double slash detected in MANIFEST_URL${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✅ URLs validated${NC}"
 
 # Create directories
 mkdir -p "$BUILD_DIR"
@@ -70,7 +110,54 @@ case $choice in
     # Check if already initialized
     if [ ! -f "twa-manifest.json" ]; then
         echo -e "${YELLOW}Initializing Bubblewrap...${NC}"
-        bubblewrap init --manifest "$PWA_URL/manifest.json"
+        bubblewrap init --manifest "$MANIFEST_URL"
+
+        # Configure TWA to hide URL bar for fullscreen gaming experience
+        echo -e "${YELLOW}Configuring TWA for fullscreen gaming...${NC}"
+
+        # Update twa-manifest.json to hide URL bar and optimize for games
+        if [ -f "twa-manifest.json" ]; then
+            # Create a temporary file for modifications
+            temp_file=$(mktemp)
+
+            # Use jq to modify the manifest, or fallback to sed if jq is not available
+            if command -v jq &>/dev/null; then
+                jq '.display = "fullscreen" | 
+                    .enableUrlBarHiding = true | 
+                    .enableNotifications = false |
+                    .isChromeOSOnly = false |
+                    .orientation = "landscape" |
+                    .themeColor = "#1a1a1a" |
+                    .backgroundColor = "#1a1a1a" |
+                    .enableSiteSettingsShortcut = false |
+                    .shortcuts = []' twa-manifest.json >"$temp_file" 2>/dev/null || {
+                    echo -e "${YELLOW}⚠️  jq failed, using sed fallback${NC}"
+                    # Fallback to sed modifications
+                    sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
+                        -e 's/"enableUrlBarHiding": [^,]*/"enableUrlBarHiding": true/' \
+                        -e 's/"enableNotifications": [^,]*/"enableNotifications": false/' \
+                        -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
+                        -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
+                        -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                        twa-manifest.json >"$temp_file"
+                }
+            else
+                # Fallback to sed modifications
+                echo -e "${YELLOW}Using sed for manifest modification${NC}"
+                sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
+                    -e 's/"enableUrlBarHiding": [^,]*/"enableUrlBarHiding": true/' \
+                    -e 's/"enableNotifications": [^,]*/"enableNotifications": false/' \
+                    -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
+                    -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
+                    -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                    twa-manifest.json >"$temp_file"
+            fi
+
+            # Replace the original file
+            mv "$temp_file" twa-manifest.json
+
+            echo -e "${GREEN}✅ TWA manifest configured for fullscreen gaming${NC}"
+        fi
     fi
 
     echo -e "${GREEN}📦 Building AAB...${NC}"
@@ -96,7 +183,55 @@ case $choice in
     mkdir -p "$BUILD_DIR/bubblewrap"
     cd "$BUILD_DIR/bubblewrap"
 
-    bubblewrap init --manifest "$PWA_URL/manifest.json"
+    bubblewrap init --manifest "$MANIFEST_URL"
+
+    # Configure TWA to hide URL bar for fullscreen gaming experience
+    echo -e "${YELLOW}Configuring TWA for fullscreen gaming...${NC}"
+
+    # Update twa-manifest.json to hide URL bar and optimize for games
+    if [ -f "twa-manifest.json" ]; then
+        # Create a temporary file for modifications
+        temp_file=$(mktemp)
+
+        # Use jq to modify the manifest, or fallback to sed if jq is not available
+        if command -v jq &>/dev/null; then
+            jq '.display = "fullscreen" | 
+                .enableUrlBarHiding = true | 
+                .enableNotifications = false |
+                .isChromeOSOnly = false |
+                .orientation = "landscape" |
+                .themeColor = "#1a1a1a" |
+                .backgroundColor = "#1a1a1a" |
+                .enableSiteSettingsShortcut = false |
+                .shortcuts = []' twa-manifest.json >"$temp_file" 2>/dev/null || {
+                echo -e "${YELLOW}⚠️  jq failed, using sed fallback${NC}"
+                # Fallback to sed modifications
+                sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
+                    -e 's/"enableUrlBarHiding": [^,]*/"enableUrlBarHiding": true/' \
+                    -e 's/"enableNotifications": [^,]*/"enableNotifications": false/' \
+                    -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
+                    -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
+                    -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                    twa-manifest.json >"$temp_file"
+            }
+        else
+            # Fallback to sed modifications
+            echo -e "${YELLOW}Using sed for manifest modification${NC}"
+            sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
+                -e 's/"enableUrlBarHiding": [^,]*/"enableUrlBarHiding": true/' \
+                -e 's/"enableNotifications": [^,]*/"enableNotifications": false/' \
+                -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
+                -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
+                -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                twa-manifest.json >"$temp_file"
+        fi
+
+        # Replace the original file
+        mv "$temp_file" twa-manifest.json
+
+        echo -e "${GREEN}✅ TWA manifest configured for fullscreen gaming${NC}"
+    fi
+
     bubblewrap build --skipPwaValidation
 
     # Move AAB files
@@ -224,3 +359,10 @@ fi
 
 echo -e "${GREEN}=======================================================${NC}"
 echo -e "${GREEN}🎉 Done! Your APK/AAB files are ready for deployment.${NC}"
+echo ""
+echo -e "${YELLOW}📱 The built app should now have:${NC}"
+echo "   • No URL bar at the top (fullscreen gaming experience)"
+echo "   • Landscape orientation locked"
+echo "   • Dark theme matching your game"
+echo "   • Optimized for mobile gaming"
+echo ""
