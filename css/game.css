@@ -461,7 +461,7 @@ button {
     /* Use consistent background with optional image overlay */
     background: url('../assets/background.jpg') center/cover no-repeat,
                 linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
-    background-blend-mode: overlay;
+    /* background-blend-mode: overlay; */
 }
 
 #mainMenu h1 {
