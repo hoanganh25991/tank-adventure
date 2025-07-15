@@ -81,9 +81,10 @@ mkdir -p "$OUTPUT_DIR"
 
 echo -e "${YELLOW}Choose build method:${NC}"
 echo "1) PWABuilder CLI (Recommended)"
-echo "2) Bubblewrap CLI (Google's Official)"
+echo "2) Bubblewrap CLI (Google's Official, Enhanced with URL bar hiding)"
 echo "3) Both methods"
-read -p "Enter your choice (1-3): " choice
+echo "4) Information about PWA vs TWA differences"
+read -p "Enter your choice (1-4): " choice
 
 case $choice in
 1)
@@ -130,7 +131,14 @@ case $choice in
                     .themeColor = "#1a1a1a" |
                     .backgroundColor = "#1a1a1a" |
                     .enableSiteSettingsShortcut = false |
-                    .shortcuts = []' twa-manifest.json >"$temp_file" 2>/dev/null || {
+                    .shortcuts = [] |
+                    .statusBarColor = "#1a1a1a" |
+                    .navigationBarColor = "#1a1a1a" |
+                    .navigationBarDividerColor = "#1a1a1a" |
+                    .splashScreenFadeOutDuration = 0 |
+                    .fullScreenWithStatusBar = true |
+                    .immersiveMode = true |
+                    .hideNavigation = true' twa-manifest.json >"$temp_file" 2>/dev/null || {
                     echo -e "${YELLOW}⚠️  jq failed, using sed fallback${NC}"
                     # Fallback to sed modifications
                     sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
@@ -139,6 +147,10 @@ case $choice in
                         -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
                         -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
                         -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                        -e 's/"statusBarColor": "[^"]*"/"statusBarColor": "#1a1a1a"/' \
+                        -e 's/"navigationBarColor": "[^"]*"/"navigationBarColor": "#1a1a1a"/' \
+                        -e 's/"fullScreenWithStatusBar": [^,]*/"fullScreenWithStatusBar": true/' \
+                        -e 's/"immersiveMode": [^,]*/"immersiveMode": true/' \
                         twa-manifest.json >"$temp_file"
                 }
             else
@@ -203,7 +215,14 @@ case $choice in
                 .themeColor = "#1a1a1a" |
                 .backgroundColor = "#1a1a1a" |
                 .enableSiteSettingsShortcut = false |
-                .shortcuts = []' twa-manifest.json >"$temp_file" 2>/dev/null || {
+                .shortcuts = [] |
+                .statusBarColor = "#1a1a1a" |
+                .navigationBarColor = "#1a1a1a" |
+                .navigationBarDividerColor = "#1a1a1a" |
+                .splashScreenFadeOutDuration = 0 |
+                .fullScreenWithStatusBar = true |
+                .immersiveMode = true |
+                .hideNavigation = true' twa-manifest.json >"$temp_file" 2>/dev/null || {
                 echo -e "${YELLOW}⚠️  jq failed, using sed fallback${NC}"
                 # Fallback to sed modifications
                 sed -e 's/"display": "[^"]*"/"display": "fullscreen"/' \
@@ -212,6 +231,10 @@ case $choice in
                     -e 's/"orientation": "[^"]*"/"orientation": "landscape"/' \
                     -e 's/"themeColor": "[^"]*"/"themeColor": "#1a1a1a"/' \
                     -e 's/"backgroundColor": "[^"]*"/"backgroundColor": "#1a1a1a"/' \
+                    -e 's/"statusBarColor": "[^"]*"/"statusBarColor": "#1a1a1a"/' \
+                    -e 's/"navigationBarColor": "[^"]*"/"navigationBarColor": "#1a1a1a"/' \
+                    -e 's/"fullScreenWithStatusBar": [^,]*/"fullScreenWithStatusBar": true/' \
+                    -e 's/"immersiveMode": [^,]*/"immersiveMode": true/' \
                     twa-manifest.json >"$temp_file"
             }
         else
@@ -246,6 +269,33 @@ case $choice in
         cp *.aab "$OUTPUT_DIR/" 2>/dev/null || echo "No AAB files found from PWABuilder"
     fi
     cd - >/dev/null
+    ;;
+4)
+    echo -e "${GREEN}📖 PWA vs TWA Information${NC}"
+    echo ""
+    echo -e "${YELLOW}🌐 PWA (Progressive Web App) Installation:${NC}"
+    echo "   • Install directly from Chrome: Menu → Install app"
+    echo "   • No URL bar at all - completely native feel"
+    echo "   • Perfect for games like Tank Adventure"
+    echo "   • Users must install manually from browser"
+    echo ""
+    echo -e "${YELLOW}📱 TWA (Trusted Web Activity) Android App:${NC}"
+    echo "   • Installable APK/AAB for Google Play Store"
+    echo "   • May show minimal URL bar (security requirement)"
+    echo "   • This script tries to minimize/hide the URL bar"
+    echo "   • Wider distribution through app stores"
+    echo ""
+    echo -e "${YELLOW}🎯 For Tank Adventure:${NC}"
+    echo "   • PWA: Best experience, manual install"
+    echo "   • TWA: Store distribution, minimal URL bar"
+    echo "   • Both work great for gaming!"
+    echo ""
+    echo -e "${GREEN}💡 Recommendation:${NC}"
+    echo "   • Use TWA for Google Play Store distribution"
+    echo "   • Promote PWA installation for best UX"
+    echo "   • This script optimizes TWA to minimize URL bar"
+    echo ""
+    exit 0
     ;;
 *)
     echo -e "${RED}❌ Invalid choice${NC}"
@@ -361,8 +411,11 @@ echo -e "${GREEN}=======================================================${NC}"
 echo -e "${GREEN}🎉 Done! Your APK/AAB files are ready for deployment.${NC}"
 echo ""
 echo -e "${YELLOW}📱 The built app should now have:${NC}"
-echo "   • No URL bar at the top (fullscreen gaming experience)"
+echo "   • Minimal/hidden URL bar (maximum TWA optimization)"
+echo "   • Immersive fullscreen gaming mode"
 echo "   • Landscape orientation locked"
 echo "   • Dark theme matching your game"
-echo "   • Optimized for mobile gaming"
+echo "   • Enhanced status bar and navigation hiding"
+echo ""
+echo -e "${GREEN}💡 Note: PWA installation (Chrome → Install app) has no URL bar at all!${NC}"
 echo ""
