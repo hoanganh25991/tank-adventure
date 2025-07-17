@@ -1268,29 +1268,30 @@ button {
     box-shadow: 0 6px 12px rgba(255, 68, 68, 0.4);
 }
 
-/* Player Stats - Horizontal Layout */
+/* Player Stats - Compact Horizontal Layout */
 #playerStats {
     display: flex;
     justify-content: space-around;
     align-items: center;
     background: var(--bg-section);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    margin-bottom: 0.5rem;
     border-left: 4px solid var(--primary-blue);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     flex-shrink: 0; /* Ensure stats don't shrink */
 }
 
 .stat-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     text-align: center;
     flex: 1;
-    min-width: 140px;
     box-sizing: border-box;
-    padding: 0 10px;
+    padding: 0 8px;
+    gap: 6px; /* Gap between label and value */
 }
 
 .stat-item:not(:last-child) {
@@ -1305,6 +1306,9 @@ button {
     letter-spacing: 0.5px;
     margin-bottom: 4px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stat-value {
@@ -1313,6 +1317,10 @@ button {
     font-family: 'Comfortaa', 'Arial', sans-serif;
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Loading Screen */
