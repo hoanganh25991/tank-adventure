@@ -19,9 +19,10 @@ class VirtualJoystick {
         this.base.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
         
         // Global touch events to handle movement outside joystick area
-        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
+        // Use passive: true to allow scrolling when not using joystick
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: true });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
+        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: true });
         
         // Mouse events for desktop testing
         this.base.addEventListener('mousedown', this.handleMouseDown.bind(this));
@@ -63,7 +64,13 @@ class VirtualJoystick {
         }
         
         if (relevantTouch) {
-            event.preventDefault();
+            // Only prevent default if this is our joystick touch
+            // We can't prevent default on passive events, so we need to check if we can
+            try {
+                event.preventDefault();
+            } catch (e) {
+                // Passive event, can't prevent default
+            }
             this.updateStickPosition(relevantTouch.clientX, relevantTouch.clientY);
         }
     }
@@ -91,7 +98,12 @@ class VirtualJoystick {
         }
         
         if (touchEnded) {
-            event.preventDefault();
+            // Only prevent default if this is our joystick touch
+            try {
+                event.preventDefault();
+            } catch (e) {
+                // Passive event, can't prevent default
+            }
             this.resetStick();
         }
     }
@@ -572,8 +584,7 @@ class GameUI {
                 }, 150);
             };
             
-            // Add both touch and click event listeners
-            btn.addEventListener('touchstart', handleBattleTypeSelection, { passive: false });
+            // Use simplified click handler that works for both touch and mouse
             btn.addEventListener('click', handleBattleTypeSelection);
         });
         
@@ -584,7 +595,6 @@ class GameUI {
             modal.classList.add('hidden');
         };
         
-        closeBtn.addEventListener('touchstart', handleClose, { passive: false });
         closeBtn.addEventListener('click', handleClose);
     }
 
@@ -1245,78 +1255,30 @@ class GameUI {
             return;
         }
         
-        console.log('Setting up mobile button:', button.id || 'unnamed button');
-        
-        let touchStarted = false;
-        let touchMoved = false;
-        
-        // Enhanced touch support for iPhone Safari
-        const handleTouchStart = (e) => {
-            console.log('Touch start on button:', button.id);
+        // Simple click handler that works for both mouse and touch
+        button.addEventListener('click', (e) => {
             e.preventDefault();
-            touchStarted = true;
-            touchMoved = false;
-            
-            // Add visual feedback
-            button.style.transform = 'scale(0.95)';
-            button.style.opacity = '0.8';
-        };
-        
-        const handleTouchMove = (e) => {
-            if (touchStarted) {
-                console.log('Touch move on button:', button.id);
-                touchMoved = true;
-            }
-        };
-        
-        const handleTouchEnd = (e) => {
-            console.log('Touch end on button:', button.id, 'touchStarted:', touchStarted, 'touchMoved:', touchMoved);
-            e.preventDefault();
-            
-            // Reset visual feedback
-            button.style.transform = 'scale(1)';
-            button.style.opacity = '1';
-            
-            // Only trigger callback if touch didn't move (actual tap)
-            if (touchStarted && !touchMoved) {
-                console.log('Button touched successfully:', button.id);
-                callback();
-            }
-            
-            touchStarted = false;
-            touchMoved = false;
-        };
-        
-        const handleClick = (e) => {
-            console.log('Button clicked:', button.id);
-            e.preventDefault();
+            e.stopPropagation();
             callback();
-        };
-        
-        // Add event listeners
-        button.addEventListener('touchstart', handleTouchStart, { passive: false });
-        button.addEventListener('touchmove', handleTouchMove, { passive: false });
-        button.addEventListener('touchend', handleTouchEnd, { passive: false });
-        button.addEventListener('touchcancel', handleTouchEnd, { passive: false });
-        
-        // Keep click for desktop/fallback
-        button.addEventListener('click', handleClick);
-        
-        // Prevent default behaviors that might interfere
-        button.addEventListener('contextmenu', (e) => e.preventDefault());
-        
-        // Debug: Check button's computed style
-        const computedStyle = window.getComputedStyle(button);
-        console.log('Button styles for', button.id, ':', {
-            pointerEvents: computedStyle.pointerEvents,
-            zIndex: computedStyle.zIndex,
-            position: computedStyle.position,
-            display: computedStyle.display,
-            visibility: computedStyle.visibility,
-            opacity: computedStyle.opacity
         });
         
-        // Make sure button is touchable
+        // Add visual feedback on touch (passive events don't prevent scrolling)
+        button.addEventListener('touchstart', (e) => {
+            button.style.transform = 'scale(0.95)';
+            button.style.opacity = '0.8';
+        }, { passive: true });
+        
+        button.addEventListener('touchend', (e) => {
+            button.style.transform = 'scale(1)';
+            button.style.opacity = '1';
+        }, { passive: true });
+        
+        button.addEventListener('touchcancel', (e) => {
+            button.style.transform = 'scale(1)';
+            button.style.opacity = '1';
+        }, { passive: true });
+        
+        // Allow touch manipulation but don't prevent scrolling
         button.style.touchAction = 'manipulation';
         button.style.userSelect = 'none';
         button.style.webkitUserSelect = 'none';

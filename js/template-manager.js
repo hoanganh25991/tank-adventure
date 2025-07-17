@@ -143,19 +143,23 @@ class TemplateManager {
         skillChoices.forEach(skill => {
             const skillElement = this.createSkillOption(skill);
             if (skillElement) {
-                // Add click handler
-                skillElement.addEventListener('click', () => {
+                // Simple click handler - works for both mouse and touch
+                skillElement.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (!skillElement.classList.contains('processing')) {
                         this.selectSkill(skillElement, skill.id, onSkillSelect);
                     }
                 });
 
-                // Add touch handling for mobile
-                this.setupMobileButton(skillElement, () => {
-                    if (!skillElement.classList.contains('processing')) {
-                        this.selectSkill(skillElement, skill.id, onSkillSelect);
-                    }
-                });
+                // Add visual feedback on touch
+                skillElement.addEventListener('touchstart', (e) => {
+                    skillElement.style.transform = 'scale(0.98)';
+                }, { passive: true });
+
+                skillElement.addEventListener('touchend', (e) => {
+                    skillElement.style.transform = 'scale(1)';
+                }, { passive: true });
 
                 this.containers.skillOptions.appendChild(skillElement);
             }
@@ -286,42 +290,7 @@ class TemplateManager {
         }
     }
 
-    // Setup mobile button handling (from ui.js)
-    setupMobileButton(element, callback) {
-        let touchStartTime = 0;
-        let touchId = null;
 
-        element.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartTime = Date.now();
-            touchId = e.touches[0].identifier;
-            element.classList.add('button-pressed');
-        }, { passive: false });
-
-        element.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            const touchDuration = Date.now() - touchStartTime;
-            
-            // Check if this is the same touch that started
-            let validTouch = false;
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === touchId) {
-                    validTouch = true;
-                    break;
-                }
-            }
-            
-            if (validTouch && touchDuration < 500) {
-                element.classList.remove('button-pressed');
-                callback();
-            }
-        }, { passive: false });
-
-        element.addEventListener('touchcancel', (e) => {
-            e.preventDefault();
-            element.classList.remove('button-pressed');
-        }, { passive: false });
-    }
 }
 
 // Create global instance
