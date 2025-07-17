@@ -465,12 +465,11 @@ button {
 }
 
 #mainMenu h1 {
-    font-family: 'Comfortaa', 'Arial', sans-serif;
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 2rem;
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 1);
-    color: var(--primary-blue);
+    color: var(--text-primary);
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -488,7 +487,8 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    width: 260px;
+    min-width: 260px;
+    max-width: 300px;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -569,11 +569,6 @@ button {
     z-index: 200 !important;
     pointer-events: auto !important;
     display: inline-block !important;
-    
-    /* Enhanced touch area */
-    min-height: 44px;
-    min-width: 200px;
-    
     /* iOS specific fixes */
     -webkit-user-select: none;
     -webkit-touch-callout: none;
