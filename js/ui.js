@@ -911,32 +911,14 @@ class GameUI {
     }
 
     showSkillSelection(skillChoices) {
-        this.elements.skillOptions.innerHTML = '';
         this.skillSelectionInProgress = false;
         this.selectedSkillElement = null;
         
-        skillChoices.forEach(skill => {
-            const skillDiv = document.createElement('div');
-            skillDiv.className = 'skill-option';
-            skillDiv.setAttribute('data-skill-id', skill.id);
-            const skillName = skill.getLocalizedName ? skill.getLocalizedName() : skill.name;
-            const skillDesc = skill.getLocalizedDescription ? skill.getLocalizedDescription() : skill.description;
-            skillDiv.innerHTML = `
-                <div class="skill-emoji">${skill.emoji}</div>
-                <h3>${skillName}</h3>
-                <p>${skillDesc}</p>
-                <p><strong>Type:</strong> ${skill.type}</p>
-            `;
-            
-            // Use mobile-friendly touch events for skill selection
-            this.setupMobileButton(skillDiv, () => {
-                if (!this.skillSelectionInProgress) {
-                    this.selectedSkillElement = skillDiv;
-                    this.selectSkill(skill.id);
-                }
-            });
-            
-            this.elements.skillOptions.appendChild(skillDiv);
+        // Use template manager to create skill options
+        window.templateManager.showSkillSelection(skillChoices, (skillId) => {
+            if (!this.skillSelectionInProgress) {
+                this.selectSkill(skillId);
+            }
         });
         
         this.showScreen('skillSelection');
@@ -1068,32 +1050,15 @@ class GameUI {
     }
     
     createBonusMessageElement() {
-        // Create bonus message element if it doesn't exist
-        const bonusMessage = document.createElement('div');
-        bonusMessage.id = 'bonusMessage';
-        bonusMessage.style.color = '#ffdd44'; // Gold color
-        bonusMessage.style.fontSize = '1.2em';
-        bonusMessage.style.fontWeight = 'bold';
-        bonusMessage.style.marginTop = '10px';
-        bonusMessage.style.marginBottom = '10px';
-        bonusMessage.style.textAlign = 'center';
-        bonusMessage.style.padding = '5px';
-        bonusMessage.style.borderRadius = '5px';
-        bonusMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        
-        // Insert after the battle result title
-        const battleResultTitle = document.getElementById('battleResultTitle');
-        if (battleResultTitle && battleResultTitle.parentNode) {
-            battleResultTitle.parentNode.insertBefore(bonusMessage, battleResultTitle.nextSibling);
-        } else {
-            // Fallback - insert at the beginning of the battle results screen
-            const battleResults = document.getElementById('battleResults');
-            if (battleResults) {
-                battleResults.insertBefore(bonusMessage, battleResults.firstChild);
-            }
+        // Check if bonus message already exists
+        const existingBonus = document.getElementById('bonusMessage');
+        if (existingBonus) {
+            return existingBonus;
         }
-        
-        return bonusMessage;
+
+        // Use template manager to create bonus message
+        const battleResultTitle = document.getElementById('battleResultTitle');
+        return window.templateManager.showBonusMessage('', battleResultTitle);
     }
 
     updateBaseScreen() {
@@ -1209,99 +1174,13 @@ class GameUI {
     }
 
     showDamageText(x, y, damage, isHeal = false) {
-        const canvas = document.getElementById('gameCanvas');
-        const rect = canvas.getBoundingClientRect();
-        
-        const damageDiv = document.createElement('div');
-        damageDiv.className = isHeal ? 'damage-text heal-text' : 'damage-text';
-        damageDiv.textContent = isHeal ? `+${damage.toFixed(0)}` : `-${damage.toFixed(0)}`;
-        damageDiv.style.left = `${rect.left + (x / canvas.width) * rect.width}px`;
-        damageDiv.style.top = `${rect.top + (y / canvas.height) * rect.height}px`;
-        
-        document.body.appendChild(damageDiv);
-        
-        // Remove after animation
-        setTimeout(() => {
-            if (damageDiv.parentNode) {
-                damageDiv.parentNode.removeChild(damageDiv);
-            }
-        }, 1000);
+        // Use template manager to create damage text
+        window.templateManager.showDamageText(x, y, damage, isHeal);
     }
 
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        
-        // Special styling for battle notifications
-        if (type === 'battle') {
-            notification.innerHTML = `<div class="battle-notification-content">${message}</div>`;
-            notification.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                padding: 20px 30px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                border-radius: 15px;
-                border: 3px solid #ff7e5f;
-                z-index: 1000;
-                animation: fadeInOut 2s ease-out;
-                font-size: 24px;
-                font-weight: bold;
-                text-align: center;
-                box-shadow: 0 0 30px rgba(255, 126, 95, 0.5);
-            `;
-            
-            // Add CSS animation for battle notification
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeInOut {
-                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-                    30% { transform: translate(-50%, -50%) scale(1); }
-                    80% { opacity: 1; }
-                    100% { opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Remove the style element when notification is removed
-            setTimeout(() => {
-                if (style.parentNode) {
-                    style.parentNode.removeChild(style);
-                }
-            }, 2500);
-            
-            // Shorter display time for battle notification
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 2500);
-        } else {
-            // Regular notifications
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                background: ${type === 'success' ? '#44aa44' : type === 'error' ? '#aa4444' : '#4a9eff'};
-                color: white;
-                border-radius: 8px;
-                z-index: 1000;
-                animation: slideUp 0.3s ease-out;
-            `;
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
-        }
-        
-        document.body.appendChild(notification);
+        // Use template manager to create notifications
+        window.templateManager.showNotification(message, type);
     }
 
     showLoading(progress = 0) {

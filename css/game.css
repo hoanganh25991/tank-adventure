@@ -2214,3 +2214,368 @@ button {
 #loadingScreen.active ~ .version-info {
     display: none;
 }
+
+/* ===== TEMPLATE SYSTEM STYLES ===== */
+
+/* Templates container - hidden by default */
+#templates {
+    display: none !important;
+}
+
+/* Notification System */
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    pointer-events: none;
+    max-width: 90%;
+}
+
+.notification {
+    margin-bottom: 10px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideInFadeIn 0.3s ease-out forwards;
+    transition: all 0.3s ease-out;
+}
+
+.notification.info {
+    background: rgba(74, 158, 255, 0.9);
+    border: 1px solid var(--primary-blue);
+}
+
+.notification.success {
+    background: rgba(68, 255, 68, 0.9);
+    border: 1px solid var(--color-success);
+}
+
+.notification.warning {
+    background: rgba(255, 153, 68, 0.9);
+    border: 1px solid var(--color-warning);
+}
+
+.notification.error {
+    background: rgba(255, 68, 68, 0.9);
+    border: 1px solid var(--color-danger);
+}
+
+.notification.battle-notification {
+    background: rgba(0, 0, 0, 0.8);
+    border: 3px solid #ff7e5f;
+    border-radius: 15px;
+    padding: 20px 30px;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 0 30px rgba(255, 126, 95, 0.5);
+    animation: battleNotificationFadeInOut 2s ease-out forwards;
+}
+
+.notification.battle-notification .battle-notification-content {
+    display: block;
+}
+
+.notification.fade-out {
+    animation: slideOutFadeOut 0.3s ease-out forwards;
+}
+
+@keyframes slideInFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes battleNotificationFadeInOut {
+    0% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8); 
+    }
+    15% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1.05); 
+    }
+    20% { 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    90% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8); 
+    }
+}
+
+/* Damage Text System */
+#damageTextContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.damage-text {
+    position: absolute;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4444;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    animation: damageTextFloat 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.damage-text.heal-text {
+    color: #44ff44;
+}
+
+.damage-text .damage-value {
+    display: block;
+}
+
+@keyframes damageTextFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-30px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.8);
+    }
+}
+
+/* Flash Effects System */
+#flashEffectsContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 998;
+}
+
+.skill-cast-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    animation: flashEffect 0.5s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes flashEffect {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Skill Selection Enhancement */
+.skill-option {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-blue);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.skill-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent-blue);
+    transform: scale(1.02);
+}
+
+.skill-option.selected {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: var(--accent-blue);
+    transform: scale(1.05);
+}
+
+.skill-option.processing {
+    opacity: 0.6;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+.skill-option .skill-emoji {
+    font-size: 48px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.skill-option .skill-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.skill-option .skill-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.skill-option .skill-type {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 0;
+}
+
+.skill-option .skill-type-value {
+    color: var(--primary-blue);
+    font-weight: 500;
+}
+
+/* Mobile optimizations for templates */
+@media (max-width: 768px) {
+    .notification {
+        font-size: 12px;
+        padding: 10px 16px;
+    }
+    
+    .notification.battle-notification {
+        font-size: 20px;
+        padding: 16px 24px;
+    }
+    
+    .damage-text {
+        font-size: 16px;
+    }
+    
+    .skill-option {
+        padding: 16px;
+        margin: 8px 0;
+    }
+    
+    .skill-option .skill-emoji {
+        font-size: 40px;
+    }
+    
+    .skill-option .skill-name {
+        font-size: 16px;
+    }
+    
+    .skill-option .skill-description {
+        font-size: 13px;
+    }
+}
+
+/* Tablet optimizations */
+@media (max-width: 1024px) and (orientation: landscape) {
+    .notification {
+        font-size: 13px;
+    }
+    
+    .notification.battle-notification {
+        font-size: 22px;
+    }
+    
+    .skill-option {
+        padding: 18px;
+    }
+    
+    .skill-option .skill-emoji {
+        font-size: 44px;
+    }
+}
+
+/* Screen shake animation for skill effects */
+@keyframes screenShake {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-2px, -1px); }
+    20% { transform: translate(-1px, 1px); }
+    30% { transform: translate(1px, -2px); }
+    40% { transform: translate(-1px, 2px); }
+    50% { transform: translate(2px, -1px); }
+    60% { transform: translate(-2px, 1px); }
+    70% { transform: translate(1px, -1px); }
+    80% { transform: translate(-1px, -2px); }
+    90% { transform: translate(2px, 1px); }
+}
+
+.screen-shake {
+    animation: screenShake 0.5s ease-in-out;
+}
+
+/* Bonus Message System */
+.bonus-message {
+    color: #ffdd44;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 10px 0;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #ffdd44;
+    animation: bonusMessageGlow 2s ease-in-out infinite;
+}
+
+.bonus-message-content {
+    display: block;
+}
+
+@keyframes bonusMessageGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 221, 68, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 221, 68, 0.6);
+    }
+}
+
+/* Mobile bonus message adjustments */
+@media (max-width: 768px) {
+    .bonus-message {
+        font-size: 1.1em;
+        margin: 8px 0;
+        padding: 8px;
+    }
+}

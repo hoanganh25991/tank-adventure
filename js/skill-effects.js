@@ -517,18 +517,8 @@ class SkillEffects {
 
     // Create HTML overlay flash effect
     createHTMLFlash(color, intensity, duration) {
-        const flashElement = document.createElement('div');
-        flashElement.className = 'skill-cast-flash';
-        flashElement.style.background = `radial-gradient(circle at center, ${color.replace('#', 'rgba(').replace(/(.{2})(.{2})(.{2})/, '$1, $2, $3')}, ${intensity}) 0%, transparent 70%)`;
-        
-        document.body.appendChild(flashElement);
-        
-        // Auto-remove after animation
-        setTimeout(() => {
-            if (flashElement.parentNode) {
-                flashElement.parentNode.removeChild(flashElement);
-            }
-        }, duration);
+        // Use template manager to create flash effect
+        window.templateManager.showFlashEffect(color, intensity, duration);
     }
 
     // Create screen shake effect
