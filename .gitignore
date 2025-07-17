@@ -2,5 +2,4 @@ note.md
 android-build
 aab-output
 .well-known
-scripts/build-android.sh
-scripts/digital-assets-links-setup.sh
+scripts
