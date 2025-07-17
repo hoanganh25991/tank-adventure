@@ -181,7 +181,6 @@ class Utils {
     // Fullscreen utilities
     static requestFullscreen(element = document.documentElement) {
         if (!element) return Promise.reject(new Error('Element not found'));
-        if (window.location.hostname == "localhost") return Promise.resolve();
 
         return new Promise((resolve, reject) => {
             const onFullscreenChange = () => {

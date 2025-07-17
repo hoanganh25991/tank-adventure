@@ -919,13 +919,25 @@ class GameUI {
     }
 
     showSkillSelection(skillChoices) {
+        console.log('UI: showSkillSelection called with', skillChoices.length, 'choices');
         this.skillSelectionInProgress = false;
         this.selectedSkillElement = null;
         
+        // Reset any existing visual states
+        document.querySelectorAll('.skill-option').forEach(option => {
+            option.style.pointerEvents = 'auto';
+            option.style.opacity = '1';
+            option.style.transform = 'scale(1)';
+            option.classList.remove('selected', 'processing');
+        });
+        
         // Use template manager to create skill options
         window.templateManager.showSkillSelection(skillChoices, (skillId) => {
+            console.log('UI: Skill callback triggered for', skillId);
             if (!this.skillSelectionInProgress) {
                 this.selectSkill(skillId);
+            } else {
+                console.log('UI: Skill selection already in progress, ignoring');
             }
         });
         

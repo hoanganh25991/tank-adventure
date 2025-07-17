@@ -143,27 +143,51 @@ class TemplateManager {
         skillChoices.forEach(skill => {
             const skillElement = this.createSkillOption(skill);
             if (skillElement) {
-                // Simple click handler - works for both mouse and touch
-                skillElement.addEventListener('click', (e) => {
+                // Create a wrapper function to handle the click properly
+                const handleClick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (!skillElement.classList.contains('processing')) {
-                        this.selectSkill(skillElement, skill.id, onSkillSelect);
+                    console.log('Skill clicked:', skill.id);
+                    
+                    // Check if already processing
+                    if (skillElement.classList.contains('processing') || 
+                        skillElement.classList.contains('selected')) {
+                        console.log('Skill already processing/selected');
+                        return;
                     }
-                });
-
-                // Add visual feedback on touch
+                    
+                    this.selectSkill(skillElement, skill.id, onSkillSelect);
+                };
+                
+                // Add click handler with proper binding
+                skillElement.addEventListener('click', handleClick);
+                
+                // Add touch handlers for mobile - improved mobile support
                 skillElement.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
                     skillElement.style.transform = 'scale(0.98)';
-                }, { passive: true });
+                }, { passive: false });
 
                 skillElement.addEventListener('touchend', (e) => {
+                    e.preventDefault();
                     skillElement.style.transform = 'scale(1)';
-                }, { passive: true });
+                    // Trigger click on touch end for mobile
+                    setTimeout(() => handleClick(e), 50);
+                }, { passive: false });
+                
+                // Add touch cancel handler
+                skillElement.addEventListener('touchcancel', (e) => {
+                    skillElement.style.transform = 'scale(1)';
+                });
 
+                // Add the element to container
                 this.containers.skillOptions.appendChild(skillElement);
             }
         });
+        
+        // Force a reflow to ensure DOM is updated
+        this.containers.skillOptions.offsetHeight;
+        console.log('Skill selection UI updated with', skillChoices.length, 'options');
     }
 
     // Handle skill selection
