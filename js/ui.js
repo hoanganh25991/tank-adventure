@@ -451,10 +451,8 @@ class GameUI {
                 }
             };
             
-            // Add multiple event types to ensure it works
-            this.elements.settingsBtn.addEventListener('click', emergencyClickHandler, { passive: false });
-            this.elements.settingsBtn.addEventListener('touchstart', emergencyClickHandler, { passive: false });
-            this.elements.settingsBtn.addEventListener('pointerdown', emergencyClickHandler, { passive: false });
+            // Use simplified click handler
+            this.elements.settingsBtn.addEventListener('click', emergencyClickHandler);
             
             console.log('Emergency settings button handlers added');
         }
