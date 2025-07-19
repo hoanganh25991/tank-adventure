@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+    <title>Android Scrolling Test - Tank Adventure</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--bg-section);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--border-primary);
+        }
+        
+        .test-content {
+            height: 200px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .long-content {
+            height: 1000px;
+            background: linear-gradient(to bottom, 
+                rgba(74, 158, 255, 0.3) 0%, 
+                rgba(74, 158, 255, 0.1) 50%, 
+                rgba(74, 158, 255, 0.3) 100%);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        .scroll-indicator {
+            position: sticky;
+            top: 0;
+            background: var(--primary-blue);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+        
+        .test-button {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Comfortaa', Arial, sans-serif;
+            touch-action: manipulation;
+        }
+        
+        .test-button:hover {
+            background: var(--secondary-blue);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: rgba(68, 255, 68, 0.2);
+            color: var(--color-success);
+        }
+        
+        .status.error {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--color-danger);
+        }
+        
+        .status.info {
+            background: rgba(74, 158, 255, 0.2);
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="settingsScreen" class="screen active">
+            <div class="test-container">
+                <h1>Android Scrolling Test</h1>
+                <p>This page tests scrolling functionality on Android devices.</p>
+                
+                <div class="status info" id="deviceInfo">
+                    <div>User Agent: <span id="userAgent"></span></div>
+                    <div>Display Mode: <span id="displayMode"></span></div>
+                    <div>Touch Support: <span id="touchSupport"></span></div>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Test 1: Settings Screen Scrolling</h2>
+                    <p>This content should be scrollable on Android devices:</p>
+                    <div class="test-content" id="settingsContent">
+                        <div class="scroll-indicator">📱 Scroll Test Area - Try scrolling here!</div>
+                        <div class="long-content">
+                            <h3>Scrollable Content</h3>
+                            <p>This is a long content area that should be scrollable on Android devices.</p>
+                            <p>Line 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            <p>Line 2: Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <p>Line 3: Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+                            <p>Line 4: Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
+                            <p>Line 5: Excepteur sint occaecat cupidatat non proident, sunt in culpa.</p>
+                            <p>Line 6: Qui officia deserunt mollit anim id est laborum.</p>
+                            <p>Line 7: Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
+                            <p>Line 8: Accusantium doloremque laudantium, totam rem aperiam.</p>
+                            <p>Line 9: Eaque ipsa quae ab illo inventore veritatis et quasi architecto.</p>
+                            <p>Line 10: Beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem.</p>
+                            <p>Line 11: Quia voluptas sit aspernatur aut odit aut fugit.</p>
+                            <p>Line 12: Sed quia consequuntur magni dolores eos qui ratione.</p>
+                            <p>Line 13: Voluptatem sequi nesciunt. Neque porro quisquam est.</p>
+                            <p>Line 14: Qui dolorem ipsum quia dolor sit amet, consectetur.</p>
+                            <p>Line 15: Adipisci velit, sed quia non numquam eius modi tempora.</p>
+                            <p>Line 16: Incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+                            <p>Line 17: Ut enim ad minima veniam, quis nostrum exercitationem.</p>
+                            <p>Line 18: Ullam corporis suscipit laboriosam, nisi ut aliquid ex ea.</p>
+                            <p>Line 19: Commodi consequatur? Quis autem vel eum iure reprehenderit.</p>
+                            <p>Line 20: Qui in ea voluptate velit esse quam nihil molestiae.</p>
+                            <div style="background: var(--color-success); padding: 20px; border-radius: 5px; margin-top: 20px;">
+                                <h3>🎉 Success!</h3>
+                                <p>If you can see this message, scrolling is working correctly!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Test 2: Touch Event Monitoring</h2>
+                    <p>Touch events will be logged below:</p>
+                    <div id="touchLog" class="test-content" style="height: 150px; font-family: monospace; font-size: 12px;">
+                        <div>Touch events will appear here...</div>
+                    </div>
+                    <button class="test-button" onclick="clearLog()">Clear Log</button>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Test 3: Scroll Event Monitoring</h2>
+                    <p>Scroll events will be logged below:</p>
+                    <div id="scrollLog" class="test-content" style="height: 150px; font-family: monospace; font-size: 12px;">
+                        <div>Scroll events will appear here...</div>
+                    </div>
+                    <button class="test-button" onclick="clearScrollLog()">Clear Scroll Log</button>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Test 4: Manual Scroll Test</h2>
+                    <p>Try scrolling in the area below:</p>
+                    <div class="test-content" style="height: 200px;">
+                        <div style="height: 800px; background: linear-gradient(to bottom, red, orange, yellow, green, blue, indigo, violet); border-radius: 5px; padding: 20px; color: white; text-shadow: 1px 1px 2px black;">
+                            <h3>Rainbow Scroll Test</h3>
+                            <p style="margin-top: 100px;">Red section</p>
+                            <p style="margin-top: 100px;">Orange section</p>
+                            <p style="margin-top: 100px;">Yellow section</p>
+                            <p style="margin-top: 100px;">Green section</p>
+                            <p style="margin-top: 100px;">Blue section</p>
+                            <p style="margin-top: 100px;">Indigo section</p>
+                            <p style="margin-top: 100px;">Violet section - End!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status" id="testResults">
+                    <h3>Test Results:</h3>
+                    <div id="results">Run tests to see results...</div>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <button class="test-button" onclick="runTests()">🧪 Run All Tests</button>
+                    <button class="test-button" onclick="window.location.href='../index.html'">🏠 Back to Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Device detection
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('displayMode').textContent = window.matchMedia('(display-mode: standalone)').matches ? 'Standalone/Fullscreen' : 'Browser';
+        document.getElementById('touchSupport').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+        
+        // Touch event logging
+        let touchLogElement = document.getElementById('touchLog');
+        let scrollLogElement = document.getElementById('scrollLog');
+        let touchEventCount = 0;
+        let scrollEventCount = 0;
+        
+        function logTouch(event, type) {
+            touchEventCount++;
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `${touchEventCount}. ${type} - Target: ${event.target.tagName} ${event.target.className || ''} - Time: ${new Date().toLocaleTimeString()}`;
+            touchLogElement.appendChild(logEntry);
+            touchLogElement.scrollTop = touchLogElement.scrollHeight;
+        }
+        
+        function logScroll(event, type) {
+            scrollEventCount++;
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `${scrollEventCount}. ${type} - Target: ${event.target.tagName} ${event.target.className || ''} - ScrollTop: ${event.target.scrollTop} - Time: ${new Date().toLocaleTimeString()}`;
+            scrollLogElement.appendChild(logEntry);
+            scrollLogElement.scrollTop = scrollLogElement.scrollHeight;
+        }
+        
+        // Add touch event listeners
+        document.addEventListener('touchstart', (e) => logTouch(e, 'touchstart'), { passive: true });
+        document.addEventListener('touchmove', (e) => logTouch(e, 'touchmove'), { passive: true });
+        document.addEventListener('touchend', (e) => logTouch(e, 'touchend'), { passive: true });
+        
+        // Add scroll event listeners
+        document.addEventListener('scroll', (e) => logScroll(e, 'scroll'), { passive: true, capture: true });
+        
+        function clearLog() {
+            touchLogElement.innerHTML = '<div>Touch events will appear here...</div>';
+            touchEventCount = 0;
+        }
+        
+        function clearScrollLog() {
+            scrollLogElement.innerHTML = '<div>Scroll events will appear here...</div>';
+            scrollEventCount = 0;
+        }
+        
+        function runTests() {
+            const results = document.getElementById('results');
+            const testResults = [];
+            
+            // Test 1: Check if scrollable elements exist
+            const settingsContent = document.getElementById('settingsContent');
+            if (settingsContent) {
+                testResults.push('✅ Settings content element found');
+                
+                // Test scrollability
+                const originalScrollTop = settingsContent.scrollTop;
+                settingsContent.scrollTop = 50;
+                if (settingsContent.scrollTop > originalScrollTop) {
+                    testResults.push('✅ Programmatic scrolling works');
+                } else {
+                    testResults.push('❌ Programmatic scrolling failed');
+                }
+                settingsContent.scrollTop = originalScrollTop;
+            } else {
+                testResults.push('❌ Settings content element not found');
+            }
+            
+            // Test 2: Check CSS properties
+            const computedStyle = window.getComputedStyle(settingsContent);
+            const overflowY = computedStyle.overflowY;
+            const touchAction = computedStyle.touchAction;
+            const webkitOverflowScrolling = computedStyle.webkitOverflowScrolling;
+            
+            testResults.push(`📋 overflow-y: ${overflowY}`);
+            testResults.push(`📋 touch-action: ${touchAction}`);
+            testResults.push(`📋 -webkit-overflow-scrolling: ${webkitOverflowScrolling}`);
+            
+            if (overflowY === 'auto' || overflowY === 'scroll') {
+                testResults.push('✅ CSS overflow-y is correct');
+            } else {
+                testResults.push('❌ CSS overflow-y is incorrect');
+            }
+            
+            // Test 3: Check display mode
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            if (isStandalone) {
+                testResults.push('📱 Running in standalone/fullscreen mode');
+            } else {
+                testResults.push('🌐 Running in regular browser mode');
+            }
+            
+            // Test 4: Check touch events
+            if (touchEventCount > 0) {
+                testResults.push(`✅ Touch events detected (${touchEventCount} events)`);
+            } else {
+                testResults.push('⚠️ No touch events detected yet');
+            }
+            
+            // Test 5: Check scroll events
+            if (scrollEventCount > 0) {
+                testResults.push(`✅ Scroll events detected (${scrollEventCount} events)`);
+            } else {
+                testResults.push('⚠️ No scroll events detected yet');
+            }
+            
+            results.innerHTML = testResults.join('<br>');
+            
+            // Update status color
+            const hasErrors = testResults.some(result => result.includes('❌'));
+            const testResultsElement = document.getElementById('testResults');
+            if (hasErrors) {
+                testResultsElement.className = 'status error';
+            } else {
+                testResultsElement.className = 'status success';
+            }
+        }
+        
+        // Auto-run tests after a short delay
+        setTimeout(runTests, 1000);
+    </script>
+</body>
+</html>

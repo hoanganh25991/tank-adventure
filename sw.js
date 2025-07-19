@@ -19,7 +19,6 @@ const STATIC_ASSETS = [
     '/tank-adventure/js/utils.js',
     '/tank-adventure/js/sound-manager.js',
     '/tank-adventure/js/orientation.js',
-    '/tank-adventure/js/android-twa.js',
     '/tank-adventure/assets/favicon/favicon.ico',
     '/tank-adventure/assets/favicon/android-chrome-192x192.png',
     '/tank-adventure/assets/favicon/android-chrome-512x512.png',
