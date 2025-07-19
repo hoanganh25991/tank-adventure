@@ -159,26 +159,17 @@ class TemplateManager {
                     this.selectSkill(skillElement, skill.id, onSkillSelect);
                 };
                 
-                // Add click handler with proper binding
+                // Simplified unified event handler for both touch and mouse
                 skillElement.addEventListener('click', handleClick);
                 
-                // Add touch handlers for mobile - improved mobile support
+                // Visual feedback for touch (simplified)
                 skillElement.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
                     skillElement.style.transform = 'scale(0.98)';
-                }, { passive: false });
+                }, { passive: true });
 
                 skillElement.addEventListener('touchend', (e) => {
-                    e.preventDefault();
                     skillElement.style.transform = 'scale(1)';
-                    // Trigger click on touch end for mobile
-                    setTimeout(() => handleClick(e), 50);
-                }, { passive: false });
-                
-                // Add touch cancel handler
-                skillElement.addEventListener('touchcancel', (e) => {
-                    skillElement.style.transform = 'scale(1)';
-                });
+                }, { passive: true });
 
                 // Add the element to container
                 this.containers.skillOptions.appendChild(skillElement);

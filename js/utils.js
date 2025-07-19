@@ -1,9 +1,15 @@
-// Utility Functions for Tank Adventure Game
+// Optimized Utility Functions for Tank Adventure Game
+// Consolidated and performance-optimized for mobile-first approach
 
 class Utils {
-    // Math utilities
+    // Cached DOM elements for performance
+    static _domCache = new Map();
+    
+    // Math utilities (consolidated)
     static distance(x1, y1, x2, y2) {
-        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     static angle(x1, y1, x2, y2) {
@@ -11,7 +17,6 @@ class Utils {
     }
     
     static normalizeAngle(angle) {
-        // Normalize angle to be between -PI and PI
         return Math.atan2(Math.sin(angle), Math.cos(angle));
     }
 
@@ -35,11 +40,10 @@ class Utils {
         return array[Math.floor(Math.random() * array.length)];
     }
 
-    // Vector utilities
+    // Vector utilities (optimized)
     static normalize(x, y) {
         const length = Math.sqrt(x * x + y * y);
-        if (length === 0) return { x: 0, y: 0 };
-        return { x: x / length, y: y / length };
+        return length === 0 ? { x: 0, y: 0 } : { x: x / length, y: y / length };
     }
 
     static rotatePoint(x, y, angle) {
@@ -51,10 +55,12 @@ class Utils {
         };
     }
 
-    // Collision detection
+    // Collision detection (optimized)
     static circleCollision(x1, y1, r1, x2, y2, r2) {
-        const distance = this.distance(x1, y1, x2, y2);
-        return distance < (r1 + r2);
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const radiusSum = r1 + r2;
+        return (dx * dx + dy * dy) < (radiusSum * radiusSum);
     }
 
     static rectCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
@@ -62,11 +68,25 @@ class Utils {
     }
 
     static pointInCircle(px, py, cx, cy, radius) {
-        return this.distance(px, py, cx, cy) <= radius;
+        const dx = px - cx;
+        const dy = py - cy;
+        return (dx * dx + dy * dy) <= (radius * radius);
     }
 
     static pointInRect(px, py, rx, ry, width, height) {
         return px >= rx && px <= rx + width && py >= ry && py <= ry + height;
+    }
+
+    // DOM utilities with caching
+    static getElement(id) {
+        if (!this._domCache.has(id)) {
+            this._domCache.set(id, document.getElementById(id));
+        }
+        return this._domCache.get(id);
+    }
+
+    static clearDOMCache() {
+        this._domCache.clear();
     }
 
     // Canvas utilities
@@ -173,173 +193,80 @@ class Utils {
         return this.rgbToHex(r, g, b);
     }
 
-    // Touch/Mobile utilities
+    // Device detection (simplified)
     static isMobile() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     }
 
-    // Fullscreen utilities
-    static requestFullscreen(element = document.documentElement) {
-        if (!element) return Promise.reject(new Error('Element not found'));
-        if (window.location.hostname == 'localhost' ) return Promise.resolve();
-
-        return new Promise((resolve, reject) => {
-            const onFullscreenChange = () => {
-                if (this.isFullscreen()) {
-                    resolve();
-                } else {
-                    reject(new Error('Fullscreen request was cancelled'));
-                }
-                // Clean up event listeners
-                document.removeEventListener('fullscreenchange', onFullscreenChange);
-                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
-                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
-                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
-                
-                // Also remove error listeners
-                document.removeEventListener('fullscreenerror', onFullscreenError);
-                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
-                document.removeEventListener('mozfullscreenerror', onFullscreenError);
-                document.removeEventListener('MSFullscreenError', onFullscreenError);
-            };
-            
-            const onFullscreenError = () => {
-                reject(new Error('Fullscreen request failed'));
-                // Clean up event listeners
-                document.removeEventListener('fullscreenchange', onFullscreenChange);
-                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
-                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
-                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
-                
-                document.removeEventListener('fullscreenerror', onFullscreenError);
-                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
-                document.removeEventListener('mozfullscreenerror', onFullscreenError);
-                document.removeEventListener('MSFullscreenError', onFullscreenError);
-            };
-            
-            // Add event listeners for fullscreen change and error
-            document.addEventListener('fullscreenchange', onFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-            document.addEventListener('mozfullscreenchange', onFullscreenChange);
-            document.addEventListener('MSFullscreenChange', onFullscreenChange);
-            
-            document.addEventListener('fullscreenerror', onFullscreenError);
-            document.addEventListener('webkitfullscreenerror', onFullscreenError);
-            document.addEventListener('mozfullscreenerror', onFullscreenError);
-            document.addEventListener('MSFullscreenError', onFullscreenError);
-            
-            // Set a timeout to reject if fullscreen doesn't activate within 5 seconds
-            setTimeout(() => {
-                reject(new Error('Fullscreen request timeout'));
-                // Clean up event listeners
-                document.removeEventListener('fullscreenchange', onFullscreenChange);
-                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
-                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
-                document.removeEventListener('MSFullscreenChange', onFullscreenChange);
-                
-                document.removeEventListener('fullscreenerror', onFullscreenError);
-                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
-                document.removeEventListener('mozfullscreenerror', onFullscreenError);
-                document.removeEventListener('MSFullscreenError', onFullscreenError);
-            }, 5000);
-            
-            // Try to request fullscreen
-            try {
-                if (element.requestFullscreen) {
-                    element.requestFullscreen();
-                } else if (element.webkitRequestFullscreen) { // Safari
-                    element.webkitRequestFullscreen();
-                } else if (element.mozRequestFullScreen) { // Firefox
-                    element.mozRequestFullScreen();
-                } else if (element.msRequestFullscreen) { // IE/Edge
-                    element.msRequestFullscreen();
-                } else {
-                    reject(new Error('Fullscreen not supported'));
-                }
-            } catch (error) {
-                reject(error);
+    // Simplified fullscreen utilities (optimized for mobile)
+    static async requestFullscreen(element = document.documentElement) {
+        if (!element || window.location.hostname === 'localhost') return;
+        
+        try {
+            if (element.requestFullscreen) {
+                await element.requestFullscreen();
+            } else if (element.webkitRequestFullscreen) {
+                await element.webkitRequestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                await element.mozRequestFullScreen();
             }
-        });
+        } catch (error) {
+            console.warn('Fullscreen request failed:', error);
+        }
     }
 
-    static exitFullscreen() {
-        if (document.exitFullscreen) {
-            return document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) { // Safari
-            return document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) { // Firefox
-            return document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) { // IE/Edge
-            return document.msExitFullscreen();
-        } else {
-            return Promise.reject(new Error('Exit fullscreen not supported'));
+    static async exitFullscreen() {
+        try {
+            if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                await document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                await document.mozCancelFullScreen();
+            }
+        } catch (error) {
+            console.warn('Exit fullscreen failed:', error);
         }
     }
 
     static isFullscreen() {
         return !!(document.fullscreenElement || 
                   document.webkitFullscreenElement || 
-                  document.mozFullScreenElement || 
-                  document.msFullscreenElement);
+                  document.mozFullScreenElement);
     }
 
     static toggleFullscreen(element = document.documentElement) {
-        if (this.isFullscreen()) {
-            return this.exitFullscreen();
-        } else {
-            return this.requestFullscreen(element);
-        }
+        return this.isFullscreen() ? this.exitFullscreen() : this.requestFullscreen(element);
     }
 
-    static getTouchPos(canvas, touch) {
+    // Unified position utilities (consolidated touch/mouse)
+    static getEventPos(canvas, event) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         
-        return {
-            x: (touch.clientX - rect.left) * scaleX,
-            y: (touch.clientY - rect.top) * scaleY
-        };
-    }
-
-    static getMousePos(canvas, event) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+        // Handle both touch and mouse events
+        const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+        const clientY = event.touches ? event.touches[0].clientY : event.clientY;
         
         return {
-            x: (event.clientX - rect.left) * scaleX,
-            y: (event.clientY - rect.top) * scaleY
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
         };
     }
 
-    // Performance utilities
-    static debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
+    // Essential utilities only
+    static formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    static throttle(func, limit) {
-        let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
+    static formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Array utilities
+    // Simplified array utilities
     static shuffle(array) {
         const result = [...array];
         for (let i = result.length - 1; i > 0; i--) {
@@ -353,28 +280,22 @@ class Utils {
         const index = array.indexOf(item);
         if (index > -1) {
             array.splice(index, 1);
+            return true;
         }
-        return array;
+        return false;
     }
 
-    // Sound utilities (for future sound implementation)
-    static playSound(audioElement, volume = 1.0) {
-        if (audioElement && typeof audioElement.play === 'function') {
-            audioElement.volume = volume;
-            audioElement.currentTime = 0;
-            audioElement.play().catch(e => console.warn('Could not play sound:', e));
-        }
-    }
-
-    // Format utilities
-    static formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    static formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    // Keep debounce for resize events (essential for performance)
+    static debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 }
 

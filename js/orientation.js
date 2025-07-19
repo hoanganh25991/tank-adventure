@@ -22,24 +22,18 @@ class OrientationManager {
         // Check initial orientation
         this.checkOrientation();
         
-        // Listen for orientation changes
-        window.addEventListener('orientationchange', () => {
-            // Use setTimeout to ensure orientation change is complete
-            setTimeout(() => {
-                this.checkOrientation();
-            }, 100);
-        });
+        // Unified orientation change handler (optimized)
+        const handleOrientationChange = () => {
+            setTimeout(() => this.checkOrientation(), 100);
+        };
         
-        // Listen for resize events (fallback for devices without orientationchange)
-        window.addEventListener('resize', () => {
-            this.checkOrientation();
-        });
+        // Listen for orientation changes (consolidated)
+        window.addEventListener('orientationchange', handleOrientationChange);
+        window.addEventListener('resize', handleOrientationChange);
         
-        // Also listen for screen orientation API if available
+        // Modern screen orientation API if available
         if (screen.orientation) {
-            screen.orientation.addEventListener('change', () => {
-                this.checkOrientation();
-            });
+            screen.orientation.addEventListener('change', handleOrientationChange);
         }
     }
 

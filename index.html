@@ -139,7 +139,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/game.css?v=7.0.0.4">
 
     <!-- Sentry - Installation -->
     <script src="https://js.sentry-cdn.com/1a40dc41bd2fd09765554e8de7e0264c.min.js" crossorigin="anonymous"></script>
@@ -727,19 +727,21 @@
     });
     </script>
 
-    <!-- Scripts -->
-    <script src="js/orientation.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/localization.js"></script>
-    <script src="js/template-manager.js"></script>
-    <script src="js/player.js"></script>
-    <script src="js/enemy.js"></script>
-    <script src="js/skills.js"></script>
-    <script src="js/skill-effects.js"></script>
-    <script src="js/sound-manager.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/upgrades.js"></script>
-    <script src="js/game-engine.js"></script>
+    <!-- Scripts (optimized loading order) -->
+    <script src="js/orientation.js?v=7.0.0.4"></script>
+    <script src="js/utils.js?v=7.0.0.4"></script>
+    <script src="js/input-manager.js?v=7.0.0.4"></script>
+    <script src="js/localization.js?v=7.0.0.4"></script>
+    <script src="js/template-manager.js?v=7.0.0.4"></script>
+    <script src="js/player.js?v=7.0.0.4"></script>
+    <script src="js/enemy.js?v=7.0.0.4"></script>
+    <script src="js/skills.js?v=7.0.0.4"></script>
+    <script src="js/skill-effects.js?v=7.0.0.4"></script>
+    <script src="js/sound-manager.js?v=7.0.0.4"></script>
+    <script src="js/ui.js?v=7.0.0.4"></script>
+    <script src="js/upgrades.js?v=7.0.0.4"></script>
+    <script src="js/quick-actions.js?v=7.0.0.4"></script>
+    <script src="js/game-engine.js?v=7.0.0.4"></script>
     
     <!-- PWA Service Worker Registration -->
     <script>
@@ -777,6 +779,84 @@
                 }
             });
         }
+        
+        // Force cache clear and reload function
+        window.forceCacheReload = async function() {
+            console.log('Forcing cache clear and reload...');
+            
+            // Clear all caches
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => {
+                        console.log('Deleting cache:', cacheName);
+                        return caches.delete(cacheName);
+                    })
+                );
+            }
+            
+            // Unregister service worker
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(
+                    registrations.map(registration => {
+                        console.log('Unregistering service worker');
+                        return registration.unregister();
+                    })
+                );
+            }
+            
+            // Clear localStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Force reload with cache bypass
+            window.location.reload(true);
+        };
+        
+        // Global error handler to catch cache-related errors
+        window.addEventListener('error', function(event) {
+            const errorMessage = event.message || '';
+            const isCacheError = errorMessage.includes('getJoystickInput is not a function') ||
+                                errorMessage.includes('removeFromArray is not a function') ||
+                                errorMessage.includes('Utils.') && errorMessage.includes('is not a function');
+            
+            if (isCacheError) {
+                console.error('Detected cache-related error - forcing cache reload:', errorMessage);
+                
+                // Show user-friendly message
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: #dc3545;
+                        color: white;
+                        padding: 20px;
+                        border-radius: 10px;
+                        z-index: 10002;
+                        text-align: center;
+                        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+                    ">
+                        <h3>🔄 Updating Game...</h3>
+                        <p>Clearing cache and reloading latest version...</p>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                // Force cache reload after a short delay
+                setTimeout(() => {
+                    window.forceCacheReload();
+                }, 2000);
+                
+                return true; // Prevent default error handling
+            }
+        });
+        
+        // Debug function for manual cache clearing
+        window.clearGameCache = window.forceCacheReload;
         
         function showUpdateAvailable() {
             // Create update notification

@@ -1,190 +1,10 @@
-// UI System for Mobile Controls and Interface
-
-class VirtualJoystick {
-    constructor(baseElement, stickElement) {
-        this.base = baseElement;
-        this.stick = stickElement;
-        this.baseRect = null;
-        this.isActive = false;
-        this.currentX = 0;
-        this.currentY = 0;
-        this.maxDistance = 35; // Maximum distance from center
-        this.touchId = null; // Track specific touch for multi-touch support
-        
-        this.setupEvents();
-    }
-
-    setupEvents() {
-        // Touch events on joystick area
-        this.base.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-        
-        // Global touch events to handle movement outside joystick area
-        // Use passive: false to allow preventDefault when needed for joystick control
-        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
-        
-        // Mouse events for desktop testing
-        this.base.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    }
-
-    handleTouchStart(event) {
-        // Check if we're in battle mode - only handle joystick in battle
-        const battleScreen = document.getElementById('battleScreen');
-        const isInBattle = battleScreen && battleScreen.classList.contains('active');
-        
-        if (!isInBattle) return;
-        
-        event.preventDefault();
-        this.isActive = true;
-        this.touchId = event.touches[0].identifier; // Track specific touch
-        this.baseRect = this.base.getBoundingClientRect();
-        const touch = event.touches[0];
-        this.updateStickPosition(touch.clientX, touch.clientY);
-    }
-
-    handleTouchMove(event) {
-        if (!this.isActive) return;
-        
-        // Check if we're in battle mode - only handle joystick in battle
-        const battleScreen = document.getElementById('battleScreen');
-        const isInBattle = battleScreen && battleScreen.classList.contains('active');
-        
-        if (!isInBattle) return;
-        
-        // Find the touch that belongs to this joystick
-        let relevantTouch = null;
-        for (let i = 0; i < event.touches.length; i++) {
-            if (event.touches[i].identifier === this.touchId) {
-                relevantTouch = event.touches[i];
-                break;
-            }
-        }
-        
-        if (relevantTouch) {
-            // Prevent default to stop scrolling when using joystick
-            event.preventDefault();
-            this.updateStickPosition(relevantTouch.clientX, relevantTouch.clientY);
-        }
-    }
-
-    handleTouchEnd(event) {
-        // Check if we're in battle mode - only handle joystick in battle
-        const battleScreen = document.getElementById('battleScreen');
-        const isInBattle = battleScreen && battleScreen.classList.contains('active');
-        
-        if (!isInBattle) {
-            // Reset joystick if we're not in battle anymore
-            if (this.isActive) {
-                this.resetStick();
-            }
-            return;
-        }
-        
-        // Check if our tracked touch ended
-        let touchEnded = true;
-        for (let i = 0; i < event.touches.length; i++) {
-            if (event.touches[i].identifier === this.touchId) {
-                touchEnded = false;
-                break;
-            }
-        }
-        
-        if (touchEnded) {
-            // Prevent default to ensure proper touch handling
-            event.preventDefault();
-            this.resetStick();
-        }
-    }
-
-    handleMouseDown(event) {
-        this.isActive = true;
-        this.baseRect = this.base.getBoundingClientRect();
-        this.updateStickPosition(event.clientX, event.clientY);
-    }
-
-    handleMouseMove(event) {
-        if (!this.isActive) return;
-        this.updateStickPosition(event.clientX, event.clientY);
-    }
-
-    handleMouseUp(event) {
-        this.resetStick();
-    }
-
-    updateStickPosition(clientX, clientY) {
-        if (!this.baseRect) return;
-        
-        // Calculate relative position
-        const centerX = this.baseRect.left + this.baseRect.width / 2;
-        const centerY = this.baseRect.top + this.baseRect.height / 2;
-        
-        let deltaX = clientX - centerX;
-        let deltaY = clientY - centerY;
-        
-        // Limit to maximum distance
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if (distance > this.maxDistance) {
-            const ratio = this.maxDistance / distance;
-            deltaX *= ratio;
-            deltaY *= ratio;
-        }
-        
-        // Update stick position
-        this.stick.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px)`;
-        
-        // Store normalized values (-1 to 1)
-        this.currentX = deltaX / this.maxDistance;
-        this.currentY = deltaY / this.maxDistance;
-    }
-
-    resetStick() {
-        this.isActive = false;
-        this.stick.style.transform = 'translate(-50%, -50%)';
-        this.currentX = 0;
-        this.currentY = 0;
-        this.baseRect = null;
-        this.touchId = null;
-    }
-
-    getDirection() {
-        const magnitude = Math.sqrt(this.currentX * this.currentX + this.currentY * this.currentY);
-        
-        // Apply deadzone - ignore very small movements
-        const deadzone = 0.15;
-        if (magnitude < deadzone) {
-            return {
-                x: 0,
-                y: 0,
-                magnitude: 0
-            };
-        }
-        
-        // Normalize direction and apply magnitude scaling
-        const normalizedX = magnitude > 0 ? this.currentX / magnitude : 0;
-        const normalizedY = magnitude > 0 ? this.currentY / magnitude : 0;
-        
-        // Scale magnitude to remove deadzone effect
-        const adjustedMagnitude = Math.min((magnitude - deadzone) / (1 - deadzone), 1);
-        
-        return {
-            x: normalizedX * adjustedMagnitude,
-            y: normalizedY * adjustedMagnitude,
-            magnitude: adjustedMagnitude
-        };
-    }
-}
+// Optimized UI System for Mobile Controls and Interface
+// VirtualJoystick functionality moved to InputManager for better performance
 
 class GameUI {
     constructor(gameEngine) {
         this.gameEngine = gameEngine;
         this.elements = this.initializeElements();
-        this.joystick = new VirtualJoystick(
-            this.elements.joystickBase,
-            this.elements.joystickStick
-        );
         
         this.damageTexts = [];
         this.skillSelectionInProgress = false;
@@ -353,26 +173,8 @@ class GameUI {
     }
 
     setupEventListeners() {
-        // Mobile control buttons
-        this.elements.primaryShootBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.handleShoot();
-        });
-        
-        this.elements.primaryShootBtn.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            this.handleShoot();
-        });
-        
-        // Skill buttons
-        [this.elements.skill1Btn, this.elements.skill2Btn, this.elements.skill3Btn].forEach((btn, index) => {
-            const handler = (e) => {
-                e.preventDefault();
-                this.handleSkillUse(index);
-            };
-            btn.addEventListener('touchstart', handler);
-            btn.addEventListener('mousedown', handler);
-        });
+        // Note: Mobile control buttons (joystick, shoot, skills) are now handled by InputManager
+        // Only setup menu and UI buttons here
         
         // Menu buttons - Enhanced for mobile touch support
         this.setupMobileButton(this.elements.startGameBtn, () => {
@@ -455,31 +257,7 @@ class GameUI {
             });
         });
         
-        // Prevent context menu on long press
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.closest('#mobileControls')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Prevent scrolling on touch - but allow in scrollable areas and on buttons
-        document.addEventListener('touchmove', (e) => {
-            // Check if we're in a scrollable area or touching a button
-            const isInScrollableArea = e.target.closest('#settingsContent') || 
-                                     e.target.closest('#baseContent') || 
-                                     e.target.closest('.info-section') ||
-                                     e.target.closest('.upgrade-category');
-            
-            const isButton = e.target.closest('button') || 
-                           e.target.closest('.menu-btn') || 
-                           e.target.closest('.action-btn') ||
-                           e.target.closest('.upgrade-btn');
-            
-            // Only prevent default if we're in the game container but not in a scrollable area or on a button
-            if (e.target.closest('#gameContainer') && !isInScrollableArea && !isButton) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // Note: Touch event handling and scroll prevention now managed by InputManager
         
         // Setup battle type modal event listeners
         this.setupBattleTypeModal();
@@ -582,63 +360,9 @@ class GameUI {
         this.showBattleTypeSelection();
     }
     
-    requestFullscreen() {
-        if (window.location.hostname == 'localhost' ) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const element = document.documentElement;
-            
-            // Check if already in fullscreen
-            if (document.fullscreenElement || document.webkitFullscreenElement) {
-                resolve();
-                return;
-            }
-            
-            // Set up event listeners for fullscreen change
-            const onFullscreenChange = () => {
-                document.removeEventListener('fullscreenchange', onFullscreenChange);
-                document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
-                document.removeEventListener('mozfullscreenchange', onFullscreenChange);
-                document.removeEventListener('msfullscreenchange', onFullscreenChange);
-                
-                if (document.fullscreenElement || document.webkitFullscreenElement) {
-                    resolve();
-                } else {
-                    reject(new Error('Fullscreen request was denied'));
-                }
-            };
-            
-            const onFullscreenError = (error) => {
-                document.removeEventListener('fullscreenerror', onFullscreenError);
-                document.removeEventListener('webkitfullscreenerror', onFullscreenError);
-                reject(error);
-            };
-            
-            // Add event listeners
-            document.addEventListener('fullscreenchange', onFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-            document.addEventListener('mozfullscreenchange', onFullscreenChange);
-            document.addEventListener('msfullscreenchange', onFullscreenChange);
-            document.addEventListener('fullscreenerror', onFullscreenError);
-            document.addEventListener('webkitfullscreenerror', onFullscreenError);
-            
-            // Request fullscreen with different API methods
-            if (element.requestFullscreen) {
-                element.requestFullscreen({ navigationUI: "hide" }).catch(reject);
-            } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-            } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
-            } else {
-                reject(new Error('Fullscreen API not supported'));
-            }
-            
-            // Timeout after 3 seconds
-            setTimeout(() => {
-                reject(new Error('Fullscreen request timeout'));
-            }, 3000);
-        });
+    async requestFullscreen() {
+        // Use simplified Utils method
+        await Utils.requestFullscreen();
     }
     
     // Removed unused fullscreen request functions
@@ -836,9 +560,7 @@ class GameUI {
         });
     }
 
-    getJoystickInput() {
-        return this.joystick.getDirection();
-    }
+    // getJoystickInput() method removed - now handled by InputManager
 
     showScreen(screenName) {
         console.log('Showing screen:', screenName);
@@ -1395,5 +1117,4 @@ window.addEventListener('orientationchange', Utils.debounce(() => {
 }, 250));
 
 // Export for global access
-window.VirtualJoystick = VirtualJoystick;
 window.GameUI = GameUI;

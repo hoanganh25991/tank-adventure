@@ -1,7 +1,7 @@
 // Tank Adventure Service Worker
-const CACHE_NAME = 'tank-adventure-v7.0.0.2';
-const STATIC_CACHE_NAME = 'tank-adventure-static-v7.0.0.2';
-const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v7.0.0.2';
+const CACHE_NAME = 'tank-adventure-v7.0.0.4';
+const STATIC_CACHE_NAME = 'tank-adventure-static-v7.0.0.4';
+const DYNAMIC_CACHE_NAME = 'tank-adventure-dynamic-v7.0.0.4';
 
 // Files to cache for offline functionality
 const STATIC_ASSETS = [
@@ -19,6 +19,10 @@ const STATIC_ASSETS = [
     '/tank-adventure/js/utils.js',
     '/tank-adventure/js/sound-manager.js',
     '/tank-adventure/js/orientation.js',
+    '/tank-adventure/js/input-manager.js',
+    '/tank-adventure/js/localization.js',
+    '/tank-adventure/js/template-manager.js',
+    '/tank-adventure/js/quick-actions.js',
     '/tank-adventure/assets/favicon/favicon.ico',
     '/tank-adventure/assets/favicon/android-chrome-192x192.png',
     '/tank-adventure/assets/favicon/android-chrome-512x512.png',

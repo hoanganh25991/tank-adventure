@@ -26,6 +26,7 @@ class GameEngine {
         this.skillManager = new SkillManager();
         this.upgradeManager = new UpgradeManager();
         this.ui = null;
+        this.inputManager = null;
         
         // Effects system
         this.skillEffects = new SkillEffects(this);
@@ -81,22 +82,13 @@ class GameEngine {
             maxSpawnedRegions: 1000 // Limit to prevent memory issues
         };
         
-        // Keyboard input state for WASD movement and spacebar shooting
-        this.keys = {
-            w: false,
-            a: false,
-            s: false,
-            d: false,
-            space: false
-        };
+        // Input will be handled by InputManager
         
         // Quick actions system for PWA shortcuts
         this.quickActions = null; // Will be initialized after UI is ready
         
         this.initialize();
         this.initializeTankRendering();
-        this.setupKeyboardControls();
-        this.setupFullscreenHandlers();
     }
 
     // Helper method to get CSS canvas dimensions (not internal pixel dimensions)
@@ -135,6 +127,9 @@ class GameEngine {
         try {
             // Initialize UI
             this.ui = new GameUI(this);
+            
+            // Initialize optimized input manager
+            this.inputManager = new InputManager(this);
             
             // Adjust canvas size
             this.ui.adjustCanvasSize();
@@ -541,73 +536,16 @@ class GameEngine {
     }
 
     handleInput() {
-        if (this.currentScene !== 'battle' || !this.player || !this.ui || this.gamePaused) return;
+        if (this.currentScene !== 'battle' || !this.player || !this.inputManager || this.gamePaused) return;
         
-        // Get joystick input
-        const joystick = this.ui.getJoystickInput();
+        // Get unified movement input from InputManager
+        const movement = this.inputManager.getMovementInput();
         
-        // Get keyboard input for WASD movement
-        const keyboard = this.getKeyboardInput();
-        
-        // Combine joystick and keyboard input (keyboard takes priority if both are active)
-        let finalX = joystick.x;
-        let finalY = joystick.y;
-        let finalMagnitude = joystick.magnitude;
-        let speedMultiplier = 0.5; // Default joystick speed (reduce 10x times)
-        
-        if (keyboard.magnitude > 0) {
-            finalX = keyboard.x;
-            finalY = keyboard.y;
-            finalMagnitude = keyboard.magnitude;
-            speedMultiplier = 0.5; // Keyboard speed (reduce 25x times)
-        }
-        
-        // Set movement direction with appropriate speed multiplier
-        this.player.setMovementDirection(finalX, finalY, finalMagnitude, speedMultiplier);
-        
-        // Handle spacebar shooting
-        if (this.keys.space) {
-            this.handleKeyboardShoot();
-        }
+        // Set movement direction with optimized speed multiplier
+        this.player.setMovementDirection(movement.x, movement.y, movement.magnitude, 0.5);
     }
 
-    getKeyboardInput() {
-        // Calculate WASD movement direction
-        let x = 0;
-        let y = 0;
-        
-        if (this.keys.a) x -= 1; // Left
-        if (this.keys.d) x += 1; // Right
-        if (this.keys.w) y -= 1; // Up
-        if (this.keys.s) y += 1; // Down
-        
-        // Calculate magnitude and normalize
-        const magnitude = Math.sqrt(x * x + y * y);
-        
-        if (magnitude > 0) {
-            x /= magnitude;
-            y /= magnitude;
-        }
-        
-        return {
-            x: x,
-            y: y,
-            magnitude: magnitude
-        };
-    }
 
-    handleKeyboardShoot() {
-        if (this.player) {
-            // Get canvas center as default target for keyboard shooting
-            const canvas = document.getElementById('gameCanvas');
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Pass enemies array for auto-aim
-            const enemies = this.waveManager ? this.waveManager.enemies : [];
-            this.player.manualShoot(centerX, centerY, enemies);
-        }
-    }
 
     checkCollisions() {
         const playerBullets = this.player.getAllBullets();
@@ -1980,111 +1918,8 @@ class GameEngine {
 
     // Debug methods removed for production
 
-    setupKeyboardControls() {
-        // Setup keydown events
-        document.addEventListener('keydown', (event) => {
-            const key = event.key.toLowerCase();
-            
-            // Handle WASD movement and spacebar shooting (only during battle)
-            if (this.currentScene === 'battle') {
-                switch (key) {
-                    case 'w':
-                        this.keys.w = true;
-                        event.preventDefault();
-                        break;
-                    case 'a':
-                        this.keys.a = true;
-                        event.preventDefault();
-                        break;
-                    case 's':
-                        this.keys.s = true;
-                        event.preventDefault();
-                        break;
-                    case 'd':
-                        this.keys.d = true;
-                        event.preventDefault();
-                        break;
-                    case ' ': // Spacebar
-                        this.keys.space = true;
-                        event.preventDefault();
-                        break;
-                }
-            }
-        });
-        
-        // Setup keyup events for movement keys
-        document.addEventListener('keyup', (event) => {
-            const key = event.key.toLowerCase();
-            
-            switch (key) {
-                case 'w':
-                    this.keys.w = false;
-                    break;
-                case 'a':
-                    this.keys.a = false;
-                    break;
-                case 's':
-                    this.keys.s = false;
-                    break;
-                case 'd':
-                    this.keys.d = false;
-                    break;
-                case ' ': // Spacebar
-                    this.keys.space = false;
-                    break;
-            }
-        });
-        
-        console.log('Keyboard controls setup:');
-        console.log('Movement: WASD keys');
-        console.log('Shooting: Spacebar');
-    }
-
-    setupFullscreenHandlers() {
-        // Handle fullscreen change events
-        const fullscreenEvents = [
-            'fullscreenchange',
-            'webkitfullscreenchange',
-            'mozfullscreenchange',
-            'MSFullscreenChange'
-        ];
-        
-        fullscreenEvents.forEach(event => {
-            document.addEventListener(event, Utils.debounce(() => {
-                const isFullscreen = Utils.isFullscreen();
-                console.log(`Fullscreen mode: ${isFullscreen ? 'ON' : 'OFF'}`);
-                
-                // Adjust canvas size when fullscreen changes
-                if (this.ui) {
-                    this.ui.adjustCanvasSize();
-                }
-                
-                // Update UI for fullscreen
-                this.handleFullscreenChange(isFullscreen);
-                
-                // Update player position if in battle mode to prevent off-screen issues
-                if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
-                    const canvasDims = this.getCanvasCSSDimensions();
-                    // Only adjust if player is way off screen
-                    if (this.player.mainTank.x < -canvasDims.width || 
-                        this.player.mainTank.x > canvasDims.width * 2 ||
-                        this.player.mainTank.y < -canvasDims.height || 
-                        this.player.mainTank.y > canvasDims.height * 2) {
-                        this.player.mainTank.x = canvasDims.width / 2;
-                        this.player.mainTank.y = canvasDims.height / 2;
-                        console.log('Player position adjusted for fullscreen');
-                    }
-                }
-            }, 100));
-        });
-        
-        // Handle escape key to exit fullscreen
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && Utils.isFullscreen()) {
-                Utils.exitFullscreen().catch(console.warn);
-            }
-        });
-    }
+    // Input handling is now managed by InputManager
+    // Fullscreen handling simplified and moved to Utils
 
     handleFullscreenChange(isFullscreen) {
         // Update body class for CSS styling
