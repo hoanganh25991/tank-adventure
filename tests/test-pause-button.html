@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pause Button Test - Tank Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+        
+        .test-container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .test-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #4a9eff, #2a7eff);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            margin: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .test-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .status {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .log {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            color: #44ff44;
+        }
+        
+        .info {
+            color: #4a9eff;
+        }
+        
+        .error {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Pause Button Test</h1>
+        <p>Testing Android Chrome touch handling</p>
+        
+        <div class="test-button" id="pauseBtn">⏸️</div>
+        
+        <div class="status" id="status">
+            Ready to test - Tap the pause button
+        </div>
+        
+        <div class="log" id="eventLog">
+            <div class="info">Event log will appear here...</div>
+        </div>
+        
+        <button onclick="clearLog()" style="background: #333; color: white; border: 1px solid #666; padding: 8px 16px; border-radius: 4px; margin-top: 10px;">
+            Clear Log
+        </button>
+    </div>
+
+    <script>
+        // Direct touch handling for Android Chrome
+        function setupMobileButton(button, callback) {
+            if (!button) {
+                log('ERROR: Button not found', 'error');
+                return;
+            }
+            
+            log('Setting up mobile button: ' + button.id, 'info');
+            
+            // Force button properties for Android Chrome
+            button.style.touchAction = 'manipulation';
+            button.style.userSelect = 'none';
+            button.style.webkitUserSelect = 'none';
+            button.style.webkitTouchCallout = 'none';
+            button.style.webkitTapHighlightColor = 'transparent';
+            button.style.cursor = 'pointer';
+            button.style.pointerEvents = 'auto';
+            button.style.position = 'relative';
+            button.style.zIndex = '999';
+            
+            let isPressed = false;
+            let touchStartTime = 0;
+            
+            // Direct touch handling for Android Chrome
+            button.addEventListener('touchstart', (e) => {
+                log('🔥 TOUCH START on: ' + button.id, 'success');
+                isPressed = true;
+                touchStartTime = Date.now();
+                
+                // Visual feedback
+                button.style.opacity = '0.7';
+                button.style.transform = 'scale(0.95)';
+                
+                // Prevent any interference
+                e.stopPropagation();
+            }, { passive: true });
+            
+            button.addEventListener('touchend', (e) => {
+                log('🔥 TOUCH END on: ' + button.id, 'success');
+                
+                // Reset visual feedback
+                button.style.opacity = '1';
+                button.style.transform = 'scale(1)';
+                
+                if (isPressed) {
+                    const touchDuration = Date.now() - touchStartTime;
+                    log('🔥 Touch duration: ' + touchDuration + 'ms', 'info');
+                    
+                    if (touchDuration < 1000) { // Valid tap (less than 1 second)
+                        log('🔥 EXECUTING CALLBACK from touchend', 'success');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        callback();
+                    }
+                }
+                
+                isPressed = false;
+            }, { passive: false });
+            
+            button.addEventListener('touchcancel', (e) => {
+                log('🔥 TOUCH CANCEL on: ' + button.id, 'info');
+                button.style.opacity = '1';
+                button.style.transform = 'scale(1)';
+                isPressed = false;
+            }, { passive: true });
+            
+            // Fallback click handler
+            button.addEventListener('click', (e) => {
+                log('🔥 CLICK EVENT on: ' + button.id, 'info');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (!isPressed) { // Only if not already handled by touch
+                    log('🔥 EXECUTING CALLBACK from click', 'success');
+                    callback();
+                }
+            });
+            
+            log('✅ Button setup complete for: ' + button.id, 'success');
+        }
+        
+        // Mock pause game function
+        function pauseGame() {
+            log('🎮 PAUSE GAME CALLED!', 'success');
+            document.getElementById('status').innerHTML = '<span class="success">✅ Pause button working correctly!</span>';
+        }
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('eventLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = className;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // Clear log function
+        function clearLog() {
+            document.getElementById('eventLog').innerHTML = '<div class="info">Event log cleared...</div>';
+            document.getElementById('status').textContent = 'Ready to test - Tap the pause button';
+        }
+        
+        // Initialize test when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (pauseBtn) {
+                setupMobileButton(pauseBtn, pauseGame);
+                log('Pause button test initialized', 'success');
+            } else {
+                log('ERROR: Could not find pause button', 'error');
+            }
+        });
+        
+        // Monitor for any JavaScript errors
+        window.addEventListener('error', (event) => {
+            log('JavaScript Error: ' + event.message, 'error');
+        });
+        
+        // Log user agent for debugging
+        log('User Agent: ' + navigator.userAgent, 'info');
+    </script>
+</body>
+</html>

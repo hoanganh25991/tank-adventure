@@ -301,54 +301,18 @@ class GameUI {
         const vietnameseBtn = document.getElementById('vietnameseBtn');
         
         if (englishBtn) {
-            // Add comprehensive touch and click event listeners for mobile compatibility
-            const englishHandler = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Reset visual feedback
-                englishBtn.style.transform = '';
+            this.setupMobileButton(englishBtn, () => {
                 this.localization.setLanguage('en');
                 this.updateLanguageButtons();
                 this.updateDynamicText();
-            };
-            
-            // Add all necessary event listeners
-            englishBtn.addEventListener('click', englishHandler);
-            englishBtn.addEventListener('touchend', englishHandler, { passive: false });
-            englishBtn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                // Add visual feedback for touch
-                englishBtn.style.transform = 'translateY(1px)';
-            }, { passive: false });
-            englishBtn.addEventListener('touchcancel', () => {
-                // Reset visual feedback
-                englishBtn.style.transform = '';
             });
         }
         
         if (vietnameseBtn) {
-            // Add comprehensive touch and click event listeners for mobile compatibility
-            const vietnameseHandler = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Reset visual feedback
-                vietnameseBtn.style.transform = '';
+            this.setupMobileButton(vietnameseBtn, () => {
                 this.localization.setLanguage('vi');
                 this.updateLanguageButtons();
                 this.updateDynamicText();
-            };
-            
-            // Add all necessary event listeners
-            vietnameseBtn.addEventListener('click', vietnameseHandler);
-            vietnameseBtn.addEventListener('touchend', vietnameseHandler, { passive: false });
-            vietnameseBtn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                // Add visual feedback for touch
-                vietnameseBtn.style.transform = 'translateY(1px)';
-            }, { passive: false });
-            vietnameseBtn.addEventListener('touchcancel', () => {
-                // Reset visual feedback
-                vietnameseBtn.style.transform = '';
             });
         }
         
@@ -438,29 +402,6 @@ class GameUI {
                 this.showScreen('settingsScreen');
             }
         });
-        
-        // Emergency fallback for guide button - direct event listeners
-        if (this.elements.settingsBtn) {
-            const emergencyClickHandler = (e) => {
-                console.log('Emergency guide button handler triggered');
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // If we're in battle, pause the game
-                if (this.gameEngine.currentScene === 'battle') {
-                    console.log('Emergency pause game from guide button');
-                    this.gameEngine.pauseGame();
-                } else {
-                    // Otherwise show guide screen
-                    this.showScreen('settingsScreen');
-                }
-            };
-            
-            // Use simplified click handler
-            this.elements.settingsBtn.addEventListener('click', emergencyClickHandler);
-            
-            console.log('Emergency settings button handlers added');
-        }
         
         // Pause button (the gear icon in HUD)
         if (this.elements.pauseBtn) {
@@ -1265,54 +1206,92 @@ class GameUI {
     }
 
     setupMobileButton(button, callback) {
-        console.error("?")
         if (!button) {
             console.warn('setupMobileButton called with null/undefined button');
             return;
         }
         
-        // Simple click handler that works for both mouse and touch
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            callback();
-        });
+        console.log('Setting up button:', button.id || button.className);
         
-        // Add visual feedback on touch (passive events don't prevent scrolling)
-        button.addEventListener('touchstart', (e) => {
-            button.style.transform = 'scale(0.95)';
-            button.style.opacity = '0.8';
-        }, { passive: true });
-        
-        button.addEventListener('touchend', (e) => {
-            button.style.transform = 'scale(1)';
-            button.style.opacity = '1';
-        }, { passive: true });
-        
-        button.addEventListener('touchcancel', (e) => {
-            button.style.transform = 'scale(1)';
-            button.style.opacity = '1';
-        }, { passive: true });
-        
-        // Allow touch manipulation but don't prevent scrolling
+        // Force button properties for Android Chrome
         button.style.touchAction = 'manipulation';
         button.style.userSelect = 'none';
         button.style.webkitUserSelect = 'none';
         button.style.webkitTouchCallout = 'none';
         button.style.webkitTapHighlightColor = 'transparent';
+        button.style.cursor = 'pointer';
+        button.style.pointerEvents = 'auto';
+        button.style.position = 'relative';
+        button.style.zIndex = '999';
         
-        // Additional debugging for iOS/Safari issues
-        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-            console.log('iOS device detected, applying additional touch fixes for button:', button.id);
-            button.style.cursor = 'pointer';
+        // Remove any existing event listeners to avoid conflicts
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        let isPressed = false;
+        let touchStartTime = 0;
+        
+        // Direct touch handling for Android Chrome
+        newButton.addEventListener('touchstart', (e) => {
+            console.log('🔥 TOUCH START on:', newButton.id);
+            isPressed = true;
+            touchStartTime = Date.now();
+            
+            // Visual feedback
+            newButton.style.opacity = '0.7';
+            newButton.style.transform = 'scale(0.95)';
+            
+            // Prevent any interference
+            e.stopPropagation();
+        }, { passive: true });
+        
+        newButton.addEventListener('touchend', (e) => {
+            console.log('🔥 TOUCH END on:', newButton.id);
+            
+            // Reset visual feedback
+            newButton.style.opacity = '1';
+            newButton.style.transform = 'scale(1)';
+            
+            if (isPressed) {
+                const touchDuration = Date.now() - touchStartTime;
+                console.log('🔥 Touch duration:', touchDuration + 'ms');
+                
+                if (touchDuration < 1000) { // Valid tap (less than 1 second)
+                    console.log('🔥 EXECUTING CALLBACK from touchend');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    callback();
+                }
+            }
+            
+            isPressed = false;
+        }, { passive: false });
+        
+        newButton.addEventListener('touchcancel', (e) => {
+            console.log('🔥 TOUCH CANCEL on:', newButton.id);
+            newButton.style.opacity = '1';
+            newButton.style.transform = 'scale(1)';
+            isPressed = false;
+        }, { passive: true });
+        
+        // Fallback click handler
+        newButton.addEventListener('click', (e) => {
+            console.log('🔥 CLICK EVENT on:', newButton.id);
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!isPressed) { // Only if not already handled by touch
+                console.log('🔥 EXECUTING CALLBACK from click');
+                callback();
+            }
+        });
+        
+        // Update the reference in elements if this is a known button
+        if (button.id === 'pauseBtn') {
+            this.elements.pauseBtn = newButton;
         }
         
-        // Test direct touch on button element
-        button.addEventListener('touchstart', (e) => {
-            console.log('Direct touchstart event on button:', button.id);
-        }, { passive: false, capture: true });
-        
-        console.log('Mobile button setup complete for:', button.id);
+        console.log('✅ Button setup complete for:', newButton.id);
     }
 
     showPauseModal() {
