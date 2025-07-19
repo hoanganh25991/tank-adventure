@@ -204,6 +204,9 @@ class GameUI {
         
         // Initialize localization
         this.initializeLocalization();
+        
+        // Initialize emoji-only buttons for cleaner UI
+        this.initializeEmojiButtons();
     }
 
     initializeElements() {
@@ -363,6 +366,14 @@ class GameUI {
         this.updateLanguageButtons();
     }
 
+    initializeEmojiButtons() {
+        // Set primary shoot button to emoji only for cleaner UI
+        if (this.elements.primaryShootBtn) {
+            this.elements.primaryShootBtn.textContent = '🔥';
+            this.elements.primaryShootBtn.title = 'Shoot'; // Add tooltip for accessibility
+        }
+    }
+
     updateLanguageButtons() {
         const englishBtn = document.getElementById('englishBtn');
         const vietnameseBtn = document.getElementById('vietnameseBtn');
@@ -381,6 +392,9 @@ class GameUI {
         if (this.gameEngine && this.gameEngine.player) {
             this.updateHUD();
         }
+        
+        // Re-apply emoji-only buttons after language change
+        this.initializeEmojiButtons();
     }
 
     setupEventListeners() {
@@ -871,9 +885,8 @@ class GameUI {
         skillButtons.forEach((btn, index) => {
             const skill = skillInfo.active[index];
             if (skill) {
-                // Use localized skill short name for button display
-                const skillShortName = skill.getLocalizedShortName ? skill.getLocalizedShortName() : skill.shortName || skill.name;
-                btn.textContent = `${skill.emoji || '⚡'} ${skillShortName || 'NO NAME'}`;
+                // Use only emoji for skill buttons - cleaner and more impressive
+                btn.textContent = skill.emoji || '⚡';
                 btn.disabled = !skill.isReady;
                 btn.style.opacity = skill.isReady ? '1' : '0.5';
                 
@@ -883,7 +896,7 @@ class GameUI {
                     btn.classList.remove('btn-pulse');
                 }
             } else {
-                btn.textContent = `SKILL ${index + 1}`;
+                btn.textContent = `${index + 1}`;
                 btn.disabled = true;
                 btn.style.opacity = '0.3';
             }
