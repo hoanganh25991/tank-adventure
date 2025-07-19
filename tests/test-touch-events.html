@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch Events Test - Tank Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+        
+        .test-area {
+            width: 300px;
+            height: 300px;
+            background: #2a4a2a;
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .joystick-base {
+            width: 140px;
+            height: 140px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .joystick-stick {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4a9eff, #2a7eff);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        }
+        
+        .info {
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .status {
+            background: #16213e;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .error {
+            color: #ff4444;
+        }
+        
+        .success {
+            color: #44ff44;
+        }
+    </style>
+</head>
+<body>
+    <h1>Touch Events Test</h1>
+    <p>This test verifies that touch events work without passive event listener warnings.</p>
+    
+    <div class="test-area">
+        <div class="joystick-base" id="testJoystickBase">
+            <div class="joystick-stick" id="testJoystickStick"></div>
+        </div>
+    </div>
+    
+    <div class="info">
+        <div class="status" id="eventStatus">Touch the joystick to test</div>
+        <div class="status" id="positionStatus">Position: (0, 0)</div>
+        <div class="status" id="errorStatus"></div>
+    </div>
+    
+    <script>
+        // Simple test implementation of VirtualJoystick
+        class TestVirtualJoystick {
+            constructor(baseElement, stickElement) {
+                this.base = baseElement;
+                this.stick = stickElement;
+                this.baseRect = null;
+                this.isActive = false;
+                this.currentX = 0;
+                this.currentY = 0;
+                this.maxDistance = 35;
+                this.touchId = null;
+                
+                this.setupEvents();
+                this.updateStatus();
+            }
+
+            setupEvents() {
+                // Touch events - using passive: false to allow preventDefault
+                this.base.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+                document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+                document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+                document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
+                
+                // Mouse events for desktop testing
+                this.base.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+            }
+
+            handleTouchStart(event) {
+                try {
+                    event.preventDefault();
+                    this.isActive = true;
+                    this.touchId = event.touches[0].identifier;
+                    this.baseRect = this.base.getBoundingClientRect();
+                    const touch = event.touches[0];
+                    this.updateStickPosition(touch.clientX, touch.clientY);
+                    this.updateStatus('Touch started');
+                } catch (error) {
+                    this.showError('TouchStart error: ' + error.message);
+                }
+            }
+
+            handleTouchMove(event) {
+                if (!this.isActive) return;
+                
+                try {
+                    // Find the touch that belongs to this joystick
+                    let relevantTouch = null;
+                    for (let i = 0; i < event.touches.length; i++) {
+                        if (event.touches[i].identifier === this.touchId) {
+                            relevantTouch = event.touches[i];
+                            break;
+                        }
+                    }
+                    
+                    if (relevantTouch) {
+                        event.preventDefault(); // This should not cause warnings now
+                        this.updateStickPosition(relevantTouch.clientX, relevantTouch.clientY);
+                        this.updateStatus('Touch moving');
+                    }
+                } catch (error) {
+                    this.showError('TouchMove error: ' + error.message);
+                }
+            }
+
+            handleTouchEnd(event) {
+                try {
+                    // Check if our tracked touch ended
+                    let touchEnded = true;
+                    for (let i = 0; i < event.touches.length; i++) {
+                        if (event.touches[i].identifier === this.touchId) {
+                            touchEnded = false;
+                            break;
+                        }
+                    }
+                    
+                    if (touchEnded) {
+                        event.preventDefault();
+                        this.resetStick();
+                        this.updateStatus('Touch ended');
+                    }
+                } catch (error) {
+                    this.showError('TouchEnd error: ' + error.message);
+                }
+            }
+
+            handleMouseDown(event) {
+                this.isActive = true;
+                this.baseRect = this.base.getBoundingClientRect();
+                this.updateStickPosition(event.clientX, event.clientY);
+                this.updateStatus('Mouse down');
+            }
+
+            handleMouseMove(event) {
+                if (!this.isActive) return;
+                this.updateStickPosition(event.clientX, event.clientY);
+                this.updateStatus('Mouse moving');
+            }
+
+            handleMouseUp(event) {
+                this.resetStick();
+                this.updateStatus('Mouse up');
+            }
+
+            updateStickPosition(clientX, clientY) {
+                if (!this.baseRect) return;
+                
+                const centerX = this.baseRect.left + this.baseRect.width / 2;
+                const centerY = this.baseRect.top + this.baseRect.height / 2;
+                
+                let deltaX = clientX - centerX;
+                let deltaY = clientY - centerY;
+                
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                if (distance > this.maxDistance) {
+                    const ratio = this.maxDistance / distance;
+                    deltaX *= ratio;
+                    deltaY *= ratio;
+                }
+                
+                this.stick.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px)`;
+                
+                this.currentX = deltaX / this.maxDistance;
+                this.currentY = deltaY / this.maxDistance;
+                
+                this.updatePosition();
+            }
+
+            resetStick() {
+                this.isActive = false;
+                this.stick.style.transform = 'translate(-50%, -50%)';
+                this.currentX = 0;
+                this.currentY = 0;
+                this.baseRect = null;
+                this.touchId = null;
+                this.updatePosition();
+            }
+
+            updateStatus(message = 'Ready') {
+                document.getElementById('eventStatus').textContent = `Status: ${message}`;
+                document.getElementById('eventStatus').className = 'status success';
+            }
+
+            updatePosition() {
+                const x = Math.round(this.currentX * 100) / 100;
+                const y = Math.round(this.currentY * 100) / 100;
+                document.getElementById('positionStatus').textContent = `Position: (${x}, ${y})`;
+            }
+
+            showError(message) {
+                document.getElementById('errorStatus').textContent = message;
+                document.getElementById('errorStatus').className = 'status error';
+                console.error(message);
+            }
+        }
+
+        // Initialize test when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const baseElement = document.getElementById('testJoystickBase');
+            const stickElement = document.getElementById('testJoystickStick');
+            
+            if (baseElement && stickElement) {
+                new TestVirtualJoystick(baseElement, stickElement);
+                console.log('Touch events test initialized');
+            } else {
+                console.error('Could not find joystick elements');
+            }
+        });
+
+        // Monitor for console errors
+        window.addEventListener('error', (event) => {
+            document.getElementById('errorStatus').textContent = 'JavaScript Error: ' + event.message;
+            document.getElementById('errorStatus').className = 'status error';
+        });
+    </script>
+</body>
+</html>

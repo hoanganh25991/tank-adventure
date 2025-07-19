@@ -59,18 +59,6 @@ html, body {
     touch-action: manipulation;
 }
 
-/* Mobile viewport fix - use dynamic viewport units */
-@media screen and (max-width: 1024px) {
-    html, body {
-        height: 100dvh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-    }
-}
-
-/* Global Ghibli Font Styling */
 p, span, div, li, label, input, textarea {
     font-family: 'Comfortaa', 'Arial', sans-serif;
 }
@@ -248,14 +236,6 @@ button {
     pointer-events: all;
     z-index: 50;
     background: linear-gradient(to top, rgba(26, 26, 46, 0.3), transparent);
-}
-
-/* Landscape mode adjustments for mobile controls */
-@media screen and (orientation: landscape) and (max-height: 500px) {
-    #mobileControls {
-        height: 100px;
-        padding: 5px 10px;
-    }
 }
 
 /* Virtual Joystick */
@@ -1365,71 +1345,10 @@ button {
     margin: 0;
 }
 
-/* Simplified Orientation Screen */
-@media (orientation: portrait) and (max-width: 768px) {
-    #orientationScreen {
-        z-index: 9999;
-        background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-    
-    .orientation-content {
-        padding: 2rem 1.5rem;
-        max-width: 90%;
-    }
-    
-    .orientation-content h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-}
-
 /* Subtle animation for orientation screen */
 @keyframes orientationPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.9; }
-}
-
-/* Essential Mobile Optimizations */
-@media (max-width: 768px) {
-    .skill-option {
-        min-height: 100px;
-    }
-}
-
-/* Landscape Mode Optimizations */
-@media (orientation: landscape) and (max-height: 500px) {
-    #baseContent {
-        padding-bottom: 80px;
-    }
-    
-    #baseButtons button {
-        padding: 8px 0.8rem;
-        font-size: 16px;
-    }
-    
-    .action-btn {
-        height: 40px; /* Slightly larger to accommodate emojis */
-        width: 60px; /* Slightly smaller for landscape */
-        font-size: 16px; /* Good emoji size for landscape */
-    }
-    
-    .action-btn.skill {
-        height: 40px;
-        width: 60px;
-        font-size: 16px; /* Consistent emoji size */
-    }
-    
-    #joystickArea {
-        width: 80px;
-        height: 80px;
-    }
-    
-    #joystickStick {
-        width: 32px;
-        height: 32px;
-    }
 }
 
 /* Modal Styles - Optimized for Mobile/Landscape */
@@ -1465,38 +1384,6 @@ button {
     margin: auto;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-}
-
-/* Landscape mode modal adjustments */
-@media screen and (orientation: landscape) and (max-height: 500px) {
-    .modal {
-        padding: 10px;
-        align-items: flex-start;
-        justify-content: center;
-    }
-    
-    .modal-content {
-        max-height: calc(100vh - 20px);
-        padding: 0.8rem;
-        margin-top: 10px;
-    }
-    
-    .modal-content h2 {
-        font-size: 1.2rem;
-        margin-bottom: 0.8rem;
-    }
-    
-    .modal-buttons {
-        gap: 0.5rem;
-        margin-top: 0.8rem;
-    }
-    
-    .modal-buttons .menu-btn {
-        min-width: 100px;
-        max-width: 140px;
-        padding: 8px 12px;
-        font-size: 14px;
-    }
 }
 
 .modal-content h2 {
@@ -1856,24 +1743,6 @@ button {
     transform: scale(1.1);
 }
 
-/* Simplified Modal Media Queries */
-@media screen and (max-height: 450px) {
-    .modal-content {
-        padding: 0.8rem;
-        max-height: calc(100vh - 20px);
-    }
-    
-    .modal-content h2 {
-        font-size: 1.1rem;
-        margin-bottom: 0.8rem;
-    }
-    
-    .modal-buttons .menu-btn {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-}
-
 /* Custom Confirm Dialog Styles */
 .confirm-dialog {
     border: 3px solid var(--danger-color, #ff4d4d);
@@ -1980,24 +1849,6 @@ button {
     background: #cc0000;
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
-}
-
-/* Simplified Confirm Dialog Media Queries */
-@media (max-height: 450px) {
-    .confirm-dialog {
-        max-height: 95vh;
-        overflow-y: auto;
-    }
-    
-    .confirm-dialog .modal-header h2 {
-        font-size: 1rem;
-    }
-    
-    .confirm-btn {
-        padding: 12px 0.8rem;
-        font-size: 14px;
-        min-height: 44px;
-    }
 }
 
 /* Base Screen Battle Button */
@@ -2312,34 +2163,6 @@ button {
 .skill-option .skill-type-value {
     color: var(--primary-blue);
     font-weight: 500;
-}
-
-/* Simplified Mobile/Tablet Optimizations */
-@media (max-width: 768px) {
-    .notification {
-        font-size: 12px;
-        padding: 10px 16px;
-    }
-    
-    .notification.battle-notification {
-        font-size: 20px;
-        padding: 16px 24px;
-    }
-    
-    .skill-option {
-        padding: 16px;
-        margin: 8px 0;
-    }
-    
-    .skill-option .skill-emoji {
-        font-size: 40px;
-    }
-}
-
-@media (max-width: 1024px) and (orientation: landscape) {
-    .notification.battle-notification {
-        font-size: 22px;
-    }
 }
 
 /* Screen shake animation for skill effects */

@@ -19,10 +19,10 @@ class VirtualJoystick {
         this.base.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
         
         // Global touch events to handle movement outside joystick area
-        // Use passive: true to allow scrolling when not using joystick
-        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: true });
-        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
-        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: true });
+        // Use passive: false to allow preventDefault when needed for joystick control
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
         
         // Mouse events for desktop testing
         this.base.addEventListener('mousedown', this.handleMouseDown.bind(this));
@@ -64,13 +64,8 @@ class VirtualJoystick {
         }
         
         if (relevantTouch) {
-            // Only prevent default if this is our joystick touch
-            // We can't prevent default on passive events, so we need to check if we can
-            try {
-                event.preventDefault();
-            } catch (e) {
-                // Passive event, can't prevent default
-            }
+            // Prevent default to stop scrolling when using joystick
+            event.preventDefault();
             this.updateStickPosition(relevantTouch.clientX, relevantTouch.clientY);
         }
     }
@@ -98,12 +93,8 @@ class VirtualJoystick {
         }
         
         if (touchEnded) {
-            // Only prevent default if this is our joystick touch
-            try {
-                event.preventDefault();
-            } catch (e) {
-                // Passive event, can't prevent default
-            }
+            // Prevent default to ensure proper touch handling
+            event.preventDefault();
             this.resetStick();
         }
     }
