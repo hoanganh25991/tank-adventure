@@ -642,6 +642,7 @@ class GameUI {
     }
     
     requestFullscreen() {
+        if (window.location.hostname == 'localhost' ) return Promise.resolve();
         return new Promise((resolve, reject) => {
             const element = document.documentElement;
             
@@ -1264,6 +1265,7 @@ class GameUI {
     }
 
     setupMobileButton(button, callback) {
+        console.error("?")
         if (!button) {
             console.warn('setupMobileButton called with null/undefined button');
             return;
