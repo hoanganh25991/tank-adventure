@@ -35,6 +35,9 @@ class GameEngine {
         // Sound system
         this.soundManager = new SoundManager();
         
+        // Payment system
+        this.paymentManager = null; // Will be set by payment manager when ready
+        
         // Game settings
         this.targetFPS = 60;
         this.frameTime = 1000 / this.targetFPS;
@@ -733,6 +736,16 @@ class GameEngine {
         if (this.waveManager.isWaveComplete() && !this.waveCompleted) {
             this.waveCompleted = true; // Prevent multiple skill selections for the same wave
             
+            // Check payment restrictions for trial version
+            if (this.paymentManager && !this.paymentManager.isPurchased) {
+                const trialLimit = this.paymentManager.getTrialWaveLimit();
+                if (this.currentWave >= trialLimit) {
+                    // End battle and show purchase prompt
+                    this.endTrialBattle();
+                    return;
+                }
+            }
+            
             if (this.currentWave >= this.maxWaves) {
                 this.endBattle(true); // Player won all waves
             } else {
@@ -804,6 +817,65 @@ class GameEngine {
             bonusMultiplier: bonusMultiplier,
             totalMultiplier: totalMultiplier
         });
+    }
+
+    endTrialBattle() {
+        this.currentScene = 'results';
+        
+        // Stop background music
+        this.soundManager.stopBackgroundMusic();
+        
+        // Calculate trial rewards (reduced)
+        const trialMultiplier = 0.5; // 50% of normal rewards for trial
+        const finalScore = Math.floor(this.battleStats.scoreEarned * trialMultiplier);
+        const finalExp = Math.floor(this.battleStats.expGained * trialMultiplier);
+        const finalCoins = Math.floor(finalScore / 4);
+        
+        this.player.addScore(finalScore);
+        this.player.addExperience(finalExp);
+        this.player.addCoins(finalCoins);
+        
+        // Save progress
+        this.saveGame();
+        
+        // Show trial completion results with purchase prompt
+        this.ui.showTrialResults({
+            wave: this.currentWave,
+            enemiesDefeated: this.battleStats.enemiesDefeated,
+            scoreEarned: finalScore,
+            expGained: finalExp,
+            trialLimit: this.paymentManager ? this.paymentManager.getTrialWaveLimit() : 5
+        });
+    }
+
+    onPurchaseStateChanged(isPurchased) {
+        console.log('Purchase state changed:', isPurchased);
+        
+        // Update UI elements
+        if (this.ui) {
+            this.ui.updatePurchaseState(isPurchased);
+        }
+        
+        // Remove trial limitations if purchased
+        if (isPurchased) {
+            // Remove trial indicators
+            const trialIndicator = document.querySelector('.trial-indicator');
+            if (trialIndicator) {
+                trialIndicator.remove();
+            }
+            
+            // Unlock premium upgrades
+            const lockedButtons = document.querySelectorAll('.upgrade-btn.locked');
+            lockedButtons.forEach(btn => {
+                btn.classList.remove('locked');
+                btn.disabled = false;
+                // Restore original upgrade button content
+                const upgradeType = btn.getAttribute('data-upgrade');
+                if (upgradeType) {
+                    this.upgradeManager.updateUpgradeButton(upgradeType);
+                }
+            });
+        }
     }
 
     showSkillSelection() {

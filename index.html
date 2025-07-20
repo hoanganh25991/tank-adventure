@@ -732,7 +732,14 @@
     });
     </script>
 
+    <!-- Google Pay API -->
+    <script async
+        src="https://pay.google.com/gp/p/js/pay.js"
+        onload="console.log('Google Pay API loaded')">
+    </script>
+
     <!-- Scripts (optimized loading order) -->
+    <script src="js/payment-manager.js?v=7.0.0.4"></script>
     <script src="js/orientation.js?v=7.0.0.4"></script>
     <script src="js/utils.js?v=7.0.0.4"></script>
     <script src="js/input-manager.js?v=7.0.0.4"></script>
@@ -747,6 +754,29 @@
     <script src="js/upgrades.js?v=7.0.0.4"></script>
     <script src="js/quick-actions.js?v=7.0.0.4"></script>
     <script src="js/game-engine.js?v=7.0.0.4"></script>
+    
+    <!-- Initialize Payment System -->
+    <script>
+        // Connect payment manager to game engine when both are ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for both game engine and payment manager to be ready
+            const checkReady = () => {
+                if (window.gameEngine && window.paymentManager) {
+                    // Connect payment manager to game engine
+                    window.gameEngine.paymentManager = window.paymentManager;
+                    
+                    // Connect payment manager to game engine (handles state sync)
+                    window.paymentManager.connectToGameEngine();
+                    
+                    console.log('Payment system connected to game engine');
+                } else {
+                    // Check again in 100ms
+                    setTimeout(checkReady, 100);
+                }
+            };
+            checkReady();
+        });
+    </script>
     
     <!-- PWA Service Worker Registration -->
     <script>

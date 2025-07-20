@@ -736,6 +736,53 @@ class GameUI {
         // Show the results screen
         this.showScreen('battleResults');
     }
+
+    showTrialResults(results) {
+        // Update stats
+        this.elements.waveCompleted.textContent = results.wave;
+        this.elements.enemiesDefeated.textContent = results.enemiesDefeated;
+        this.elements.scoreEarned.textContent = Utils.formatNumber(results.scoreEarned);
+        this.elements.expGained.textContent = results.expGained;
+        
+        // Update title for trial completion
+        const battleResultTitle = document.getElementById('battleResultTitle');
+        if (battleResultTitle) {
+            battleResultTitle.textContent = '🔒 Trial Complete!';
+            battleResultTitle.style.color = '#f39c12'; // Orange color for trial
+        }
+        
+        // Add trial limitation message
+        const bonusMessage = document.getElementById('bonusMessage') || this.createBonusMessageElement();
+        bonusMessage.innerHTML = `
+            <div class="trial-complete-message">
+                <h3>🎮 You've reached the trial limit!</h3>
+                <p>You completed <strong>${results.wave}</strong> waves out of <strong>${results.trialLimit}</strong> available in the trial version.</p>
+                <p>💎 <strong>Unlock the full game</strong> to enjoy unlimited waves, all features, and future updates!</p>
+                <button id="unlockGameBtn" class="purchase-btn" style="margin-top: 15px;">
+                    🚀 Unlock Full Game - 20,000 VND
+                </button>
+            </div>
+        `;
+        bonusMessage.style.display = 'block';
+        
+        // Add click handler for unlock button
+        const unlockBtn = document.getElementById('unlockGameBtn');
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', () => {
+                if (window.paymentManager) {
+                    window.paymentManager.purchaseFullGame();
+                }
+            });
+        }
+        
+        // Hide continue button for trial
+        if (this.elements.continueBtn) {
+            this.elements.continueBtn.style.display = 'none';
+        }
+        
+        // Show the results screen
+        this.showScreen('battleResults');
+    }
     
     createBonusMessageElement() {
         // Check if bonus message already exists
@@ -1095,6 +1142,79 @@ class GameUI {
     destroy() {
         if (this.updateInterval) {
             clearInterval(this.updateInterval);
+        }
+    }
+
+    updatePurchaseState(isPurchased) {
+        console.log('UI: Updating purchase state:', isPurchased);
+        
+        // Update main menu purchase button
+        const purchaseBtn = document.getElementById('purchaseBtn');
+        if (purchaseBtn) {
+            if (isPurchased) {
+                purchaseBtn.style.display = 'none';
+            } else {
+                purchaseBtn.style.display = 'inline-block';
+            }
+        }
+        
+        // Update purchase status indicator
+        const purchaseStatus = document.querySelector('.purchase-status');
+        if (purchaseStatus) {
+            if (isPurchased) {
+                purchaseStatus.innerHTML = '✅ Full Game Unlocked';
+                purchaseStatus.className = 'purchase-status purchased';
+                purchaseStatus.style.cursor = 'default';
+            } else {
+                purchaseStatus.innerHTML = '🔒 Trial Version';
+                purchaseStatus.className = 'purchase-status trial';
+                purchaseStatus.style.cursor = 'pointer';
+            }
+        }
+        
+        // Update trial indicator in HUD
+        const trialIndicator = document.querySelector('.trial-indicator');
+        if (isPurchased && trialIndicator) {
+            trialIndicator.remove();
+        } else if (!isPurchased && !trialIndicator && this.gameEngine.currentScene === 'battle') {
+            // Add trial indicator if in battle and not purchased
+            const hud = document.getElementById('hud');
+            if (hud) {
+                const indicator = document.createElement('div');
+                indicator.className = 'trial-indicator';
+                indicator.innerHTML = '🔒 Trial Mode';
+                indicator.addEventListener('click', () => {
+                    if (window.paymentManager) {
+                        window.paymentManager.purchaseFullGame();
+                    }
+                });
+                hud.appendChild(indicator);
+            }
+        }
+        
+        // Update upgrade buttons
+        if (!isPurchased) {
+            // Lock premium upgrades
+            const upgradeButtons = document.querySelectorAll('.upgrade-btn');
+            upgradeButtons.forEach((btn, index) => {
+                if (index > 5) { // Lock upgrades after the first few
+                    btn.classList.add('locked');
+                    btn.disabled = true;
+                    btn.innerHTML = '🔒 Premium';
+                }
+            });
+        } else {
+            // Unlock all upgrades
+            const lockedButtons = document.querySelectorAll('.upgrade-btn.locked');
+            lockedButtons.forEach(btn => {
+                btn.classList.remove('locked');
+                btn.disabled = false;
+                // Restore original upgrade button content
+                const upgradeType = btn.getAttribute('data-upgrade');
+                if (upgradeType && this.gameEngine.upgradeManager) {
+                    this.gameEngine.upgradeManager.updateUpgradeButton(upgradeType);
+                }
+            });
         }
     }
 }
