@@ -339,6 +339,15 @@ class Enemy {
             case 'sniper':
                 this.sniperAI(nearestTank, nearestDistance, deltaTime);
                 break;
+            case 'elite':
+                this.eliteAI(nearestTank, nearestDistance, deltaTime);
+                break;
+            case 'berserker':
+                this.berserkerAI(nearestTank, nearestDistance, deltaTime);
+                break;
+            case 'support':
+                this.supportAI(nearestTank, nearestDistance, deltaTime);
+                break;
             case 'boss':
                 this.bossAI(nearestTank, nearestDistance, deltaTime);
                 break;
@@ -421,6 +430,83 @@ class Enemy {
                 }
                 this.shootAt(target);
                 break;
+        }
+    }
+
+    eliteAI(target, distance, deltaTime) {
+        // Elite Guardian - Tactical combat with shield management
+        if (this.shield <= this.maxShield * 0.3) {
+            // Low shield - tactical retreat while regenerating
+            if (distance < 200) {
+                this.moveAway(target.x, target.y);
+            } else {
+                // Maintain distance while shield regens
+                this.circleStrafe(target, deltaTime);
+            }
+            this.shootAt(target);
+        } else if (distance > this.range * 0.9) {
+            // Move to optimal combat range
+            this.moveTowards(target.x, target.y);
+        } else if (distance < 120) {
+            // Too close - back away while shooting
+            this.moveAway(target.x, target.y);
+            this.shootAt(target);
+        } else {
+            // Optimal range - tactical positioning and shooting
+            if (this.stateTimer % 2000 < 1000) {
+                this.circleStrafe(target, deltaTime);
+            }
+            this.shootAt(target);
+        }
+    }
+
+    berserkerAI(target, distance, deltaTime) {
+        // Berserker Destroyer - Aggressive close combat
+        const healthPercent = this.health / this.maxHealth;
+        
+        // Berserker rage - gets more aggressive as health decreases
+        const rageMultiplier = 1 + (1 - healthPercent) * 0.5;
+        
+        if (distance > 150) {
+            // Rush towards target aggressively
+            this.moveTowards(target.x, target.y);
+        } else if (distance < 60) {
+            // Very close - ramming attack behavior
+            this.moveTowards(target.x, target.y); // Keep charging
+            this.shootAt(target);
+        } else {
+            // Close combat range - circle and shoot rapidly
+            this.circleStrafe(target, deltaTime);
+            this.shootAt(target);
+            
+            // Rapid fire when in rage
+            if (healthPercent < 0.5 && this.shootCooldown > this.maxShootCooldown * 0.3) {
+                this.shootCooldown = this.maxShootCooldown * 0.3;
+            }
+        }
+    }
+
+    supportAI(target, distance, deltaTime) {
+        // Support Commander - Maintains distance and provides support
+        const optimalRange = this.range * 0.7;
+        
+        if (distance > optimalRange + 50) {
+            // Move to optimal support range
+            this.moveTowards(target.x, target.y);
+        } else if (distance < optimalRange - 50) {
+            // Too close - back away to maintain support position
+            this.moveAway(target.x, target.y);
+        } else {
+            // Optimal range - maintain position and provide covering fire
+            // Slight movement to avoid being a static target
+            if (this.stateTimer % 3000 < 500) {
+                this.circleStrafe(target, deltaTime);
+            }
+        }
+        
+        // Always try to shoot when in range
+        if (distance <= this.range) {
+            this.shootAt(target);
         }
     }
 

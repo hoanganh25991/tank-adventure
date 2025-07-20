@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Enemy AI Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background: linear-gradient(45deg, #4a9eff, #2a7eff);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #6bb6ff, #4a9eff);
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .enemy-type {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .elite { background: #00FFFF; color: black; }
+        .berserker { background: #FF0066; }
+        .support { background: #00FF00; color: black; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Elite Enemy AI Test</h1>
+        
+        <div class="test-section">
+            <h2>AI Method Verification</h2>
+            <p>Testing if the new enemy types have proper AI methods implemented.</p>
+            <button onclick="testAIMethods()">Test AI Methods</button>
+            <div id="aiMethodResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Enemy Stats Verification</h2>
+            <p>Verify that new enemy types have proper stats and abilities.</p>
+            <button onclick="testEnemyStats()">Test Enemy Stats</button>
+            <div id="statsResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>AI Behavior Simulation</h2>
+            <p>Simulate AI behavior for different scenarios.</p>
+            <button onclick="simulateAI()">Simulate AI Behavior</button>
+            <div id="simulationResults"></div>
+        </div>
+    </div>
+
+    <!-- Load game files -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/enemy.js"></script>
+    <script>
+        // Mock game engine and player for testing
+        window.gameEngine = {
+            waveManager: {
+                currentWave: 5
+            },
+            player: {
+                level: 3
+            }
+        };
+
+        // Mock player for AI testing
+        const mockPlayer = {
+            mainTank: {
+                x: 400,
+                y: 300,
+                isAlive: true
+            },
+            miniTanks: [
+                { x: 380, y: 280, isAlive: true },
+                { x: 420, y: 280, isAlive: true },
+                { x: 380, y: 320, isAlive: true },
+                { x: 420, y: 320, isAlive: true }
+            ]
+        };
+
+        function testAIMethods() {
+            const results = document.getElementById('aiMethodResults');
+            let html = '<h3>AI Method Test Results</h3>';
+            
+            const newEnemyTypes = ['elite', 'berserker', 'support'];
+            let allPassed = true;
+            
+            newEnemyTypes.forEach(type => {
+                try {
+                    const enemy = new Enemy(100, 100, type);
+                    const methodName = type + 'AI';
+                    
+                    // Check if the AI method exists
+                    const hasMethod = typeof enemy[methodName] === 'function';
+                    
+                    if (hasMethod) {
+                        // Try to call the AI method
+                        enemy[methodName](mockPlayer.mainTank, 200, 16);
+                        html += `<div class="success">✓ ${type} AI method exists and executes</div>`;
+                    } else {
+                        html += `<div class="error">✗ ${type} AI method missing</div>`;
+                        allPassed = false;
+                    }
+                } catch (error) {
+                    html += `<div class="error">✗ ${type} AI method error: ${error.message}</div>`;
+                    allPassed = false;
+                }
+            });
+            
+            html += `<div class="${allPassed ? 'success' : 'error'}">
+                <strong>Overall Result: ${allPassed ? 'PASSED' : 'FAILED'}</strong>
+            </div>`;
+            
+            results.innerHTML = html;
+        }
+
+        function testEnemyStats() {
+            const results = document.getElementById('statsResults');
+            let html = '<h3>Enemy Stats Test Results</h3>';
+            
+            const newEnemyTypes = ['elite', 'berserker', 'support'];
+            
+            html += '<div class="stats-grid">';
+            
+            newEnemyTypes.forEach(type => {
+                const enemy = new Enemy(100, 100, type);
+                html += `
+                    <div class="stat-item">
+                        <strong class="enemy-type ${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</strong><br>
+                        HP: ${enemy.maxHealth} / ${enemy.health}<br>
+                        Damage: ${enemy.damage}<br>
+                        Speed: ${enemy.speed.toFixed(2)}<br>
+                        Range: ${enemy.range}<br>
+                        Shield: ${enemy.shield} / ${enemy.maxShield}<br>
+                        Abilities: ${enemy.abilities.length}<br>
+                        Special Cooldown: ${enemy.maxSpecialCooldown}ms
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            results.innerHTML = html;
+        }
+
+        function simulateAI() {
+            const results = document.getElementById('simulationResults');
+            let html = '<h3>AI Behavior Simulation</h3>';
+            
+            const scenarios = [
+                { distance: 50, description: 'Very Close Range' },
+                { distance: 150, description: 'Medium Range' },
+                { distance: 300, description: 'Long Range' },
+                { distance: 500, description: 'Very Long Range' }
+            ];
+            
+            const newEnemyTypes = ['elite', 'berserker', 'support'];
+            
+            newEnemyTypes.forEach(type => {
+                html += `<h4>${type.charAt(0).toUpperCase() + type.slice(1)} AI Behavior</h4>`;
+                
+                scenarios.forEach(scenario => {
+                    try {
+                        const enemy = new Enemy(100, 100, type);
+                        const initialX = enemy.x;
+                        const initialY = enemy.y;
+                        const initialShootCooldown = enemy.shootCooldown;
+                        
+                        // Simulate AI behavior
+                        const methodName = type + 'AI';
+                        enemy[methodName](mockPlayer.mainTank, scenario.distance, 16);
+                        
+                        // Analyze what happened
+                        const moved = (enemy.x !== initialX || enemy.y !== initialY);
+                        const triedToShoot = (enemy.shootCooldown !== initialShootCooldown);
+                        
+                        let behavior = [];
+                        if (moved) behavior.push('Moved');
+                        if (triedToShoot) behavior.push('Attempted to shoot');
+                        if (behavior.length === 0) behavior.push('Stayed in position');
+                        
+                        html += `<div class="stat-item">
+                            <strong>${scenario.description} (${scenario.distance}px):</strong><br>
+                            ${behavior.join(', ')}
+                        </div>`;
+                        
+                    } catch (error) {
+                        html += `<div class="error">Error in ${scenario.description}: ${error.message}</div>`;
+                    }
+                });
+            });
+            
+            results.innerHTML = html;
+        }
+
+        // Run initial tests
+        window.onload = function() {
+            testAIMethods();
+            testEnemyStats();
+        };
+    </script>
+</body>
+</html>
