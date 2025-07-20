@@ -40,7 +40,7 @@ class Localization {
                 'skill_1': 'SKILL 1',
                 'skill_2': 'SKILL 2',
                 'skill_3': 'SKILL 3',
-                'shoot': 'SHOOT',
+                'shoot': '🎯',
                 
                 // Skill Selection
                 'choose_enhancement': 'Choose Your Enhancement',
@@ -308,7 +308,7 @@ class Localization {
                 'skill_1': 'KỸ NĂNG 1',
                 'skill_2': 'KỸ NĂNG 2',
                 'skill_3': 'KỸ NĂNG 3',
-                'shoot': 'BẮN',
+                'shoot': '🎯',
                 
                 // Skill Selection
                 'choose_enhancement': 'Chọn Kỹ Năng',
