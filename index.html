@@ -45,8 +45,13 @@
     <meta name="android-layout-stable" content="false">
     <meta name="android-system-ui-visibility" content="immersive-sticky">
     
-    <!-- Additional Android fullscreen meta tags -->
-    <meta name="android-windowSoftInputMode" content="adjustNothing">
+    <!-- Additional Android fullscreen enforcement -->
+    <meta name="android-windowFlags" content="FLAG_FULLSCREEN|FLAG_KEEP_SCREEN_ON">
+    <meta name="android-systemUiVisibility" content="SYSTEM_UI_FLAG_FULLSCREEN|SYSTEM_UI_FLAG_HIDE_NAVIGATION|SYSTEM_UI_FLAG_IMMERSIVE_STICKY">
+    <meta name="android-windowSoftInputMode" content="adjustNothing|stateHidden">
+    <meta name="android-configChanges" content="orientation|screenSize|keyboardHidden">
+    
+    <!-- Additional Android app configuration -->
     <meta name="android-hardwareAccelerated" content="true">
     <meta name="android-allowBackup" content="false">
     <meta name="android-screenOrientation" content="landscape">

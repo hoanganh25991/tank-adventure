@@ -57,6 +57,22 @@ html, body {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: none;
     touch-action: manipulation;
+    
+    /* PWA Fullscreen and status bar hiding */
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100vh;
+    min-height: 100dvh;
+    
+    /* iOS Safari PWA specific */
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+    
+    /* Android TWA and PWA - extend into status bar area */
+    padding-top: env(safe-area-inset-top, 0);
+    padding-right: env(safe-area-inset-right, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-left: env(safe-area-inset-left, 0);
 }
 
 p, span, div, li, label, input, textarea {
@@ -80,6 +96,74 @@ button {
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+
+/* Fullscreen specific styles */
+html:fullscreen,
+html:-webkit-full-screen,
+html:-moz-full-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+}
+
+html:fullscreen body,
+html:-webkit-full-screen body,
+html:-moz-full-screen body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-dark);
+}
+
+/* PWA fullscreen mode - Android TWA and installed PWAs */
+@media (display-mode: fullscreen) {
+    html, body {
+        height: 100vh !important;
+        height: 100dvh !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        overflow: hidden;
+        /* Remove any padding in fullscreen PWA mode */
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    #gameContainer {
+        height: 100vh !important;
+        height: 100dvh !important;
+        width: 100vw !important;
+    }
+}
+
+/* PWA standalone mode - fallback */
+@media (display-mode: standalone) {
+    html, body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        /* Use safe area insets in standalone mode */
+        padding-top: env(safe-area-inset-top, 0);
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+/* iOS Safari PWA */
+@supports (-webkit-touch-callout: none) {
+    html, body {
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+    }
+    
+    @media (display-mode: fullscreen) {
+        html, body {
+            height: 100vh !important;
+            height: 100dvh !important;
+            height: -webkit-fill-available !important;
+            min-height: -webkit-fill-available !important;
+        }
+    }
 }
 
 /* Canvas */

@@ -198,21 +198,10 @@ class Utils {
         return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     }
 
-    // Simplified fullscreen utilities (optimized for mobile)
+    // Disabled fullscreen utilities - PWA handles fullscreen automatically
     static async requestFullscreen(element = document.documentElement) {
-        if (!element || window.location.hostname === 'localhost') return;
-        
-        try {
-            if (element.requestFullscreen) {
-                await element.requestFullscreen();
-            } else if (element.webkitRequestFullscreen) {
-                await element.webkitRequestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-                await element.mozRequestFullScreen();
-            }
-        } catch (error) {
-            console.warn('Fullscreen request failed:', error);
-        }
+        // No JavaScript fullscreen requests - PWA manifest handles this
+        return Promise.resolve();
     }
 
     static async exitFullscreen() {
