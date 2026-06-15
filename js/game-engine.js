@@ -131,6 +131,10 @@ class GameEngine {
             // Initialize optimized input manager
             this.inputManager = new InputManager(this);
             
+            // Cap mobile controls to 1/3 viewport height in landscape
+            Utils.updateMobileControlSizes();
+            this.inputManager.updateJoystickMetrics();
+            
             // Adjust canvas size
             this.ui.adjustCanvasSize();
             this.setupFullscreenHandlers();

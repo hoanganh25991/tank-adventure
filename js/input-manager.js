@@ -17,7 +17,10 @@ class InputManager {
             deadzone: 0.15
         };
         
-        this.handleResize = this.updateJoystickMetrics.bind(this);
+        this.handleResize = () => {
+            Utils.updateMobileControlSizes();
+            this.updateJoystickMetrics();
+        };
         
         // Button states
         this.buttons = {

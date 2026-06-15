@@ -226,8 +226,28 @@ class Utils {
         };
     }
 
+    static updateMobileControlSizes() {
+        const root = document.documentElement;
+        const { height } = Utils.getViewportSize();
+        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+        const maxAreaPx = height / 3;
+        const maxStickPx = maxAreaPx * 0.465;
+        const maxControlsPx = maxAreaPx + 20;
+
+        if (isLandscape && height <= 500) {
+            root.style.setProperty('--joystick-area-size', `${Math.round(maxAreaPx)}px`);
+            root.style.setProperty('--joystick-stick-size', `${Math.round(maxStickPx)}px`);
+            root.style.setProperty('--mobile-controls-height', `${Math.round(maxControlsPx)}px`);
+        } else {
+            root.style.removeProperty('--joystick-area-size');
+            root.style.removeProperty('--joystick-stick-size');
+            root.style.removeProperty('--mobile-controls-height');
+        }
+    }
+
     static scheduleLayoutRefresh() {
         const refresh = () => {
+            Utils.updateMobileControlSizes();
             if (window.gameUI) {
                 window.gameUI.adjustCanvasSize();
             }

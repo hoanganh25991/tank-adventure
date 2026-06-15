@@ -534,11 +534,6 @@ class GameUI {
         
         // Update score
         this.elements.scoreText.textContent = `${this.localization.t('score')}: ${Utils.formatNumber(player.score)}`;
-
-        const posX = document.getElementById('posX');
-        const posY = document.getElementById('posY');
-        if (posX) posX.textContent = `x: ${player.mainTank.x}`;
-        if (posY) posY.textContent = `y: ${player.mainTank.y}`;
         
         // Update skill buttons
         const skillInfo = this.gameEngine.skillManager.getSkillInfo();
@@ -1094,16 +1089,20 @@ class GameUI {
 
 // Handle window resize
 window.addEventListener('resize', Utils.debounce(() => {
+    Utils.updateMobileControlSizes();
     if (window.gameUI) {
         window.gameUI.adjustCanvasSize();
     }
+    window.gameEngine?.inputManager?.updateJoystickMetrics();
 }, 250));
 
 if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', Utils.debounce(() => {
+        Utils.updateMobileControlSizes();
         if (window.gameUI) {
             window.gameUI.adjustCanvasSize();
         }
+        window.gameEngine?.inputManager?.updateJoystickMetrics();
     }, 100));
 }
 
@@ -1112,7 +1111,9 @@ window.addEventListener('orientationchange', Utils.debounce(() => {
     if (window.gameUI) {
         // Small delay to ensure screen size is updated
         setTimeout(() => {
+            Utils.updateMobileControlSizes();
             window.gameUI.adjustCanvasSize();
+            window.gameEngine?.inputManager?.updateJoystickMetrics();
         }, 100);
     }
 }, 250));

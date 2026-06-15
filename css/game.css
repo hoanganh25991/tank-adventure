@@ -38,36 +38,38 @@
     /* Game Canvas */
     --canvas-bg: #2a4a2a;
 
-    /* Mobile controls - phone defaults */
-    --joystick-area-size: 168px;
-    --joystick-stick-size: 78px;
-    --mobile-controls-height: 160px;
+    /* Mobile controls - capped at 1/3 viewport height (landscape short axis) */
+    --joystick-max-vh: 33.33;
+    --joystick-stick-ratio: 0.465;
+    --joystick-area-size: min(calc(var(--joystick-max-vh) * 1dvh), 168px);
+    --joystick-stick-size: min(calc(var(--joystick-max-vh) * var(--joystick-stick-ratio) * 1dvh), 78px);
+    --mobile-controls-height: min(calc(var(--joystick-max-vh) * 1dvh + 20px), 160px);
 }
 
 /* Larger phones / landscape handheld */
 @media (min-width: 600px) and (min-height: 400px) {
     :root {
-        --joystick-area-size: 188px;
-        --joystick-stick-size: 88px;
-        --mobile-controls-height: 180px;
+        --joystick-area-size: min(calc(var(--joystick-max-vh) * 1dvh), 188px);
+        --joystick-stick-size: min(calc(var(--joystick-max-vh) * var(--joystick-stick-ratio) * 1dvh), 88px);
+        --mobile-controls-height: min(calc(var(--joystick-max-vh) * 1dvh + 20px), 180px);
     }
 }
 
 /* Tablet */
 @media (min-width: 768px) {
     :root {
-        --joystick-area-size: 210px;
-        --joystick-stick-size: 96px;
-        --mobile-controls-height: 200px;
+        --joystick-area-size: min(calc(var(--joystick-max-vh) * 1dvh), 210px);
+        --joystick-stick-size: min(calc(var(--joystick-max-vh) * var(--joystick-stick-ratio) * 1dvh), 96px);
+        --mobile-controls-height: min(calc(var(--joystick-max-vh) * 1dvh + 20px), 200px);
     }
 }
 
 /* Desktop / large tablet */
 @media (min-width: 1024px) {
     :root {
-        --joystick-area-size: 240px;
-        --joystick-stick-size: 108px;
-        --mobile-controls-height: 220px;
+        --joystick-area-size: min(calc(var(--joystick-max-vh) * 1dvh), 240px);
+        --joystick-stick-size: min(calc(var(--joystick-max-vh) * var(--joystick-stick-ratio) * 1dvh), 108px);
+        --mobile-controls-height: min(calc(var(--joystick-max-vh) * 1dvh + 20px), 220px);
     }
 }
 
@@ -281,23 +283,6 @@ body.fullscreen #gameCanvas {
     align-items: flex-start;
     pointer-events: none;
     font-size: 14px; /* Base font size for consistent HUD text */
-}
-
-#positionInfo {
-    position: absolute;
-    top: -2px;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    font-family: monospace;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(0, 0, 0, 0.45);
-    padding: 3px 6px;
-    border-radius: 4px;
-    line-height: 1.2;
-    pointer-events: none;
 }
 
 #healthBar {
