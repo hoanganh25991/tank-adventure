@@ -333,8 +333,8 @@ class InputManager {
     
     // Cleanup
     destroy() {
-        // Remove all event listeners
-        // This would be called when switching scenes or cleaning up
+        window.removeEventListener('resize', this.handleResize);
+        window.removeEventListener('orientationchange', this.handleResize);
         console.log('InputManager destroyed');
     }
 }
