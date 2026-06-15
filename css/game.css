@@ -37,6 +37,38 @@
     
     /* Game Canvas */
     --canvas-bg: #2a4a2a;
+
+    /* Mobile controls - phone defaults */
+    --joystick-area-size: 168px;
+    --joystick-stick-size: 78px;
+    --mobile-controls-height: 160px;
+}
+
+/* Larger phones / landscape handheld */
+@media (min-width: 600px) and (min-height: 400px) {
+    :root {
+        --joystick-area-size: 188px;
+        --joystick-stick-size: 88px;
+        --mobile-controls-height: 180px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    :root {
+        --joystick-area-size: 210px;
+        --joystick-stick-size: 96px;
+        --mobile-controls-height: 200px;
+    }
+}
+
+/* Desktop / large tablet */
+@media (min-width: 1024px) {
+    :root {
+        --joystick-area-size: 240px;
+        --joystick-stick-size: 108px;
+        --mobile-controls-height: 220px;
+    }
 }
 
 /* Simplified Mobile-First Approach */
@@ -353,7 +385,7 @@ html:-moz-full-screen body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 140px;
+    height: var(--mobile-controls-height);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -366,8 +398,9 @@ html:-moz-full-screen body {
 /* Virtual Joystick */
 #joystickArea {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: var(--joystick-area-size);
+    height: var(--joystick-area-size);
+    flex-shrink: 0;
 }
 
 #joystickBase {
@@ -382,15 +415,15 @@ html:-moz-full-screen body {
 
 #joystickStick {
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: var(--joystick-stick-size);
+    height: var(--joystick-stick-size);
     background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
     border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: all 0.1s ease;
+    transition: transform 0.1s ease;
     cursor: pointer;
 }
 
@@ -497,6 +530,34 @@ html:-moz-full-screen body {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
+}
+
+@media (min-width: 768px) {
+    .action-btn {
+        width: 80px;
+        height: 56px;
+        min-width: 80px;
+        font-size: 22px;
+    }
+
+    .action-btn.skill {
+        width: 80px;
+        height: 56px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .action-btn {
+        width: 88px;
+        height: 60px;
+        min-width: 88px;
+        font-size: 24px;
+    }
+
+    .action-btn.skill {
+        width: 88px;
+        height: 60px;
+    }
 }
 
 /* Screens */
@@ -2353,423 +2414,4 @@ html:-moz-full-screen body {
     }
 }
 
-/* ===== PAYMENT SYSTEM STYLES ===== */
-
-/* Purchase Modal */
-.purchase-modal {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-}
-
-.purchase-content {
-    max-width: 500px;
-    width: 90%;
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    border: 2px solid #f39c12;
-    border-radius: 20px;
-    padding: 30px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-}
-
-.purchase-content h2 {
-    color: #f39c12;
-    font-size: 2.2em;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.purchase-info {
-    margin: 20px 0;
-}
-
-.product-details h3 {
-    color: #ecf0f1;
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.product-details p {
-    color: #bdc3c7;
-    font-size: 1.1em;
-    line-height: 1.4;
-    margin-bottom: 20px;
-}
-
-.price-display {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    border-radius: 15px;
-    padding: 15px;
-    margin: 20px 0;
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
-}
-
-.price-display .price {
-    color: white;
-    font-size: 2em;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.purchase-benefits {
-    text-align: left;
-    margin: 20px 0;
-    background: rgba(52, 73, 94, 0.5);
-    border-radius: 15px;
-    padding: 20px;
-}
-
-.purchase-benefits h4 {
-    color: #f39c12;
-    font-size: 1.3em;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.purchase-benefits ul {
-    list-style: none;
-    padding: 0;
-}
-
-.purchase-benefits li {
-    color: #ecf0f1;
-    font-size: 1.1em;
-    margin: 10px 0;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.purchase-benefits li:last-child {
-    border-bottom: none;
-}
-
-.purchase-btn {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    color: white;
-    font-size: 1.3em;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
-    margin: 10px;
-}
-
-.purchase-btn:hover {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
-}
-
-.cancel-btn {
-    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-    color: white;
-    font-size: 1.1em;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 10px;
-}
-
-.cancel-btn:hover {
-    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-    transform: translateY(-1px);
-}
-
-.purchase-note {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(52, 152, 219, 0.2);
-    border-radius: 10px;
-    border: 1px solid rgba(52, 152, 219, 0.3);
-}
-
-.purchase-note p {
-    color: #3498db;
-    font-size: 0.9em;
-    margin: 0;
-    font-style: italic;
-}
-
-/* Purchase Status */
-.purchase-status {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: bold;
-    font-size: 0.9em;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.purchase-status.purchased {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    color: white;
-    border: 2px solid #27ae60;
-}
-
-.purchase-status.trial {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-    color: white;
-    border: 2px solid #f39c12;
-    cursor: pointer;
-}
-
-.purchase-status.trial:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(243, 156, 18, 0.4);
-}
-
-/* Trial Indicator in HUD */
-.trial-indicator {
-    position: absolute;
-    top: 10px;
-    right: 120px;
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
-    animation: pulse-trial 2s infinite;
-}
-
-.trial-indicator:hover {
-    transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
-}
-
-@keyframes pulse-trial {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-}
-
-/* Locked Upgrade Buttons */
-.upgrade-btn.locked {
-    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-    color: #bdc3c7;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.upgrade-btn.locked:hover {
-    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-    transform: none;
-    box-shadow: none;
-}
-
-/* Toast Messages */
-.toast {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) translateY(20px);
-    background: rgba(44, 62, 80, 0.95);
-    color: white;
-    padding: 20px 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    z-index: 10000;
-    opacity: 0;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    border: 2px solid transparent;
-    max-width: 400px;
-    text-align: center;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateY(0);
-}
-
-.toast-success {
-    border-color: #27ae60;
-    background: rgba(39, 174, 96, 0.9);
-}
-
-.toast-error {
-    border-color: #e74c3c;
-    background: rgba(231, 76, 60, 0.9);
-}
-
-.toast-info {
-    border-color: #3498db;
-    background: rgba(52, 152, 219, 0.9);
-}
-
-.toast-premium {
-    border-color: #f39c12;
-    background: rgba(243, 156, 18, 0.9);
-}
-
-.toast-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.toast-icon {
-    font-size: 1.5em;
-}
-
-.toast-message {
-    font-size: 1.1em;
-    font-weight: 500;
-    line-height: 1.4;
-}
-
-/* Purchase Button in Main Menu */
-#mainMenu .purchase-btn {
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    color: white;
-    font-size: 1.2em;
-    padding: 15px 30px;
-    margin: 10px 0;
-    border: 2px solid #9b59b6;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
-    animation: glow-purchase 3s infinite;
-}
-
-#mainMenu .purchase-btn:hover {
-    background: linear-gradient(135deg, #8e44ad, #9b59b6);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(155, 89, 182, 0.5);
-}
-
-@keyframes glow-purchase {
-    0%, 100% {
-        box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
-    }
-    50% {
-        box-shadow: 0 5px 25px rgba(155, 89, 182, 0.6);
-    }
-}
-
-/* Mobile Responsive Adjustments */
-@media (max-width: 768px) {
-    .purchase-content {
-        padding: 20px;
-        margin: 20px;
-    }
-    
-    .purchase-content h2 {
-        font-size: 1.8em;
-    }
-    
-    .price-display .price {
-        font-size: 1.6em;
-    }
-    
-    .purchase-benefits {
-        padding: 15px;
-    }
-    
-    .purchase-btn {
-        font-size: 1.1em;
-        padding: 12px 25px;
-    }
-    
-    .purchase-status {
-        top: 10px;
-        right: 10px;
-        font-size: 0.8em;
-        padding: 8px 15px;
-    }
-    
-    .trial-indicator {
-        right: 80px;
-        font-size: 0.7em;
-        padding: 6px 12px;
-    }
-    
-    .toast {
-        max-width: 300px;
-        padding: 15px 20px;
-        margin: 20px;
-    }
-    
-    .toast-message {
-        font-size: 1em;
-    }
-}
-
-/* Landscape Mobile Adjustments */
-@media (max-height: 500px) and (orientation: landscape) {
-    .purchase-status {
-        top: 5px;
-        right: 5px;
-        font-size: 0.7em;
-        padding: 5px 10px;
-    }
-    
-    .trial-indicator {
-        top: 5px;
-        right: 60px;
-        font-size: 0.6em;
-        padding: 4px 8px;
-    }
-}
-
-/* Trial Complete Message */
-.trial-complete-message {
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #34495e, #2c3e50);
-    border-radius: 15px;
-    border: 2px solid #f39c12;
-    margin: 10px 0;
-}
-
-.trial-complete-message h3 {
-    color: #f39c12;
-    font-size: 1.5em;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.trial-complete-message p {
-    color: #ecf0f1;
-    font-size: 1.1em;
-    line-height: 1.4;
-    margin: 10px 0;
-}
-
-.trial-complete-message strong {
-    color: #3498db;
-    font-weight: bold;
-}
-
-@media (max-width: 768px) {
-    .trial-complete-message {
-        padding: 15px;
-        margin: 5px 0;
-    }
-    
-    .trial-complete-message h3 {
-        font-size: 1.3em;
-    }
-    
-    .trial-complete-message p {
-        font-size: 1em;
-    }
-}
 

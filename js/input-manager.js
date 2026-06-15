@@ -13,9 +13,11 @@ class InputManager {
             y: 0,
             touchId: null,
             baseRect: null,
-            maxDistance: 35,
+            maxDistance: 40,
             deadzone: 0.15
         };
+        
+        this.handleResize = this.updateJoystickMetrics.bind(this);
         
         // Button states
         this.buttons = {
@@ -39,7 +41,22 @@ class InputManager {
     initialize() {
         this.cacheElements();
         this.setupEventListeners();
+        this.updateJoystickMetrics();
+        window.addEventListener('resize', this.handleResize);
+        window.addEventListener('orientationchange', this.handleResize);
         console.log(`InputManager initialized for ${this.isDesktop ? 'desktop' : 'mobile'}`);
+    }
+    
+    updateJoystickMetrics() {
+        const base = this.elements?.joystickBase;
+        const stick = this.elements?.joystickStick;
+        if (!base || !stick) return;
+
+        const baseSize = Math.min(base.offsetWidth, base.offsetHeight);
+        const stickSize = Math.min(stick.offsetWidth, stick.offsetHeight);
+        const travel = (baseSize - stickSize) / 2;
+
+        this.joystick.maxDistance = Math.max(travel, 24);
     }
     
     cacheElements() {
@@ -127,6 +144,7 @@ class InputManager {
         
         event.preventDefault();
         this.joystick.isActive = true;
+        this.updateJoystickMetrics();
         this.joystick.baseRect = this.elements.joystickBase.getBoundingClientRect();
         
         if (event.type === 'touchstart') {
