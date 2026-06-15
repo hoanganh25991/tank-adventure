@@ -133,6 +133,7 @@ class GameEngine {
             
             // Adjust canvas size
             this.ui.adjustCanvasSize();
+            this.setupFullscreenHandlers();
             
             // Initialize localization after UI is ready
             if (window.Localization) {
@@ -1926,43 +1927,47 @@ class GameEngine {
     // Input handling is now managed by InputManager
     // Fullscreen handling simplified and moved to Utils
 
+    setupFullscreenHandlers() {
+        const onFullscreenChange = Utils.debounce(() => {
+            this.handleFullscreenChange(Utils.isFullscreen());
+        }, 50);
+
+        const events = [
+            'fullscreenchange',
+            'webkitfullscreenchange',
+            'mozfullscreenchange',
+            'MSFullscreenChange'
+        ];
+
+        events.forEach((eventName) => {
+            document.addEventListener(eventName, onFullscreenChange);
+        });
+    }
+
     handleFullscreenChange(isFullscreen) {
-        // Update body class for CSS styling
-        if (isFullscreen) {
-            document.body.classList.add('fullscreen');
-        } else {
-            document.body.classList.remove('fullscreen');
-        }
-        
-        // Force canvas context re-setup for crisp rendering
-        setTimeout(() => {
-            this.updateCanvasForFullscreen();
-        }, 100); // Small delay to ensure canvas resize has completed
-        
-        // Log fullscreen state
+        document.body.classList.toggle('fullscreen', isFullscreen);
+        Utils.scheduleLayoutRefresh();
         console.log(`Game is now in ${isFullscreen ? 'fullscreen' : 'windowed'} mode`);
     }
 
     updateCanvasForFullscreen() {
-        // Re-setup canvas context for crisp rendering
+        if (this.ui) {
+            this.ui.adjustCanvasSize();
+        }
+
         this.setupContextForCrispRendering();
-        
-        // Update camera if in battle mode to re-center on player
+
         if (this.currentScene === 'battle' && this.player && this.player.mainTank) {
             this.updateCamera();
-            
-            // Force immediate camera update to new screen dimensions
+
             const canvasDims = this.getCanvasCSSDimensions();
             this.camera.targetX = this.player.mainTank.x - (canvasDims.width / 2) / this.camera.zoom;
             this.camera.targetY = this.player.mainTank.y - (canvasDims.height / 2) / this.camera.zoom;
             this.camera.x = this.camera.targetX;
             this.camera.y = this.camera.targetY;
         }
-        
-        // Trigger a render to ensure everything is displayed correctly
+
         this.render();
-        
-        console.log('Canvas updated for fullscreen transition');
     }
 
     resetGame() {

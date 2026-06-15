@@ -199,6 +199,52 @@ class Utils {
     }
 
     // Fullscreen utilities for mobile browsers (PWA/TWA uses manifest)
+    static getViewportSize() {
+        const fsElement = document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement;
+
+        if (fsElement) {
+            return {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        }
+
+        const viewport = window.visualViewport;
+        if (viewport) {
+            return {
+                width: viewport.width,
+                height: viewport.height
+            };
+        }
+
+        return {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+    }
+
+    static scheduleLayoutRefresh() {
+        const refresh = () => {
+            if (window.gameUI) {
+                window.gameUI.adjustCanvasSize();
+            }
+            if (window.gameEngine?.inputManager) {
+                window.gameEngine.inputManager.updateJoystickMetrics();
+            }
+            if (window.gameEngine) {
+                window.gameEngine.updateCanvasForFullscreen();
+            }
+        };
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(refresh);
+        });
+        setTimeout(refresh, 100);
+    }
+
     static async requestFullscreen(element = document.documentElement) {
         try {
             if (this.isFullscreen()) {
@@ -215,6 +261,8 @@ class Utils {
             } else if (el.msRequestFullscreen) {
                 await el.msRequestFullscreen();
             }
+
+            this.scheduleLayoutRefresh();
         } catch (error) {
             console.warn('Fullscreen request failed:', error);
             throw error;
@@ -229,7 +277,11 @@ class Utils {
                 await document.webkitExitFullscreen();
             } else if (document.mozCancelFullScreen) {
                 await document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                await document.msExitFullscreen();
             }
+
+            this.scheduleLayoutRefresh();
         } catch (error) {
             console.warn('Exit fullscreen failed:', error);
         }

@@ -171,6 +171,29 @@ html:-moz-full-screen body {
     margin: 0;
     padding: 0;
     background: var(--bg-dark);
+    overflow: hidden;
+}
+
+html:fullscreen #gameContainer,
+html:-webkit-full-screen #gameContainer,
+html:-moz-full-screen #gameContainer,
+body.fullscreen #gameContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin: 0;
+    padding: 0;
+}
+
+html:fullscreen #gameCanvas,
+html:-webkit-full-screen #gameCanvas,
+html:-moz-full-screen #gameCanvas,
+body.fullscreen #gameCanvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* PWA fullscreen mode - Android TWA and installed PWAs */

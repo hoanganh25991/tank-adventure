@@ -874,51 +874,48 @@ class GameUI {
     adjustCanvasSize() {
         const canvas = document.getElementById('gameCanvas');
         const container = document.getElementById('gameContainer');
-        
-        const viewport = window.visualViewport;
-        const width = viewport ? viewport.width : window.innerWidth;
-        const height = viewport ? viewport.height : window.innerHeight;
-        
-        container.style.width = `${width}px`;
-        container.style.height = `${height}px`;
-        
+        if (!canvas || !container) return;
+
+        const fsActive = !!(document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement);
+
+        if (fsActive || document.body.classList.contains('battle-active')) {
+            container.style.width = '100vw';
+            container.style.height = '100dvh';
+        } else {
+            const { width, height } = Utils.getViewportSize();
+            container.style.width = `${width}px`;
+            container.style.height = `${height}px`;
+        }
+
         const containerRect = container.getBoundingClientRect();
         const canvasWidth = containerRect.width;
         const canvasHeight = containerRect.height;
-        
-        // Get device pixel ratio for crisp rendering on high-DPI displays
+
         const dpr = window.devicePixelRatio || 1;
-        console.log(`Device pixel ratio detected: ${dpr}`);
-        
-        // Set the internal canvas resolution to match screen size * device pixel ratio
-        canvas.width = canvasWidth * dpr;
-        canvas.height = canvasHeight * dpr;
-        
-        // Set the CSS size to fill the screen
+
+        canvas.width = Math.round(canvasWidth * dpr);
+        canvas.height = Math.round(canvasHeight * dpr);
         canvas.style.width = `${canvasWidth}px`;
         canvas.style.height = `${canvasHeight}px`;
         canvas.style.left = '0px';
         canvas.style.top = '0px';
-        
-        // Scale the canvas context to match the device pixel ratio
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-        
-        // Set additional context properties for crisp rendering
+
+        const ctx = window.gameEngine?.ctx || canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
         ctx.imageSmoothingEnabled = false;
         ctx.webkitImageSmoothingEnabled = false;
         ctx.mozImageSmoothingEnabled = false;
         ctx.msImageSmoothingEnabled = false;
-        
-        // Store dimensions for game logic
+
         this.canvasScale = dpr;
         this.canvasOffsetX = 0;
         this.canvasOffsetY = 0;
-        
-        console.log(`Canvas resized to full screen: ${canvasWidth}x${canvasHeight} (DPR: ${dpr})`);
-        
-        // Ensure crisp rendering is maintained after resize
-        if (window.gameEngine && window.gameEngine.setupContextForCrispRendering) {
+
+        if (window.gameEngine?.setupContextForCrispRendering) {
             window.gameEngine.setupContextForCrispRendering();
         }
     }
