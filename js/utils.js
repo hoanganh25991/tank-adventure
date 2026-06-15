@@ -198,10 +198,27 @@ class Utils {
         return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     }
 
-    // Disabled fullscreen utilities - PWA handles fullscreen automatically
+    // Fullscreen utilities for mobile browsers (PWA/TWA uses manifest)
     static async requestFullscreen(element = document.documentElement) {
-        // No JavaScript fullscreen requests - PWA manifest handles this
-        return Promise.resolve();
+        try {
+            if (this.isFullscreen()) {
+                return;
+            }
+
+            const el = element;
+            if (el.requestFullscreen) {
+                await el.requestFullscreen({ navigationUI: 'hide' });
+            } else if (el.webkitRequestFullscreen) {
+                await el.webkitRequestFullscreen();
+            } else if (el.mozRequestFullScreen) {
+                await el.mozRequestFullScreen();
+            } else if (el.msRequestFullscreen) {
+                await el.msRequestFullscreen();
+            }
+        } catch (error) {
+            console.warn('Fullscreen request failed:', error);
+            throw error;
+        }
     }
 
     static async exitFullscreen() {
@@ -219,9 +236,12 @@ class Utils {
     }
 
     static isFullscreen() {
-        return !!(document.fullscreenElement || 
-                  document.webkitFullscreenElement || 
-                  document.mozFullScreenElement);
+        return !!(document.fullscreenElement ||
+                  document.webkitFullscreenElement ||
+                  document.mozFullScreenElement ||
+                  document.msFullscreenElement ||
+                  window.matchMedia('(display-mode: fullscreen)').matches ||
+                  window.matchMedia('(display-mode: standalone)').matches);
     }
 
     static toggleFullscreen(element = document.documentElement) {

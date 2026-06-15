@@ -443,7 +443,7 @@ class UpgradeManager {
                 
             case 'autoRepair':
                 const hpPerSecUnit = localization ? localization.t('hp_per_sec_unit') : 'HP/sec';
-                return `${totalEffect.toFixed(1)} ${hpPerSecUnit}`;
+                return `+${totalEffect.toFixed(1)} ${hpPerSecUnit}`;
                 
             case 'shield':
                 const shieldUnit = localization ? localization.t('shield_unit') : 'Shield';
@@ -451,11 +451,98 @@ class UpgradeManager {
                 
             case 'multiShot':
                 const multiShotUnit = localization ? localization.t('multi_shot_unit') : 'Multi-Shot';
-                return `${(totalEffect * 100).toFixed(0)}% ${multiShotUnit}`;
+                return `+${(totalEffect * 100).toFixed(0)}% ${multiShotUnit}`;
                 
             default:
                 const levelUnit = localization ? localization.t('level_unit') : 'Level';
                 return `${levelUnit} ${effectLevel}`;
+        }
+    }
+
+    getUpgradeButtonLabel(id) {
+        const upgrade = this.upgrades[id];
+        if (!upgrade) return 'UP';
+
+        const localization = window.Localization || window.localization;
+        if (upgrade.level >= upgrade.maxLevel) {
+            return localization ? localization.t('upgrade_max') : 'MAX';
+        }
+
+        switch (id) {
+            case 'mainHealth':
+            case 'miniHealth':
+            case 'mainDamage':
+            case 'miniDamage':
+            case 'shield':
+            case 'bulletSpeed':
+            case 'formation':
+                return `+${upgrade.baseValue}`;
+
+            case 'mainSpeed':
+            case 'miniSpeed':
+                return `+${upgrade.baseValue.toFixed(1)}`;
+
+            case 'mainFireRate':
+            case 'miniFireRate':
+                return `-${Math.round((1 - upgrade.baseValue) * 100)}%`;
+
+            case 'coordination':
+            case 'coinBonus':
+            case 'expBonus':
+            case 'multiShot':
+                return `+${Math.round(upgrade.baseValue * 100)}%`;
+
+            case 'autoRepair':
+                return `+${upgrade.baseValue.toFixed(1)}`;
+
+            default:
+                return 'UP';
+        }
+    }
+
+    getUpgradeNextDescription(id) {
+        const upgrade = this.upgrades[id];
+        if (!upgrade || upgrade.level >= upgrade.maxLevel) {
+            const localization = window.Localization || window.localization;
+            return localization ? localization.t('upgrade_max_level') : 'Max level reached';
+        }
+        return this.getUpgradeEffect(id, 1);
+    }
+
+    updateUpgradeButton(id) {
+        const upgrade = this.upgrades[id];
+        if (!upgrade) return;
+
+        const btn = document.querySelector(`.upgrade-btn[data-upgrade="${id}"]`);
+        if (!btn) return;
+
+        const player = window.gameEngine?.player;
+        const canUpgrade = player ? upgrade.canUpgrade(player.coins) : upgrade.level < upgrade.maxLevel;
+        btn.disabled = !canUpgrade || upgrade.level >= upgrade.maxLevel;
+
+        const costElement = btn.querySelector('.upgrade-cost');
+        if (costElement) {
+            costElement.textContent = upgrade.level >= upgrade.maxLevel
+                ? '—'
+                : `${upgrade.getCurrentCost()}💰`;
+        }
+
+        const bonusElement = btn.querySelector('.upgrade-bonus');
+        if (bonusElement) {
+            bonusElement.textContent = this.getUpgradeButtonLabel(id);
+        }
+
+        let descElement = btn.closest('.upgrade-item')?.querySelector('.upgrade-desc');
+        if (!descElement) {
+            const info = btn.closest('.upgrade-item')?.querySelector('.upgrade-info');
+            if (info) {
+                descElement = document.createElement('span');
+                descElement.className = 'upgrade-desc';
+                info.appendChild(descElement);
+            }
+        }
+        if (descElement) {
+            descElement.textContent = this.getUpgradeNextDescription(id);
         }
     }
 

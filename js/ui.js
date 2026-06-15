@@ -534,6 +534,11 @@ class GameUI {
         
         // Update score
         this.elements.scoreText.textContent = `${this.localization.t('score')}: ${Utils.formatNumber(player.score)}`;
+
+        const posX = document.getElementById('posX');
+        const posY = document.getElementById('posY');
+        if (posX) posX.textContent = `x: ${player.mainTank.x}`;
+        if (posY) posY.textContent = `y: ${player.mainTank.y}`;
         
         // Update skill buttons
         const skillInfo = this.gameEngine.skillManager.getSkillInfo();
@@ -575,6 +580,8 @@ class GameUI {
         if (targetScreen) {
             console.log('Target screen found:', targetScreen.id);
             targetScreen.classList.add('active');
+
+            document.body.classList.toggle('battle-active', screenName === 'battleScreen');
             
             // Update screen content
             if (screenName === 'baseScreen') {
@@ -883,27 +890,11 @@ class GameUI {
         this.elements.playerExpNext.textContent = player.experienceToNext;
         this.elements.playerCoins.textContent = Utils.formatNumber(player.coins);
         
-        // Update upgrade button states and costs
+        // Update upgrade button states, costs, and labels
         document.querySelectorAll('.upgrade-btn').forEach(btn => {
             const upgradeType = btn.getAttribute('data-upgrade');
-            const upgrade = upgradeManager.getUpgrade(upgradeType);
-            
-            if (upgrade) {
-                const canUpgrade = upgrade.canUpgrade(player.coins);
-                btn.disabled = !canUpgrade;
-                
-                // Update cost display
-                const costElement = btn.querySelector('.upgrade-cost');
-                if (costElement) {
-                    costElement.textContent = `${upgrade.getCurrentCost()}💰`;
-                }
-                
-                // Update bonus display
-                const bonusElement = btn.querySelector('.upgrade-bonus');
-                if (bonusElement) {
-                    const effect = upgradeManager.getUpgradeEffect(upgradeType, 1);
-                    bonusElement.textContent = effect || `+${upgrade.baseValue}`;
-                }
+            if (upgradeType) {
+                upgradeManager.updateUpgradeButton(upgradeType);
             }
         });
     }
@@ -931,23 +922,28 @@ class GameUI {
         const canvas = document.getElementById('gameCanvas');
         const container = document.getElementById('gameContainer');
         
-        const containerRect = container.getBoundingClientRect();
+        const viewport = window.visualViewport;
+        const width = viewport ? viewport.width : window.innerWidth;
+        const height = viewport ? viewport.height : window.innerHeight;
         
-        // Use full screen dimensions
-        const width = containerRect.width;
-        const height = containerRect.height;
+        container.style.width = `${width}px`;
+        container.style.height = `${height}px`;
+        
+        const containerRect = container.getBoundingClientRect();
+        const canvasWidth = containerRect.width;
+        const canvasHeight = containerRect.height;
         
         // Get device pixel ratio for crisp rendering on high-DPI displays
         const dpr = window.devicePixelRatio || 1;
         console.log(`Device pixel ratio detected: ${dpr}`);
         
         // Set the internal canvas resolution to match screen size * device pixel ratio
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+        canvas.width = canvasWidth * dpr;
+        canvas.height = canvasHeight * dpr;
         
         // Set the CSS size to fill the screen
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
+        canvas.style.width = `${canvasWidth}px`;
+        canvas.style.height = `${canvasHeight}px`;
         canvas.style.left = '0px';
         canvas.style.top = '0px';
         
@@ -966,7 +962,7 @@ class GameUI {
         this.canvasOffsetX = 0;
         this.canvasOffsetY = 0;
         
-        console.log(`Canvas resized to full screen: ${width}x${height} (DPR: ${dpr})`);
+        console.log(`Canvas resized to full screen: ${canvasWidth}x${canvasHeight} (DPR: ${dpr})`);
         
         // Ensure crisp rendering is maintained after resize
         if (window.gameEngine && window.gameEngine.setupContextForCrispRendering) {
@@ -1225,6 +1221,14 @@ window.addEventListener('resize', Utils.debounce(() => {
         window.gameUI.adjustCanvasSize();
     }
 }, 250));
+
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', Utils.debounce(() => {
+        if (window.gameUI) {
+            window.gameUI.adjustCanvasSize();
+        }
+    }, 100));
+}
 
 // Handle orientation change for mobile devices
 window.addEventListener('orientationchange', Utils.debounce(() => {

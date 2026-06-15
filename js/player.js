@@ -604,6 +604,11 @@ class Player {
     }
 
     updateAutoShoot(deltaTime, enemies) {
+        // Mini tanks follow formation while moving — only shoot when stationary
+        if (this.isMoving || this.moveIntensity > 0.1) {
+            return;
+        }
+
         this.autoShootTimer += deltaTime;
         
         if (this.autoShootTimer >= this.autoShootInterval) {

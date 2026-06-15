@@ -11,11 +11,10 @@ class Localization {
         // Load translations
         this.loadTranslations();
         
-        // Detect device language
-        this.detectLanguage();
-        
-        // Load saved language preference
-        this.loadLanguagePreference();
+        // Manual language choice takes priority; otherwise auto-detect (default en)
+        if (!this.loadLanguagePreference()) {
+            this.detectLanguage();
+        }
     }
 
     loadTranslations() {
@@ -237,6 +236,8 @@ class Localization {
                 'shield_unit': 'Shield',
                 'multi_shot_unit': 'Multi-Shot',
                 'level_unit': 'Level',
+                'upgrade_max': 'MAX',
+                'upgrade_max_level': 'Max level reached',
                 
                 // Skill Short Names for Button Display
                 'heal_short': 'REPAIR',
@@ -505,6 +506,8 @@ class Localization {
                 'shield_unit': 'Khiên',
                 'multi_shot_unit': 'Đa Pháo',
                 'level_unit': 'Cấp',
+                'upgrade_max': 'MAX',
+                'upgrade_max_level': 'Đã đạt cấp tối đa',
                 
                 // Skill Short Names for Button Display - Vietnamese
                 'heal_short': 'SỬA',
@@ -560,30 +563,33 @@ class Localization {
     }
 
     detectLanguage() {
-        // Detect device/browser language
-        const browserLanguage = navigator.language || navigator.userLanguage;
-        
-        // Check if it's Vietnamese
-        if (browserLanguage && browserLanguage.toLowerCase().startsWith('vi')) {
+        this.currentLanguage = 'en';
+
+        const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
+        const isVietnamese = browserLanguage === 'vn' ||
+            browserLanguage.startsWith('vi-') ||
+            browserLanguage === 'vi';
+
+        if (isVietnamese) {
             this.currentLanguage = 'vi';
-        } else {
-            this.currentLanguage = 'en';
         }
-        
+
         console.log('Detected language:', browserLanguage, '-> Set to:', this.currentLanguage);
     }
 
     loadLanguagePreference() {
-        // Load saved language preference
-        const savedLanguage = localStorage.getItem('tank_adventure_language');
-        if (savedLanguage && this.supportedLanguages.includes(savedLanguage)) {
-            this.currentLanguage = savedLanguage;
-            console.log('Loaded saved language:', savedLanguage);
+        const manualLanguage = localStorage.getItem('tank_adventure_language_manual');
+        if (manualLanguage && this.supportedLanguages.includes(manualLanguage)) {
+            this.currentLanguage = manualLanguage;
+            console.log('Loaded manual language preference:', manualLanguage);
+            return true;
         }
+        return false;
     }
 
     saveLanguagePreference() {
         localStorage.setItem('tank_adventure_language', this.currentLanguage);
+        localStorage.setItem('tank_adventure_language_manual', this.currentLanguage);
         console.log('Saved language preference:', this.currentLanguage);
     }
 

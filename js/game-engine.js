@@ -944,6 +944,8 @@ class GameEngine {
         
         // Show battle screen
         this.ui.showScreen('battleScreen');
+        document.body.classList.add('battle-active');
+        Utils.requestFullscreen().catch(() => {});
         
         // Show battle title notification
         if (this.ui) {
@@ -1041,9 +1043,13 @@ class GameEngine {
         }
         
         // Reset player position to center
-        if (this.player) {
-            this.player.x = 0;
-            this.player.y = 0;
+        if (this.player && this.player.mainTank) {
+            const canvasDims = this.getCanvasCSSDimensions();
+            this.player.mainTank.x = canvasDims.width / 2;
+            this.player.mainTank.y = canvasDims.height / 2;
+            if (typeof this.player.updateMiniTankFormation === 'function') {
+                this.player.updateMiniTankFormation();
+            }
         }
     }
 
@@ -1453,8 +1459,7 @@ class GameEngine {
     }
 
     drawBattleUI() {
-        // Any additional battle UI that needs to be drawn on canvas
-        // Most UI is handled by HTML/CSS overlay
+        // Battle HUD is handled by HTML/CSS overlay (#positionInfo, #healthBar, etc.)
     }
 
     renderEffects() {
